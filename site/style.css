@@ -295,6 +295,23 @@ kbd { background: var(--surface-2); border: 1px solid var(--line); border-bottom
 .faq summary:hover { color: var(--accent-hover); }
 .faq > p { color: var(--text-soft); margin: 0 0 16px; }
 
+/* Versions */
+.releases { margin-top: 32px; }
+.release { margin: 0 0 14px; padding: 20px 22px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.release-latest { border-color: rgba(61, 165, 255, .45); box-shadow: 0 20px 60px -30px rgba(61, 165, 255, .5); }
+.release-label { margin: 0 0 6px; color: var(--accent); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.release h2 { font-size: 1.35rem; margin: 0 0 4px; }
+.release-meta { margin: 0; color: var(--muted); font-family: var(--mono); font-size: .82rem; }
+.release-body { margin: 16px 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-soft); }
+details.release { padding-top: 0; padding-bottom: 0; }
+details.release > summary {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding: 16px 0;
+  cursor: pointer; list-style: none; font: 700 1.1rem var(--display); letter-spacing: -0.01em;
+}
+details.release > summary::-webkit-details-marker { display: none; }
+details.release > summary::after { content: "+"; margin-left: auto; font: 500 1.2rem/1 var(--mono); color: var(--muted); }
+details.release[open] > summary::after { content: "−"; color: var(--accent); }
+
 /* Toujours en dernier */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
