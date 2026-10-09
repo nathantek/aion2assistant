@@ -18,23 +18,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Entraînement : bande de choix et état, hors du bloc combat pour rester utilisable sans combat -->
+        <!-- Entraînement : ligne d'état, hors du bloc combat pour rester utilisable sans combat -->
         <StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
-                        Visibility="{Binding IsTrainingStripOpen, Converter={StaticResource BoolToVisibility}}">
-                <Button Style="{StaticResource TextButtonStyle}" Content="1 min" Margin="0,0,6,0"
-                        Command="{Binding StartTrainingCommand}" CommandParameter="60000"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="3 min" Margin="0,0,6,0"
-                        Command="{Binding StartTrainingCommand}" CommandParameter="180000"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="5 min" Margin="0,0,6,0"
-                        Command="{Binding StartTrainingCommand}" CommandParameter="300000"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="Libre" Margin="0,0,6,0"
-                        Command="{Binding StartTrainingCommand}" CommandParameter="0"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="Annuler"
-                        Command="{Binding ToggleTrainingStripCommand}"/>
-            </StackPanel>
             <DockPanel Margin="0,0,0,4" Visibility="{Binding HasTrainingText, Converter={StaticResource BoolToVisibility}}">
                 <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Content="Arrêter" Margin="6,0,0,0"
                         Command="{Binding StopTrainingCommand}"/>
@@ -48,9 +36,13 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12"
                     Visibility="{Binding HasSnapshot, Converter={StaticResource InverseBoolToVisibility}}">
             <TextBlock Text="Aucun combat en cours." Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Entraînement" Margin="0,6,0,0" HorizontalAlignment="Center"
-                    Command="{Binding ToggleTrainingStripCommand}" ToolTip="Entraînement chronométré"
-                    Visibility="{Binding ShowTrainingButton, Converter={StaticResource BoolToVisibility}}"/>
+            <StackPanel Margin="0,10,0,0" Visibility="{Binding HasLastFight, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="DERNIER COMBAT"/>
+                <TextBlock Text="{Binding LastFightText}" Foreground="{DynamicResource TextMutedBrush}"
+                           FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="Voir dans l'historique" HorizontalAlignment="Left"
+                        Command="{Binding OpenLastFightClickCommand}"/>
+            </StackPanel>
         </StackPanel>
 
         <Grid Visibility="{Binding HasSnapshot, Converter={StaticResource BoolToVisibility}}">
@@ -62,21 +54,27 @@
             <!-- En-tête -->
             <StackPanel Margin="0,0,0,4">
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="6,0,0,0"
-                            Content="{Binding CopyText}" Command="{Binding CopyCommand}"
-                            ToolTip="Copier le classement sur une ligne, à coller dans le chat du jeu"/>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource IconButtonStyle}" Content="&#xE722;" Margin="6,0,0,0"
-                            Command="{Binding CopyImageCommand}" ToolTip="Copier une image du tableau (toutes les lignes)"/>
                     <Button DockPanel.Dock="Right" Style="{StaticResource ChartToggleStyle}" Margin="6,0,0,0"
-                            Command="{Binding ToggleChartCommand}" ToolTip="Courbe / classement"
+                            Command="{Binding ToggleChartCommand}" ToolTip="Liste / courbe"
                             Visibility="{Binding ShowChartToggle, Converter={StaticResource BoolToVisibility}}"/>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="6,0,0,0"
-                            Content="{Binding BossToggleText}" Command="{Binding ToggleBossCommand}"
-                            ToolTip="Basculer entre les dégâts sur le boss seulement et tous les dégâts"
-                            Visibility="{Binding ShowBossToggle, Converter={StaticResource BoolToVisibility}}"/>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource IconButtonStyle}" Content="&#xE916;" Margin="6,0,0,0"
-                            Command="{Binding ToggleTrainingStripCommand}" ToolTip="Entraînement chronométré"
-                            Visibility="{Binding ShowTrainingButton, Converter={StaticResource BoolToVisibility}}"/>
+                    <Border DockPanel.Dock="Right" CornerRadius="4" Background="{DynamicResource SurfaceBrush}" ClipToBounds="True"
+                            Margin="6,0,0,0" VerticalAlignment="Center"
+                            Visibility="{Binding ShowBossToggle, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Style="{StaticResource SegmentButtonStyle}" Content="Boss"
+                                         IsChecked="{Binding IsBossOnly, Mode=OneWay}"
+                                         Command="{Binding SetBossOnlyCommand}" CommandParameter="True"
+                                         ToolTip="Dégâts sur le boss seulement">
+                                <RadioButton.Tag><CornerRadius>4,0,0,4</CornerRadius></RadioButton.Tag>
+                            </RadioButton>
+                            <RadioButton Style="{StaticResource SegmentButtonStyle}" Content="Tout"
+                                         IsChecked="{Binding IsAll, Mode=OneWay}"
+                                         Command="{Binding SetBossOnlyCommand}" CommandParameter="False"
+                                         ToolTip="Tous les dégâts">
+                                <RadioButton.Tag><CornerRadius>0,4,4,0</CornerRadius></RadioButton.Tag>
+                            </RadioButton>
+                        </StackPanel>
+                    </Border>
                     <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                VerticalAlignment="Center"/>
                 </DockPanel>
@@ -147,5 +145,71 @@
             </Grid>
         </Grid>
         </Grid>
+
+        <!-- Barre d'actions : bande d'entraînement au-dessus ; Entraînement à gauche, Copier à droite -->
+        <StackPanel Grid.Row="2" Margin="0,6,0,0"
+                    Visibility="{Binding ShowActionBar, Converter={StaticResource BoolToVisibility}}">
+            <WrapPanel Margin="0,0,0,4"
+                        Visibility="{Binding IsTrainingStripOpen, Converter={StaticResource BoolToVisibility}}">
+                <Button Style="{StaticResource TextButtonStyle}" Content="1 min" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="60000"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="3 min" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="180000"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="5 min" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="300000"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="Libre" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="0"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="Annuler"
+                        Command="{Binding ToggleTrainingStripCommand}"/>
+            </WrapPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Style="{StaticResource TextButtonStyle}" Padding="6,4" Margin="0"
+                        Command="{Binding ToggleTrainingStripCommand}" ToolTip="Entraînement chronométré"
+                        Visibility="{Binding ShowTrainingButton, Converter={StaticResource BoolToVisibility}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE916;" FontFamily="{DynamicResource IconFont}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="Entraînement" FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"/>
+                    </Grid>
+                </Button>
+                <Grid Grid.Column="1" Margin="6,0,0,0" Visibility="{Binding HasSnapshot, Converter={StaticResource BoolToVisibility}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource TextButtonStyle}" Margin="0,0,3,0" Padding="6,4"
+                            Command="{Binding CopyCommand}"
+                            ToolTip="Copier le classement sur une ligne, à coller dans le chat du jeu">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE8C8;" FontFamily="{DynamicResource IconFont}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CopyTextLabel}" FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+                    </Button>
+                    <Button Grid.Column="1" Style="{StaticResource TextButtonStyle}" Margin="3,0,0,0" Padding="6,4"
+                            Command="{Binding CopyImageCommand}"
+                            ToolTip="Copier une image du tableau (toutes les lignes)">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE722;" FontFamily="{DynamicResource IconFont}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CopyImageLabel}" FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+                    </Button>
+                </Grid>
+            </Grid>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -20,6 +20,28 @@ Téléchargements : [page des Releases](https://github.com/nathantek/aion2assist
 - **Entraînement** : mode pour s'exercer sur un mannequin.
 - **Thèmes** : plusieurs thèmes visuels au choix.
 
+## Raccourcis clavier
+
+Globaux (actifs même quand le jeu a le focus), modifiables dans Réglages › Raccourcis. Verr Num doit être activé.
+
+| Raccourci | Action |
+|---|---|
+| Ctrl+Alt+Num1 | Onglet DPS |
+| Ctrl+Alt+Num2 | Onglet Dégâts reçus |
+| Ctrl+Alt+Num3 | Onglet Soins |
+| Ctrl+Alt+Num4 | Onglet Historique |
+| Ctrl+Alt+Num5 | Onglet Timers |
+| Ctrl+Alt+Num/ | Onglet précédent |
+| Ctrl+Alt+Num* | Onglet suivant |
+| Ctrl+Alt+Num0 | Masquer / afficher |
+| Ctrl+Alt+Num7 | Ancrer / libérer |
+| Ctrl+Alt+Num8 | Réduire / agrandir |
+| Ctrl+Alt+Num9 | Réinitialiser le combat |
+| Ctrl+Alt+Num+ | Agrandir l'interface |
+| Ctrl+Alt+Num- | Rétrécir l'interface |
+
+Depuis la 0.3.1, les onglets suivent l'ordre DPS, Reçus, Soins, Historique, Timers. Un raccourci d'onglet resté à son ancienne valeur par défaut est mis à jour automatiquement ; un raccourci personnalisé est conservé.
+
 ## Installation (courte)
 
 1. Installe [Npcap](https://npcap.com) (nécessaire pour lire le trafic réseau du jeu) et **laisse décochée** l'option « Restrict Npcap driver's access to Administrators only ».

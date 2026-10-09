@@ -35,7 +35,7 @@ public sealed class AppSettings
     public const double MinFontScale = 0.8, MaxFontScale = 1.5;
     public const double MinOpacity = 0.0, MaxOpacity = 1.0;
 
-    public const int CurrentVersion = 3;
+    public const int CurrentVersion = 4;
     public const string DefaultThemeId = "classique";
     /// <summary>Version du CLUF en vigueur ; l'utilisateur doit l'accepter à nouveau quand elle change.</summary>
     public const string EulaVersion = "1";
@@ -101,15 +101,47 @@ public sealed class AppSettings
         History.MaxEncounters = Math.Clamp(History.MaxEncounters, 10, HistorySettings.MaxEncountersCap);
         History.MinDurationSeconds = Math.Clamp(History.MinDurationSeconds, 0, 600);
         if (string.IsNullOrWhiteSpace(ThemeId)) ThemeId = DefaultThemeId;
+        Hotkeys ??= new();
         // v2 : raccourcis par défaut déplacés sur le pavé numérique ; les anciens défauts (F1…) sont remplacés.
         if (SettingsVersion < 2) Hotkeys = HotkeyDefaults.Create();
         // v3 : historique plafonné à 30 jours / 100 combats.
         if (SettingsVersion < 3) { History.RetentionDays = HistorySettings.MaxRetentionDays; History.MaxEncounters = HistorySettings.MaxEncountersCap; }
+        // v4 : raccourcis d'onglet réordonnés comme les onglets (DPS, Reçus, Soins, Historique, Timers).
+        if (SettingsVersion < 4) MigrateTabHotkeysV4(Hotkeys);
         SettingsVersion = CurrentVersion;
-        Hotkeys ??= new();
         foreach (var (action, gesture) in HotkeyDefaults.Create())
             Hotkeys.TryAdd(action, gesture);
         foreach (var timer in Timers.Values)
             timer.SoonThresholdMinutes = Math.Clamp(timer.SoonThresholdMinutes, 1, 120);
+    }
+
+    /// <summary>
+    /// Passe les raccourcis d'onglet restés à leur ancien défaut sur le nouveau, sans toucher aux valeurs personnalisées
+    /// ni créer de doublon (un candidat dont le nouveau défaut est déjà pris par une autre action reste inchangé).
+    /// </summary>
+    internal static void MigrateTabHotkeysV4(Dictionary<string, string> hotkeys)
+    {
+        var newDefaults = HotkeyDefaults.Create();
+        var candidates = new HashSet<string>();
+        foreach (var (action, oldDefault) in HotkeyDefaults.TabDefaultsV3)
+            if (hotkeys.TryGetValue(action, out var value)
+                && HotkeyGesture.TryParse(value, out var current)
+                && HotkeyGesture.TryParse(oldDefault, out var old) && current == old)
+                candidates.Add(action);
+
+        bool removed;
+        do
+        {
+            removed = false;
+            var taken = new HashSet<HotkeyGesture>();
+            foreach (var (action, value) in hotkeys)
+                if (!candidates.Contains(action) && HotkeyGesture.TryParse(value, out var g)) taken.Add(g);
+            foreach (var action in candidates.ToList())
+                if (HotkeyGesture.TryParse(newDefaults[action], out var target) && taken.Contains(target))
+                    removed |= candidates.Remove(action);
+        } while (removed);
+
+        foreach (var action in candidates)
+            hotkeys[action] = newDefaults[action];
     }
 }

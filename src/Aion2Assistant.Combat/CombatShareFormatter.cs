@@ -47,7 +47,12 @@ public static class CombatShareFormatter
     }
 
     /// <summary>État du combat tel qu'affiché dans l'en-tête des meters.</summary>
-    public static string StateLabel(EncounterSnapshot snapshot) => snapshot.Active ? (snapshot.IsTraining ? "entraînement" : "en cours") : snapshot.Outcome switch
+    public static string StateLabel(EncounterSnapshot snapshot) => snapshot.Active
+        ? (snapshot.IsTraining ? "entraînement" : "en cours")
+        : OutcomeLabel(snapshot.Outcome);
+
+    /// <summary>Issue d'un combat terminé (null = terminé sans cause connue).</summary>
+    public static string OutcomeLabel(EncounterOutcome? outcome) => outcome switch
     {
         EncounterOutcome.Training => "Entraînement",
         EncounterOutcome.Kill => "Tué",
@@ -55,6 +60,13 @@ public static class CombatShareFormatter
         EncounterOutcome.Manual => "Réinitialisé",
         _ => "Terminé",
     };
+
+    /// <summary>Une ligne pour le dernier combat : « Vakron · 4:50 · Tué · 52,3k/s ».</summary>
+    public static string SummaryLine(EncounterSummary s)
+    {
+        var name = !string.IsNullOrWhiteSpace(s.Boss) ? s.Boss : !string.IsNullOrWhiteSpace(s.Zone) ? s.Zone : "Combat";
+        return $"{Clean(name)} · {Duration(s.DurationMs)} · {OutcomeLabel(s.Outcome)} · {Compact(s.GroupDps)}/s";
+    }
 
     private static string Compact(double v)
     {

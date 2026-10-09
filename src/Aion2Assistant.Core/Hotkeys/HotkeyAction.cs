@@ -2,11 +2,11 @@ namespace Aion2Assistant.Core.Hotkeys;
 
 public enum HotkeyAction
 {
-    TabTimers,
     TabDps,
     TabTaken,
     TabHeal,
     TabHistory,
+    TabTimers,
     PreviousTab,
     NextTab,
     ToggleVisible,

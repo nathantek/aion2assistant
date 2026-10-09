@@ -10,8 +10,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- Le DPI (PerMonitorV2) est déclaré dans le manifeste pour WPF ; WinForms n'héberge que le NotifyIcon. -->
     <NoWarn>$(NoWarn);WFAC010</NoWarn>
-    <Version>0.3.0</Version>
-    <InformationalVersion>0.3.0-beta.1</InformationalVersion>
+    <Version>0.3.1</Version>
+    <InformationalVersion>0.3.1-beta.1</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

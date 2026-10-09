@@ -27,21 +27,21 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Grid Background="Transparent" Width="30" Height="32">
-                        <TextBlock x:Name="Glyph"
-                                   Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
-                                   FontFamily="{DynamicResource IconFont}"
-                                   FontSize="{DynamicResource FontSizeLarge}"
-                                   Foreground="{TemplateBinding Foreground}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Path x:Name="Glyph"
+                              Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                              Fill="{TemplateBinding Foreground}" Stretch="Uniform"
+                              Width="{DynamicResource FontSizeLarge}" Height="{DynamicResource FontSizeLarge}"
+                              SnapsToDevicePixels="True"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Border x:Name="Underline" Height="2" VerticalAlignment="Bottom" Margin="6,0"
                                 CornerRadius="1" Background="{TemplateBinding Tag}" Visibility="Collapsed"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource TextBrush}"/>
+                            <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource TextBrush}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Glyph" Property="Foreground"
+                            <Setter TargetName="Glyph" Property="Fill"
                                     Value="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
                             <Setter TargetName="Underline" Property="Visibility" Value="Visible"/>
                         </Trigger>
@@ -67,6 +67,66 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Segment du sélecteur [Boss | Tout] : à placer par deux dans un Border arrondi ; coché = fond survol + texte clair. -->
+    <Style x:Key="SegmentButtonStyle" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}"/>
+        <Setter Property="Padding" Value="8,3"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Bg" Background="{DynamicResource SurfaceBrush}" Padding="{TemplateBinding Padding}"
+                            CornerRadius="{TemplateBinding Tag}">
+                        <TextBlock x:Name="Text" Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"
+                                   FontSize="{TemplateBinding FontSize}" FontWeight="{TemplateBinding FontWeight}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Text" Property="Foreground" Value="{DynamicResource TextBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter TargetName="Text" Property="Foreground" Value="{DynamicResource TextBrush}"/>
+                            <Setter TargetName="Text" Property="FontWeight" Value="SemiBold"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Onglet « roue dentée » du groupe de droite : même aspect qu'IconButtonStyle, coché = glyphe clair + fond survol. -->
+    <Style x:Key="ClusterTabButtonStyle" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Bg" Background="Transparent" CornerRadius="4" Width="26" Height="26">
+                        <TextBlock x:Name="Glyph"
+                                   Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                   FontFamily="{DynamicResource IconFont}" FontSize="{DynamicResource FontSizeNormal}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource TextBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -1,10 +1,11 @@
+using System.Windows.Media;
 using Aion2Assistant.Core.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Aion2Assistant.App.ViewModels;
 
-public enum OverlayTab { Timers, Dps, Taken, Heal, History, Settings }
+public enum OverlayTab { Dps, Taken, Heal, History, Timers, Settings }
 
 public partial class MainViewModel : ObservableObject
 {
@@ -22,6 +23,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool _isDocked;
     [ObservableProperty] private bool _isMinimized;
     [ObservableProperty] private string? _warningMessage;
+
+    // Valeur clé de la barre réduite (DPS en combat, sinon prochain timer) ; null hors réduction. Alimentée par MiniBarController.
+    [ObservableProperty] private string? _miniValueText;
+    [ObservableProperty] private Brush? _miniValueBrush;
+    [ObservableProperty] private string? _miniValueTip;
 
     public MainViewModel(AppSettings settings, Action requestSave)
     {

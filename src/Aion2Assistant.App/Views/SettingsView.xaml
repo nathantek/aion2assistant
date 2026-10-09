@@ -5,9 +5,23 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <WrapPanel Grid.Row="0" Margin="0,0,0,6">
+            <Button Style="{StaticResource TextButtonStyle}" Content="Affichage" Tag="{Binding ElementName=SecAffichage}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="Son" Tag="{Binding ElementName=SecSon}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="Timers" Tag="{Binding ElementName=SecTimers}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="Combat" Tag="{Binding ElementName=SecCombat}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="Capture" Tag="{Binding ElementName=SecCapture}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="Raccourcis" Tag="{Binding ElementName=SecRaccourcis}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="À propos" Tag="{Binding ElementName=SecAPropos}" Click="OnSectionChip"/>
+    </WrapPanel>
+    <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="AFFICHAGE"/>
+            <TextBlock x:Name="SecAffichage" Style="{StaticResource SectionHeaderStyle}" Text="AFFICHAGE"/>
             <TextBlock Text="{Binding UiScale, StringFormat='Échelle de l’interface : {0:P0}'}"/>
             <Slider Minimum="0.8" Maximum="2" TickFrequency="0.1" IsSnapToTickEnabled="True" Value="{Binding UiScale}"/>
             <TextBlock Text="{Binding FontScale, StringFormat='Taille du texte : {0:P0}'}" Margin="0,6,0,0"/>
@@ -35,7 +49,7 @@
             <Button Style="{StaticResource TextButtonStyle}" Content="Réinitialiser la position"
                     Command="{Binding ResetPositionCommand}" HorizontalAlignment="Left" Margin="0,8,0,0"/>
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="SON"/>
+            <TextBlock x:Name="SecSon" Style="{StaticResource SectionHeaderStyle}" Text="SON"/>
             <TextBlock Text="{Binding Volume, StringFormat='Volume : {0:P0}'}"/>
             <Slider Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding Volume}"/>
             <TextBlock Text="{Binding SoundLabel}" Foreground="{DynamicResource TextMutedBrush}"
@@ -46,7 +60,7 @@
                 <Button Style="{StaticResource TextButtonStyle}" Content="Tester" Command="{Binding TestSoundCommand}"/>
             </StackPanel>
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="TIMERS"/>
+            <TextBlock x:Name="SecTimers" Style="{StaticResource SectionHeaderStyle}" Text="TIMERS"/>
             <ItemsControl ItemsSource="{Binding Timers}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:TimerSettingRowViewModel}">
@@ -72,12 +86,12 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="COMBAT"/>
+            <TextBlock x:Name="SecCombat" Style="{StaticResource SectionHeaderStyle}" Text="COMBAT"/>
             <TextBlock Text="{Binding CombatIdleSeconds, StringFormat='Fin de combat après inactivité : {0:0} s'}"/>
             <Slider Minimum="3" Maximum="60" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding CombatIdleSeconds}"/>
             <CheckBox Content="Inclure tous les joueurs (sinon : moi seulement)" IsChecked="{Binding IncludeAllPlayers}" Margin="0,6,0,0"/>
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="CAPTURE"/>
+            <TextBlock x:Name="SecCapture" Style="{StaticResource SectionHeaderStyle}" Text="CAPTURE"/>
             <StackPanel DataContext="{Binding Capture}">
                 <DockPanel>
                     <Ellipse Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{Binding IndicatorBrush}"/>
@@ -109,7 +123,7 @@
                            TextWrapping="Wrap" Margin="0,4,0,0"/>
             </StackPanel>
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="RACCOURCIS"/>
+            <TextBlock x:Name="SecRaccourcis" Style="{StaticResource SectionHeaderStyle}" Text="RACCOURCIS"/>
             <ItemsControl ItemsSource="{Binding Hotkeys}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:HotkeyRowViewModel}">
@@ -127,7 +141,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="À PROPOS"/>
+            <TextBlock x:Name="SecAPropos" Style="{StaticResource SectionHeaderStyle}" Text="À PROPOS"/>
             <TextBlock Text="{Binding VersionText}"/>
             <DockPanel Margin="0,4,0,0">
                 <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="Voir"
@@ -157,4 +171,5 @@
                        Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
         </StackPanel>
     </ScrollViewer>
+    </Grid>
 </UserControl>

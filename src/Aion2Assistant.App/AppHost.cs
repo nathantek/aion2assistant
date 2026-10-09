@@ -43,6 +43,7 @@ internal sealed class AppHost : IDisposable
     public CaptureController Capture { get; }
     public BossFilter BossFilter { get; }
     public MetersController Meters { get; }
+    private MiniBarController _miniBar = null!;
     public HistoryController History { get; }
     public RecordController Records { get; }
     public FieldBossController FieldBosses { get; }
@@ -132,6 +133,23 @@ internal sealed class AppHost : IDisposable
         History = new HistoryController(Meters, Settings, MapNames.Load(Path.Combine(AppContext.BaseDirectory, "data")), BossFilter);
         if (npcapInstalled) Main.Pages[OverlayTab.History] = History.View;
         Records = new RecordController(History, Notifications);
+
+        // Barre réduite : lit l'instantané du suivi (les meters ne se mettent pas à jour fenêtre réduite).
+        _miniBar = new MiniBarController(Main, npcapInstalled ? () => Meters.LastSnapshot : () => null, timersPage, BossFilter);
+
+        // État vide des meters live : résumé du dernier combat + lien vers l'historique.
+        if (npcapInstalled)
+        {
+            var meters = new[] { Meters.Dps, Meters.Taken, Meters.Heal };
+            void UpdateLastFight()
+            {
+                var text = History.View.Latest is { } s ? CombatShareFormatter.SummaryLine(s) : null;
+                foreach (var m in meters) m.LastFightText = text;
+            }
+            foreach (var m in meters) m.OpenLastFight = () => { ShowTab(OverlayTab.History); History.View.OpenLatest(); };
+            History.View.LatestChanged += UpdateLastFight;
+            UpdateLastFight();
+        }
 
         // Dernier : un échec de construction plus haut ne laisse pas d'icône fantôme dans la zone de notification.
         InstallTabSwitchProbe();
@@ -276,6 +294,7 @@ internal sealed class AppHost : IDisposable
 
     public void Dispose()
     {
+        _miniBar.Dispose();
         Meters.Dispose();
         Records.Dispose();
         History.Dispose();

@@ -44,7 +44,8 @@ public partial class MeterViewModel : ObservableObject
     [ObservableProperty] private string _detailName = "";
     [ObservableProperty] private IReadOnlyList<SkillLineViewModel> _detailSkills = [];
     [ObservableProperty] private IReadOnlyList<object> _detailRecaps = [];
-    [ObservableProperty] private string _copyText = CopyIdle;
+    [ObservableProperty] private string _copyTextLabel = CopyTextIdle;
+    [ObservableProperty] private string _copyImageLabel = CopyImageIdle;
 
     [ObservableProperty] private bool _isChart;
     [ObservableProperty] private IReadOnlyList<ChartSeries> _chartSeries = [];
@@ -54,7 +55,8 @@ public partial class MeterViewModel : ObservableObject
     private static readonly string[] SeriesBrushKeys =
         ["TextBrush", "TextMutedBrush", "DpsBrush", "HealBrush", "TimerBrush", "AlertBrush", "TakenBrush", "CritBrush"];
 
-    private const string CopyIdle = "📋 Copier";
+    private const string CopyTextIdle = "Copier texte";
+    private const string CopyImageIdle = "Copier image";
     private DispatcherTimer? _copyReset;
 
     private readonly Dictionary<uint, MeterRowViewModel> _rowsById = new();
@@ -64,7 +66,8 @@ public partial class MeterViewModel : ObservableObject
         _bossFilter = bossFilter;
         if (bossFilter is not null) bossFilter.PropertyChanged += (_, _) =>
         {
-            OnPropertyChanged(nameof(BossToggleText));
+            OnPropertyChanged(nameof(IsBossOnly));
+            OnPropertyChanged(nameof(IsAll));
             Update(_lastSnapshot);
         };
         Kind = kind;
@@ -88,6 +91,8 @@ public partial class MeterViewModel : ObservableObject
     /// <summary>Commandes d'entraînement ; null = pas de bouton (historique, soins, dégâts reçus).</summary>
     public TrainingControls? Training { get; init; }
     public bool ShowTrainingButton => Training is not null;
+    /// <summary>Barre d'actions sous la liste : Entraînement (live) et/ou Copier (dès qu'il y a un combat).</summary>
+    public bool ShowActionBar => ShowTrainingButton || HasSnapshot;
     [ObservableProperty] private bool _isTrainingStripOpen;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasTrainingText))] private string _trainingText = "";
     public bool HasTrainingText => TrainingText.Length > 0;
@@ -117,6 +122,17 @@ public partial class MeterViewModel : ObservableObject
     [RelayCommand]
     private void StopTraining() => Training?.Stop();
 
+    /// <summary>Ouvre le dernier combat dans l'historique (renseigné par AppHost, absent de l'historique lui-même).</summary>
+    public Action? OpenLastFight { get; set; }
+
+    /// <summary>Résumé du dernier combat pour l'état vide ; null = section masquée.</summary>
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasLastFight))] private string? _lastFightText;
+
+    public bool HasLastFight => LastFightText is not null;
+
+    [RelayCommand]
+    private void OpenLastFightClick() => OpenLastFight?.Invoke();
+
     public MeterKind Kind { get; }
     public string Title { get; }
     public Brush Accent => AppHost.Resource(_accentKey);
@@ -125,13 +141,15 @@ public partial class MeterViewModel : ObservableObject
     public bool ShowOverheal => Kind == MeterKind.Heal;
     public bool ShowRecaps => Kind == MeterKind.Taken;
     public bool ShowBossToggle => _bossFilter is not null && Kind == MeterKind.Dps;
-    public string BossToggleText => _bossFilter?.BossOnly == true ? "Boss seul" : "Tout";
+    public bool IsBossOnly => _bossFilter?.BossOnly == true;
+    public bool IsAll => !IsBossOnly;
     public bool ShowChartToggle => Kind == MeterKind.Dps;
     public bool HasChartData => ChartSeries.Count > 0;
     public bool ShowList => !IsChart && !IsDetail;
     public bool ShowDetail => !IsChart && IsDetail;
     public bool HasTargetHp => TargetHpPct is not null;
 
+    partial void OnHasSnapshotChanged(bool value) => OnPropertyChanged(nameof(ShowActionBar));
     partial void OnTargetHpPctChanged(double? value) => OnPropertyChanged(nameof(HasTargetHp));
     partial void OnChartSeriesChanged(IReadOnlyList<ChartSeries> value) => OnPropertyChanged(nameof(HasChartData));
 
@@ -163,10 +181,11 @@ public partial class MeterViewModel : ObservableObject
         IsChart = !IsChart;
     }
 
+    /// <summary>Sélecteur [Boss | Tout] : « True » = boss seul, « False » = tous les dégâts.</summary>
     [RelayCommand]
-    private void ToggleBoss()
+    private void SetBossOnly(string? value)
     {
-        if (_bossFilter is not null) _bossFilter.BossOnly = !_bossFilter.BossOnly;
+        if (_bossFilter is not null) _bossFilter.BossOnly = string.Equals(value, "True", StringComparison.OrdinalIgnoreCase);
     }
 
     [RelayCommand]
@@ -194,7 +213,8 @@ public partial class MeterViewModel : ObservableObject
     {
         if (_lastSnapshot is null) return;
         var text = CombatShareFormatter.Format(_lastSnapshot, Kind, bossOnly: _bossFilter?.BossOnly == true);
-        ShowCopyResult(TrySetClipboard(() => Clipboard.SetText(text)) ? "✓ Copié" : "Échec de la copie");
+        CopyTextLabel = TrySetClipboard(() => Clipboard.SetText(text)) ? "✓ Copié" : "Échec de la copie";
+        StartCopyReset();
     }
 
     /// <summary>Copie une image du tableau (toutes les lignes, sans défilement) dans le presse-papiers.</summary>
@@ -202,8 +222,9 @@ public partial class MeterViewModel : ObservableObject
     private void CopyImage()
     {
         var image = ShareImageRenderer.Render(this);
-        ShowCopyResult(image is not null && TrySetClipboard(() => Clipboard.SetImage(image))
-            ? "✓ Image copiée" : "Échec de la copie");
+        CopyImageLabel = image is not null && TrySetClipboard(() => Clipboard.SetImage(image))
+            ? "✓ Image copiée" : "Échec de la copie";
+        StartCopyReset();
     }
 
     private static bool TrySetClipboard(Action set)
@@ -230,9 +251,9 @@ public partial class MeterViewModel : ObservableObject
         return false;
     }
 
-    private void ShowCopyResult(string text)
+    /// <summary>Un seul minuteur remet les deux libellés de copie à leur état de repos après 1,5 s.</summary>
+    private void StartCopyReset()
     {
-        CopyText = text;
         _copyReset ??= new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
         _copyReset.Stop();
         _copyReset.Tick -= OnCopyReset;
@@ -243,7 +264,8 @@ public partial class MeterViewModel : ObservableObject
     private void OnCopyReset(object? sender, EventArgs e)
     {
         _copyReset?.Stop();
-        CopyText = CopyIdle;
+        CopyTextLabel = CopyTextIdle;
+        CopyImageLabel = CopyImageIdle;
     }
 
     public void Update(EncounterSnapshot? snapshot)

@@ -11,6 +11,9 @@ public sealed class TimersViewModel(AppSettings settings, Action requestSave)
 
     public ObservableCollection<TimerRowViewModel> Rows { get; } = new();
 
+    /// <summary>Prochain timer à afficher : le premier qui n'est pas ouvert, sinon le premier, sinon null.</summary>
+    public TimerRowViewModel? NextTimer => Rows.FirstOrDefault(r => !r.IsOpen) ?? Rows.FirstOrDefault();
+
     /// <summary>Met à jour les lignes sans les recréer (ajouts, suppressions, réordonnancement par prochaine échéance).</summary>
     public void Refresh(IReadOnlyList<TimerState> states, DateTimeOffset now)
     {

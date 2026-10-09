@@ -10,6 +10,7 @@ internal static class CategoryGlyphs
         "dungeon" => "", // repère
         "boss" => "",    // avertissement
         "fieldboss" => "", // drapeau
+        "event" => "",     // calendrier
         _ => "",         // chronomètre
     };
 }

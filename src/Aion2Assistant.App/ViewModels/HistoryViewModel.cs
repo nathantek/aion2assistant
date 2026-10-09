@@ -12,6 +12,7 @@ public partial class HistoryViewModel : ObservableObject
     private readonly Func<long, EncounterSnapshot?> _load;
 
     private readonly List<HistoryRowViewModel> _checked = new();
+    private bool _settingItems;
 
     [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowList))] private bool _isDetail;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowList))] private bool _isComparing;
@@ -45,7 +46,34 @@ public partial class HistoryViewModel : ObservableObject
 
     public bool IsEmpty => Items.Count == 0 && ErrorMessage is null;
 
-    partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(IsEmpty));
+    partial void OnErrorMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(IsEmpty));
+        if (value is not null) SetLatest(null);
+    }
+
+    /// <summary>Résumé du combat le plus récent (null si la liste est vide ou l'historique en erreur).</summary>
+    public EncounterSummary? Latest { get; private set; }
+
+    /// <summary>Levé quand <see cref="Latest"/> change.</summary>
+    public event Action? LatestChanged;
+
+    private void SetLatest(EncounterSummary? summary)
+    {
+        if (ReferenceEquals(Latest, summary)) return;
+        Latest = summary;
+        LatestChanged?.Invoke();
+    }
+
+    /// <summary>Ouvre le détail du combat le plus récent (ferme d'abord comparaison ou détail) ; rien si la liste est vide.</summary>
+    public void OpenLatest()
+    {
+        var row = Items.OfType<HistoryRowViewModel>().FirstOrDefault();
+        if (row is null) return;
+        CloseComparison();
+        Back();
+        OpenCommand.Execute(row);
+    }
 
     /// <summary>Dit si un combat porte un record actuel ; renseigné par le contrôleur de records.</summary>
     public Func<long, bool>? IsRecord { get; set; }
@@ -63,12 +91,17 @@ public partial class HistoryViewModel : ObservableObject
         Items.Clear();
         _checked.Clear();
         OnPropertyChanged(nameof(CanCompare));
-        foreach (var s in summaries.Reverse()) Insert(s, now);
+        _settingItems = true;
+        EncounterSummary? newest = null;
+        foreach (var s in summaries.Reverse()) { Insert(s, now); newest = s; }
+        _settingItems = false;
+        SetLatest(ErrorMessage is null ? newest : null);
     }
 
     /// <summary>Ajoute un combat en tête (le plus récent), en créant l'en-tête de son jour au besoin.</summary>
     public void Insert(EncounterSummary summary, DateTime now)
     {
+        if (!_settingItems && ErrorMessage is null) SetLatest(summary);
         var row = new HistoryRowViewModel(summary, IsRecord?.Invoke(summary.Id) ?? false);
         row.PropertyChanged += OnRowChanged;
         if (Items.Count > 0 && Items[0] is HistoryDayHeaderViewModel head && head.Day == row.Day)

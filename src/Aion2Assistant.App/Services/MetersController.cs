@@ -62,6 +62,9 @@ internal sealed class MetersController : IDisposable
         _suppressedFaults = 0;
     }
 
+    /// <summary>Dernier instantané calculé (rafraîchi toutes les 250 ms, même fenêtre réduite).</summary>
+    public EncounterSnapshot? LastSnapshot => _lastSnapshot;
+
     public MeterViewModel Dps { get; }
     public MeterViewModel Heal { get; }
     public MeterViewModel Taken { get; }
