@@ -33,51 +33,80 @@
 </div>
 </header>
 <main id="contenu">
+<section class="hero" aria-labelledby="h-hero">
 <div class="wrap">
-<section class="hero">
-<img class="hero-logo" src="assets/icon-512.png" alt="Logo A2A d’Aion2Assistant" width="160" height="160">
-<h1>Aion2Assistant <span class="badge">bêta</span></h1>
-<p class="lead">Un overlay gratuit et open source pour <strong>AION 2</strong> : timers de boss, meters de combat et historique, affichés par-dessus le jeu sans rien y modifier.</p>
+<p class="pill"><span class="pill-dot" aria-hidden="true"></span><span data-version>Bêta</span> · Windows 64 bits</p>
+<h1 id="h-hero">Tes combats AION 2, <em>en chiffres</em>.</h1>
+<p class="lead">Un overlay gratuit et open source : DPS, soins, timers de boss et historique, affichés par-dessus le jeu sans rien y modifier.</p>
 <div class="btn-row">
 <a class="btn" data-download href="https://github.com/nathantek/aion2assistant/releases">Télécharger</a>
-<span class="dl-meta" data-download-meta aria-live="polite">Windows 64 bits · gratuit · GPL-3.0</span>
+<a class="btn btn-ghost" href="guide.html">Voir le guide</a>
 </div>
-<p><a href="installation.html">Voir le guide d'installation</a></p>
-<div class="notice">
-<p><strong>Version bêta (0.3.0-beta.1).</strong> L'app est fonctionnelle mais encore jeune : des bugs sont possibles et l'exécutable n'est pas signé (Windows SmartScreen affichera un avertissement, voir <a href="installation.html">Installation</a>). Les retours sont les bienvenus sur <a href="https://github.com/nathantek/aion2assistant/issues">GitHub</a>.</p>
+<p class="dl-meta" data-download-meta aria-live="polite">Windows 64 bits · gratuit · GPL-3.0</p>
+<div class="meter" aria-hidden="true">
+<div class="meter-head"><span>Divine Auldor · 3:50 · Tué</span><span class="meter-total">Groupe 45,6 k/s</span></div>
+<ol class="meter-bars">
+<li class="meter-bar m1"><span>Kaelis</span><span class="num">13,6 k/s · 30 %</span></li>
+<li class="meter-bar m2"><span>Morwen</span><span class="num">11,4 k/s · 25 %</span></li>
+<li class="meter-bar m3"><span>Thadric</span><span class="num">10,6 k/s · 23 %</span></li>
+<li class="meter-bar m4"><span>Ysolde</span><span class="num">5 523/s · 12 %</span></li>
+<li class="meter-bar m5"><span>Brann</span><span class="num">4 431/s · 10 %</span></li>
+</ol>
+</div>
+<p class="sr-only">Exemple de meter : cinq joueurs classés par dégâts par seconde sur un combat de boss.</p>
 </div>
 </section>
 
-<section aria-labelledby="h-features">
-<h2 id="h-features">Fonctionnalités</h2>
-<ul class="grid">
-<li class="card"><h3>Timers</h3><p>Failles, quotidiennes, hebdos, donjons, resets et boss de terrain, avec alertes et sons.</p></li>
-<li class="card"><h3>Meters</h3><p>DPS, soins et dégâts reçus par joueur. Un clic sur un joueur ouvre le détail par compétence et le récap de mort.</p></li>
-<li class="card"><h3>Boss seul / Tout</h3><p>Bascule entre les dégâts faits au boss uniquement et l'ensemble du combat.</p></li>
-<li class="card"><h3>Courbe de DPS</h3><p>L'évolution du DPS au fil du combat, avec une légende cliquable.</p></li>
-<li class="card"><h3>Copie texte et image</h3><p>Partage un résumé de combat dans le chat en texte, ou en image.</p></li>
-<li class="card"><h3>Historique et records</h3><p>Les 100 derniers combats sur 30 jours, et tes records personnels (🏆).</p></li>
-<li class="card"><h3>Entraînement</h3><p>Sessions chronométrées de 1, 3, 5 minutes ou libres, et comparaison de deux essais.</p></li>
-<li class="card"><h3>Thèmes</h3><p>Classique et Néon, avec lueur désactivable, opacité et échelle réglables.</p></li>
-<li class="card"><h3>Raccourcis clavier</h3><p>Raccourcis globaux, configurables dans les Options.</p></li>
+<section class="showcase" aria-labelledby="h-showcase">
+<div class="wrap">
+<h2 id="h-showcase" class="section-title">Ce que fait l'overlay</h2>
+<div class="tabs" role="tablist" aria-label="Fonctionnalités principales" hidden>
+<button class="tab" type="button" role="tab" id="tab-meters" aria-controls="panel-meters" aria-selected="true">Meters</button>
+<button class="tab" type="button" role="tab" id="tab-timers" aria-controls="panel-timers" aria-selected="false" tabindex="-1">Timers</button>
+<button class="tab" type="button" role="tab" id="tab-historique" aria-controls="panel-historique" aria-selected="false" tabindex="-1">Historique</button>
+<button class="tab" type="button" role="tab" id="tab-courbe" aria-controls="panel-courbe" aria-selected="false" tabindex="-1">Courbe</button>
+</div>
+<div class="tab-panel" id="panel-meters" role="tabpanel" aria-labelledby="tab-meters" tabindex="0">
+<div><h3>Qui fait quoi, en direct</h3><p>DPS, soins et dégâts reçus par joueur. Un clic sur un joueur ouvre le détail par compétence et, s'il est tombé, le récap de sa mort.</p><p>Le bouton Boss seul / Tout bascule entre les dégâts faits au boss et l'ensemble du combat.</p></div>
+<img src="assets/shots/meter-neon.png" alt="Meter de dégâts d’un combat de boss, thème Néon, pseudos floutés" width="485" height="330" loading="lazy">
+</div>
+<div class="tab-panel" id="panel-timers" role="tabpanel" aria-labelledby="tab-timers" tabindex="0">
+<div><h3>Ne rate plus un boss</h3><p>Failles, quotidiennes, hebdos, donjons, resets et boss de terrain. Des alertes visuelles et sonores te préviennent avant l'événement.</p></div>
+<img src="assets/shots/timers.png" alt="Onglet Timers : faille, reset quotidien et reset hebdomadaire avec leurs comptes à rebours" width="483" height="335" loading="lazy">
+</div>
+<div class="tab-panel" id="panel-historique" role="tabpanel" aria-labelledby="tab-historique" tabindex="0">
+<div><h3>Chaque combat, gardé 30 jours</h3><p>Les 100 derniers combats restent consultables. Tes records personnels sont signalés par un trophée.</p></div>
+<img src="assets/shots/historique.png" alt="Historique des combats avec des trophées sur les records personnels" width="478" height="332" loading="lazy">
+</div>
+<div class="tab-panel" id="panel-courbe" role="tabpanel" aria-labelledby="tab-courbe" tabindex="0">
+<div><h3>Le combat, seconde par seconde</h3><p>L'évolution du DPS de chaque joueur au fil du combat. Clique sur un nom dans la légende pour afficher ou masquer sa courbe.</p></div>
+<img src="assets/shots/courbe.png" alt="Courbe de DPS du groupe sur un combat de 4 min 50, pseudos floutés" width="468" height="270" loading="lazy">
+</div>
+</div>
+</section>
+
+<section class="wrap" aria-labelledby="h-also">
+<h2 id="h-also">Et aussi</h2>
+<ul class="also">
+<li><strong>Copie texte et image</strong><span>Un résumé du combat, prêt à coller dans le chat du jeu ou à partager en image.</span></li>
+<li><strong>Entraînement</strong><span>Sessions de 1, 3 ou 5 minutes, ou libres, puis comparaison de deux essais.</span></li>
+<li><strong>Thèmes</strong><span>Classique ou Néon, lueur désactivable, opacité et échelle réglables.</span></li>
+<li><strong>Raccourcis clavier</strong><span>Globaux, configurables dans les Options, actifs même quand le jeu a le focus.</span></li>
 </ul>
 </section>
 
-<section aria-labelledby="h-shots">
-<h2 id="h-shots">Captures</h2>
-<div class="grid">
-<figure class="shot"><img src="assets/shots/meter-neon.png" alt="Meter de dégâts d’un combat de boss, thème Néon, pseudos floutés" width="485" height="330" loading="lazy"><figcaption>Meter d’un combat (thème Néon)</figcaption></figure>
-<figure class="shot"><img src="assets/shots/courbe.png" alt="Courbe de DPS du groupe sur un combat de 4 min 50, pseudos floutés" width="468" height="270" loading="lazy"><figcaption>Courbe de DPS du groupe</figcaption></figure>
-<figure class="shot"><img src="assets/shots/timers.png" alt="Onglet Timers : faille, reset quotidien et reset hebdomadaire avec leurs comptes à rebours" width="483" height="335" loading="lazy"><figcaption>Timers et comptes à rebours</figcaption></figure>
-<figure class="shot"><img src="assets/shots/historique.png" alt="Historique des combats avec des trophées sur les records personnels" width="478" height="332" loading="lazy"><figcaption>Historique et records 🏆</figcaption></figure>
+<section class="wrap" aria-labelledby="h-trust">
+<h2 id="h-trust">Discret et respectueux</h2>
+<ul class="trust">
+<li><h3>Lecture passive</h3><p>L'app lit le trafic réseau du jeu. Elle n'injecte aucun code, ne lit pas sa mémoire, ne lui envoie rien et ne modifie aucun fichier.</p></li>
+<li><h3>Aucune collecte</h3><p>Réglages et historiques restent sur ton PC. Seule la vérification de version contacte GitHub, et elle se désactive.</p></li>
+<li><h3>Code ouvert</h3><p>Le code est public sous licence GPL-3.0 : tu peux le lire et compiler l'app toi-même.</p></li>
+</ul>
+<p><a href="faq.html#bannissement">Risque-t-on un bannissement ? Lire la FAQ</a></p>
+<div class="callout callout-warn">
+<p><strong>Version bêta.</strong> L'app est fonctionnelle mais encore jeune : des bugs sont possibles. L'exécutable n'est pas signé, Windows SmartScreen affichera donc un avertissement (voir <a href="installation.html">Installation</a>). Les retours sont les bienvenus sur <a href="https://github.com/nathantek/aion2assistant/issues">GitHub</a>.</p>
 </div>
 </section>
-
-<section aria-labelledby="h-passif">
-<h2 id="h-passif">Discret et respectueux</h2>
-<p>L'application lit passivement le trafic réseau du jeu : elle n'injecte aucun code, ne lit pas la mémoire du jeu, n'envoie aucun paquet au jeu ni à ses serveurs et ne modifie aucun fichier. Aucune donnée n'est collectée ; seule la vérification de la dernière version contacte GitHub. Voir la <a href="faq.html">FAQ</a>.</p>
-</section>
-</div>
 </main>
 <footer class="site-footer">
 <div class="wrap footer-inner">

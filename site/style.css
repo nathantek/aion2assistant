@@ -186,6 +186,81 @@ kbd { background: var(--surface-2); border: 1px solid var(--line); border-bottom
   .brand-name { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 }
 
+/* Accueil : haut de page */
+.hero { position: relative; isolation: isolate; text-align: center; padding: 24px 0 8px; }
+.hero::before {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: -120px;
+  width: 1100px; max-width: 100%; height: 760px; transform: translateX(-50%); pointer-events: none;
+  background:
+    radial-gradient(closest-side at 50% 62%, rgba(139, 92, 246, .30), transparent 72%),
+    radial-gradient(closest-side at 22% 22%, rgba(61, 165, 255, .13), transparent 70%);
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lead { margin: 0 auto; }
+.hero .btn-row { justify-content: center; margin-top: 28px; }
+
+/* Accueil : faux meter */
+.meter {
+  max-width: 520px; margin: 44px auto 0; padding: 12px; text-align: left;
+  background: #0E0A1A; border: 1px solid #3B2A6B; border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, .15), 0 30px 80px -20px rgba(139, 92, 246, .6);
+}
+.meter-head { display: flex; justify-content: space-between; gap: 12px; margin: 0 2px 8px; color: #C9B8FF; font-size: .82rem; font-weight: 600; }
+.meter-total { font-family: var(--mono); font-weight: 500; color: var(--muted); }
+.meter-bars { list-style: none; margin: 0; padding: 0; }
+.meter-bar {
+  position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  height: 28px; margin: 0 0 4px; padding: 0 10px; border-radius: 4px; overflow: hidden;
+  background: #151020; color: #fff; font-size: .85rem; font-weight: 600;
+}
+.meter-bar::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 4px;
+  background: var(--c); transform-origin: left center;
+  animation: meter-fill 1.6s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--d);
+}
+.meter-bar > span { position: relative; }
+.meter-bar .num { font-size: .8rem; }
+.m1 { --w: 100%; --c: #2C6FB8; --d: 0s; }
+.m2 { --w: 84%; --c: #B08A2E; --d: .12s; }
+.m3 { --w: 78%; --c: #A3423A; --d: .24s; }
+.m4 { --w: 41%; --c: #5B4BC4; --d: .36s; }
+.m5 { --w: 33%; --c: #3E7D5A; --d: .48s; }
+@keyframes meter-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Accueil : onglets */
+.showcase { margin-top: 96px; }
+.section-title { text-align: center; margin: 0 0 20px; }
+.tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 0 0 32px; }
+.tab {
+  padding: 8px 16px; border: 1px solid transparent; border-radius: 8px; background: transparent;
+  color: var(--muted); font: 400 .95rem var(--font); cursor: pointer;
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--text); background: var(--surface-2); border-color: var(--line); }
+.tab-panel { display: grid; grid-template-columns: 1fr 1.15fr; gap: 40px; align-items: center; margin-bottom: 48px; }
+.js .tab-panel { margin-bottom: 0; }
+.tab-panel h3 { font-size: clamp(1.3rem, 3vw, 1.7rem); font-weight: 700; margin-top: 0; }
+.tab-panel p { color: var(--muted); }
+.tab-panel img {
+  display: block; width: 100%; border: 1px solid var(--line); border-radius: var(--radius); background: #000;
+  box-shadow: 0 24px 60px -24px rgba(139, 92, 246, .5);
+}
+
+/* Accueil : « Et aussi » et confiance */
+.also { list-style: none; padding: 0; margin: 16px 0 0; border-top: 1px solid var(--line); }
+.also li { display: grid; grid-template-columns: 220px 1fr; gap: 4px 24px; margin: 0; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.also strong { font-family: var(--display); font-weight: 500; font-size: 1.05rem; }
+.also span { color: var(--muted); }
+.trust { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; list-style: none; padding: 0; margin: 16px 0 20px; }
+.trust li { margin: 0; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.trust h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.trust p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+@media (max-width: 720px) {
+  .tab-panel { grid-template-columns: 1fr; gap: 20px; }
+  .also li { grid-template-columns: 1fr; }
+}
+
 /* Toujours en dernier */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
