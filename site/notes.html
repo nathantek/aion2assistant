@@ -3,38 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Notes de version — Aion2Assistant</title>
-<meta name="description" content="Historique des versions d'Aion2Assistant.">
+<title>Versions — Aion2Assistant</title>
+<meta name="description" content="Historique des versions d'Aion2Assistant et notes de chaque version.">
 <meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0B0D12">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://api.github.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="icon" href="assets/favicon-32.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 <header class="site-header">
-<div class="wrap">
+<div class="wrap header-inner">
 <a class="brand" href="index.html"><img src="assets/logo.png" alt="" width="64" height="22">Aion2<span>Assistant</span></a>
-<nav class="site-nav" aria-label="Navigation principale">
+<nav class="site-nav" id="site-nav" aria-label="Navigation principale">
 <ul>
-<li><a href="index.html">Accueil</a></li>
-<li><a href="installation.html">Installation</a></li>
 <li><a href="guide.html">Guide</a></li>
+<li><a href="installation.html">Installation</a></li>
 <li><a href="faq.html">FAQ</a></li>
-<li><a href="notes.html" aria-current="page">Notes de version</a></li>
-<li><a href="legal.html">Légal</a></li>
+<li><a href="notes.html" aria-current="page">Versions</a></li>
 </ul>
 </nav>
+<a class="btn btn-sm header-cta" href="installation.html#telecharger">Télécharger</a>
+<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Menu</span><span class="nav-toggle-bars" aria-hidden="true"></span></button>
 </div>
 </header>
 <main id="contenu">
 <div class="wrap">
 <h1>Notes de version</h1>
 <div class="btn-row">
-<a class="btn" id="download-btn" href="https://github.com/nathantek/aion2assistant/releases">Télécharger</a>
-<span class="dl-meta" id="download-meta" aria-live="polite"></span>
+<a class="btn" data-download href="https://github.com/nathantek/aion2assistant/releases">Télécharger</a>
+<span class="dl-meta" data-download-meta aria-live="polite"></span>
 </div>
 <div id="releases" aria-live="polite">
 <p>Chargement des notes de version…</p>
@@ -43,11 +46,18 @@
 </div>
 </main>
 <footer class="site-footer">
-<div class="wrap">
+<div class="wrap footer-inner">
+<p class="footer-brand"><img src="assets/logo.png" alt="" width="48" height="17">Aion2Assistant — overlay gratuit et open source pour AION 2</p>
 <p>Aion2Assistant est un projet de fan indépendant, <strong>non affilié à NCSOFT</strong> ni approuvé par elle. AION et AION 2 sont des marques de NCSOFT.</p>
-<p>Code sous licence <a href="https://github.com/nathantek/aion2assistant/blob/main/LICENSE">GPL-3.0</a> · <a href="legal.html">Mentions légales</a> · <a href="https://github.com/nathantek/aion2assistant">GitHub</a></p>
+<ul class="footer-links">
+<li><a href="legal.html">Légal</a></li>
+<li><a href="https://github.com/nathantek/aion2assistant">GitHub</a></li>
+<li><a href="https://github.com/nathantek/aion2assistant/blob/main/LICENSE">Licence GPL-3.0</a></li>
+<li><a href="https://ko-fi.com/nathantek">Soutenir sur Ko-fi</a></li>
+</ul>
 </div>
 </footer>
+<script src="ui.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>
