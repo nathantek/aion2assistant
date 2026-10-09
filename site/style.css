@@ -282,6 +282,19 @@ kbd { background: var(--surface-2); border: 1px solid var(--line); border-bottom
   color: var(--muted); font: 400 .72rem/1.6 var(--font); letter-spacing: 0;
 }
 
+/* FAQ */
+.faq-list { border-top: 1px solid var(--line); }
+.faq { border-bottom: 1px solid var(--line); }
+.faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 18px 0; cursor: pointer; list-style: none; font-weight: 600; font-size: 1.02rem;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: 0 0 auto; font: 500 1.3rem/1 var(--mono); color: var(--muted); }
+.faq[open] summary::after { content: "−"; color: var(--accent); }
+.faq summary:hover { color: var(--accent-hover); }
+.faq > p { color: var(--text-soft); margin: 0 0 16px; }
+
 /* Toujours en dernier */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
