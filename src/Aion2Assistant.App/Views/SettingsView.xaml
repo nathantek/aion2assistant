@@ -104,6 +104,9 @@
                     <Button Style="{StaticResource TextButtonStyle}" Content="Ouvrir le dossier"
                             Command="{Binding OpenCapturesFolderCommand}"/>
                 </StackPanel>
+                <TextBlock Text="Les captures et les logs contiennent ton pseudo, ton serveur et le chat du jeu : ne les publie pas (issue GitHub, Discord public), envoie-les en privé."
+                           Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}"
+                           TextWrapping="Wrap" Margin="0,4,0,0"/>
             </StackPanel>
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="RACCOURCIS"/>

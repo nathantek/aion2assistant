@@ -47,6 +47,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $ghArgs = @('release', 'create', $env:TAG, "Aion2Assistant-$env:TAG-win-x64.zip", '--title', $env:TAG, '--generate-notes')
+          $zip = "Aion2Assistant-$env:TAG-win-x64.zip"
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
+          "$hash  $zip" | Set-Content -Encoding ascii "$zip.sha256"
+          $notes = "**SHA-256** ``$zip`` : ``$hash```n`nVérification : ``Get-FileHash .\$zip`` doit afficher la même valeur."
+          $ghArgs = @('release', 'create', $env:TAG, $zip, "$zip.sha256", '--title', $env:TAG, '--notes', $notes, '--generate-notes')
           if ($env:TAG -like '*-*') { $ghArgs += '--prerelease' }
           gh @ghArgs

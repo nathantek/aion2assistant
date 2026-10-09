@@ -6,6 +6,7 @@
 <title>FAQ — Aion2Assistant</title>
 <meta name="description" content="Questions fréquentes : bannissement, affichage, combats non détectés, antivirus, données.">
 <meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://api.github.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="icon" href="assets/favicon-32.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -42,6 +43,11 @@
 <details>
 <summary>Aucun combat n'est détecté</summary>
 <p>Vérifie que <a href="https://npcap.com">Npcap</a> est installé et que l'option « Restrict Npcap driver's access to Administrators only » n'a <strong>pas</strong> été cochée (réinstalle Npcap si besoin). Lance l'app avant d'entrer en combat. Si le problème persiste, ouvre une <a href="https://github.com/nathantek/aion2assistant/issues">issue</a>.</p>
+<p>À savoir : avec cette option décochée, n'importe quel programme de ton PC peut utiliser Npcap sans droits administrateur. C'est ce qui permet à Aion2Assistant de tourner sans droits admin, mais n'installe que des logiciels de confiance.</p>
+</details>
+<details>
+<summary>Comment vérifier que mon fichier est authentique ?</summary>
+<p>Télécharge l'app uniquement depuis ce site ou la page <a href="https://github.com/nathantek/aion2assistant/releases">Releases GitHub</a>. Chaque version publie l'empreinte SHA-256 du zip dans ses notes. Pour la comparer, ouvre PowerShell dans le dossier du zip et lance <code>Get-FileHash .\Aion2Assistant-*.zip</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas l'app.</p>
 </details>
 <details>
 <summary>Mon antivirus ou SmartScreen bloque l'app</summary>
@@ -54,6 +60,7 @@
 <details>
 <summary>Comment signaler un bug ?</summary>
 <p>Ouvre une <a href="https://github.com/nathantek/aion2assistant/issues">issue sur GitHub</a> en décrivant le problème et la version utilisée.</p>
+<p>Ne joins pas tes logs ni tes captures (<code>.log</code>, <code>.pcap</code>) à une issue publique : ils contiennent ton pseudo, ton serveur et le chat du jeu. Si on te les demande, on conviendra d'un envoi privé.</p>
 </details>
 </div>
 </main>
