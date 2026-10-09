@@ -27,36 +27,50 @@
     });
   }
 
-  // Puces de sections : surligne la section visible
+  // Puces de sections : surligne la section en cours de lecture
   var chips = document.querySelector('.chips');
-  if (chips && 'IntersectionObserver' in window) {
+  if (chips) {
     var row = chips.querySelector('ul');
-    var links = toArray(chips.querySelectorAll('a[href^="#"]'));
-    var linkById = {};
-    var targets = [];
-    links.forEach(function (a) {
+    var items = [];
+    toArray(chips.querySelectorAll('a[href^="#"]')).forEach(function (a) {
       var t = document.getElementById(a.getAttribute('href').slice(1));
-      if (t) { linkById[t.id] = a; targets.push(t); }
+      if (t) { items.push({ link: a, target: t }); }
     });
-    var activate = function (id) {
-      links.forEach(function (a) {
-        var on = linkById[id] === a;
-        a.classList.toggle('is-active', on);
-        if (on) { a.setAttribute('aria-current', 'true'); } else { a.removeAttribute('aria-current'); }
+    var current = null;
+    var activate = function (item) {
+      if (item === current) { return; }
+      current = item;
+      items.forEach(function (it) {
+        var on = it === item;
+        it.link.classList.toggle('is-active', on);
+        if (on) { it.link.setAttribute('aria-current', 'location'); } else { it.link.removeAttribute('aria-current'); }
       });
-      var cur = linkById[id];
-      if (cur && row && row.scrollWidth > row.clientWidth) {
-        row.scrollLeft = cur.offsetLeft - row.offsetLeft - (row.clientWidth - cur.offsetWidth) / 2;
+      if (item && row && row.scrollWidth > row.clientWidth) {
+        row.scrollLeft = item.link.offsetLeft - row.offsetLeft - (row.clientWidth - item.link.offsetWidth) / 2;
       }
     };
-    var visible = {};
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
-      for (var i = 0; i < targets.length; i++) {
-        if (visible[targets[i].id]) { activate(targets[i].id); return; }
+    var update = function () {
+      if (!items.length) { return; }
+      var line = chips.getBoundingClientRect().bottom + 32;
+      var doc = document.documentElement;
+      var found = items[0];
+      if (window.innerHeight + window.pageYOffset >= doc.scrollHeight - 2) {
+        found = items[items.length - 1];
+      } else {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].target.getBoundingClientRect().top <= line) { found = items[i]; } else { break; }
+        }
       }
-    }, { rootMargin: '-130px 0px -55% 0px' });
-    targets.forEach(function (t) { io.observe(t); });
+      activate(found);
+    };
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(function () { ticking = false; update(); });
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   }
 
   // Onglets de l'accueil (motif ARIA tabs)
