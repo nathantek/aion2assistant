@@ -312,6 +312,13 @@ details.release > summary::-webkit-details-marker { display: none; }
 details.release > summary::after { content: "+"; margin-left: auto; font: 500 1.2rem/1 var(--mono); color: var(--muted); }
 details.release[open] > summary::after { content: "−"; color: var(--accent); }
 
+/* Légal */
+.legal-text {
+  white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 16px; padding: 20px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  color: var(--text-soft); font: 400 .92rem/1.65 var(--font);
+}
+
 /* Toujours en dernier */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
