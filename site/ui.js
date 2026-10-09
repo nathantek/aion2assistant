@@ -93,7 +93,8 @@
   var openFromHash = function () {
     var id = window.location.hash.slice(1);
     if (!id) { return; }
-    var el = document.getElementById(decodeURIComponent(id));
+    var el;
+    try { el = document.getElementById(decodeURIComponent(id)); } catch (e) { return; }
     if (el && el.tagName === 'DETAILS') { el.open = true; }
   };
   openFromHash();
