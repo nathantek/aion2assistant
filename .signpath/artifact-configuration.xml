@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Configuration d'artefact SignPath pour Aion2Assistant (à coller dans le projet SignPath).
+  L'artefact est le dossier publish/ zippé par actions/upload-artifact.
+  Seuls nos propres binaires sont signés ; le runtime .NET (déjà signé par Microsoft)
+  et les bibliothèques NuGet tierces restent tels quels.
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file-set product-name="Aion2Assistant">
+      <include path="Aion2Assistant.exe" product-version="${version}" />
+      <include path="Aion2Assistant.dll" product-version="${version}" />
+      <include path="Aion2Assistant.*.dll" max-matches="unbounded" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+  </zip-file>
+</artifact-configuration>

@@ -3,5 +3,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+    <!-- Métadonnées vérifiées par SignPath : même nom de produit partout, version sans suffixe +hash. -->
+    <Product>Aion2Assistant</Product>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>

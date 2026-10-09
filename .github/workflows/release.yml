@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: read # SignPath lit l'artefact non signé du job
 
 jobs:
   release:
@@ -21,12 +22,14 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Check tag matches app version
+        id: version
         shell: pwsh
         run: |
           $csproj = [xml](Get-Content src/Aion2Assistant.App/Aion2Assistant.App.csproj -Raw)
           $version = ($csproj.Project.PropertyGroup.InformationalVersion | Where-Object { $_ } | Select-Object -First 1)
           if (-not $version) { throw 'InformationalVersion introuvable dans Aion2Assistant.App.csproj' }
           if ("v$version" -ne $env:TAG) { throw "Le tag $env:TAG ne correspond pas a la version de l'app (v$version)" }
+          "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Publish
         run: dotnet publish src/Aion2Assistant.App/Aion2Assistant.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
@@ -37,6 +40,47 @@ jobs:
           Copy-Item LICENSE publish/LICENSE
           Copy-Item data/NOTICE.md publish/NOTICE.md
           Copy-Item README.md publish/README.md
+
+      # --- Signature SignPath : active seulement quand la variable SIGNPATH_ORGANIZATION_ID est définie.
+      - name: Upload unsigned build
+        id: upload-unsigned
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned
+          path: publish/
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Sign with SignPath
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3.0
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          # Chaque signature doit être approuvée à la main dans SignPath : on attend jusqu'à 1 h.
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: signed
+          parameters: |
+            version: ${{ toJSON(steps.version.outputs.version) }}
+
+      - name: Use signed build
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        shell: pwsh
+        run: |
+          foreach ($f in 'signed/Aion2Assistant.exe', 'signed/Aion2Assistant.dll') {
+            $sig = Get-AuthenticodeSignature $f
+            if ($sig.Status -ne 'Valid') { throw "Signature invalide sur $f : $($sig.Status)" }
+          }
+          $before = (Get-ChildItem publish -Recurse -File).Count
+          $after = (Get-ChildItem signed -Recurse -File).Count
+          if ($before -ne $after) { throw "Le build signé n'a pas le même nombre de fichiers ($after au lieu de $before)" }
+          Remove-Item publish -Recurse -Force
+          Move-Item signed publish
 
       - name: Zip
         shell: pwsh
