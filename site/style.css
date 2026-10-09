@@ -261,6 +261,27 @@ kbd { background: var(--surface-2); border: 1px solid var(--line); border-bottom
   .also li { grid-template-columns: 1fr; }
 }
 
+/* Installation */
+.download-box {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin: 24px 0 8px;
+  padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.steps { counter-reset: step; list-style: none; padding: 0; margin: 40px 0 24px; }
+.steps > li { counter-increment: step; position: relative; margin: 0; padding: 0 0 28px 52px; }
+.steps > li::before {
+  content: counter(step); position: absolute; left: 0; top: 0;
+  display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+  border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent);
+  color: var(--accent); font: 700 .95rem var(--display);
+}
+.steps > li::after { content: ""; position: absolute; left: 17px; top: 40px; bottom: 6px; width: 1px; background: var(--line); }
+.steps > li:last-child::after { display: none; }
+.steps h2 { font-size: 1.2rem; margin: 5px 0 8px; }
+.step-optional {
+  margin-left: 8px; padding: 1px 8px; vertical-align: middle; border: 1px solid var(--line); border-radius: 999px;
+  color: var(--muted); font: 400 .72rem/1.6 var(--font); letter-spacing: 0;
+}
+
 /* Toujours en dernier */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

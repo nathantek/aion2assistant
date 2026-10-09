@@ -33,24 +33,26 @@
 </div>
 </header>
 <main id="contenu">
-<div class="wrap">
+<div class="wrap prose">
 <h1>Installation</h1>
-<p class="lead">Quatre étapes, environ cinq minutes. Windows 64 bits requis.</p>
-<div class="btn-row">
+<p class="lead">Cinq étapes, environ cinq minutes. Windows 64 bits requis.</p>
+<div class="download-box" id="telecharger">
 <a class="btn" data-download href="https://github.com/nathantek/aion2assistant/releases">Télécharger</a>
-<span class="dl-meta" data-download-meta aria-live="polite"></span>
+<p class="dl-meta" data-download-meta aria-live="polite">Windows 64 bits · gratuit · GPL-3.0</p>
 </div>
 <ol class="steps">
-<li><h2>Installer Npcap</h2>
+<li><h2 id="npcap">Installer Npcap</h2>
 <p>Aion2Assistant a besoin de Npcap pour lire le trafic réseau du jeu. Télécharge-le depuis <a href="https://npcap.com">npcap.com</a> et lance l'installateur.</p>
-<p><strong>Important :</strong> ne coche <strong>pas</strong> l'option « Restrict Npcap driver's access to Administrators only ». Laisse-la décochée, sinon l'app ne pourra pas capturer sans droits administrateur.</p></li>
-<li><h2>Décompresser l'archive</h2>
+<div class="callout callout-warn"><p><strong>Important :</strong> ne coche <strong>pas</strong> l'option « Restrict Npcap driver's access to Administrators only ». Laisse-la décochée, sinon l'app ne pourra pas capturer sans droits administrateur.</p></div></li>
+<li><h2 id="decompresser">Décompresser l'archive</h2>
 <p>Télécharge le zip <code>Aion2Assistant-&lt;version&gt;-win-x64.zip</code> avec le bouton ci-dessus, puis décompresse-le dans un dossier de ton choix.</p></li>
-<li><h2>Lancer l'application</h2>
+<li><h2 id="lancer">Lancer l'application</h2>
 <p>Double-clique sur <code>Aion2Assistant.exe</code>. Au premier lancement, le contrat de licence (CLUF) s'affiche : lis-le et accepte pour continuer.</p>
-<p>Comme cette bêta n'est pas signée, Windows SmartScreen peut afficher « Windows a protégé votre ordinateur ». Clique sur <strong>« Informations complémentaires »</strong>, puis sur <strong>« Exécuter quand même »</strong>. Voir aussi la <a href="faq.html">FAQ</a>.</p></li>
-<li><h2>Jouer en fenêtré sans bordure</h2>
+<p>Comme cette bêta n'est pas signée, Windows SmartScreen peut afficher « Windows a protégé votre ordinateur ». Clique sur <strong>« Informations complémentaires »</strong>, puis sur <strong>« Exécuter quand même »</strong>. Voir aussi la <a href="faq.html#antivirus">FAQ</a>.</p></li>
+<li><h2 id="fenetre">Jouer en fenêtré sans bordure</h2>
 <p>Dans les options graphiques d'AION 2, choisis le mode <strong>fenêtré sans bordure</strong>. En plein écran exclusif, le jeu masque les overlays et l'application ne sera pas visible.</p></li>
+<li><h2 id="verifier">Vérifier le fichier <span class="step-optional">optionnel</span></h2>
+<p>Chaque version publie l'empreinte SHA-256 du zip dans ses notes (page <a href="notes.html">Versions</a>). Ouvre PowerShell dans le dossier du zip et lance <code>Get-FileHash .\Aion2Assistant-*.zip</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas l'app.</p></li>
 </ol>
 <p>Un souci ? Consulte la <a href="faq.html">FAQ</a> ou ouvre une <a href="https://github.com/nathantek/aion2assistant/issues">issue sur GitHub</a>.</p>
 </div>
