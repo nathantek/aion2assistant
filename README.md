@@ -48,3 +48,6 @@ Aion2Assistant est un projet de fan indépendant. Il n'est **pas affilié** à N
 Le code est publié sous licence **GPL-3.0** (voir le fichier `LICENSE`).
 
 Les données de jeu (textes, noms de compétences et de monstres) ne sont **pas** couvertes par la GPL : voir [data/NOTICE.md](data/NOTICE.md).
+
+
+Support me: https://ko-fi.com/nathantek
