@@ -1,0 +1,42 @@
+<UserControl x:Class="Aion2Assistant.App.Views.TimersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding Rows}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:TimerRowViewModel}">
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="{Binding Glyph}" FontFamily="{DynamicResource IconFont}"
+                                   FontSize="{DynamicResource FontSizeLarge}" Foreground="{Binding AccentBrush}"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding SubText}" Foreground="{DynamicResource TextMutedBrush}"
+                                       FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Text="{Binding RemainingText}" Foreground="{Binding AccentBrush}"
+                                   FontSize="{DynamicResource FontSizeLarge}" FontWeight="SemiBold"
+                                   Typography.NumeralAlignment="Tabular" VerticalAlignment="Center" Margin="8,0,4,0"/>
+                        <Button Grid.Column="3" Style="{StaticResource IconButtonStyle}" Content="{Binding SoundGlyph}"
+                                Command="{Binding ToggleSoundCommand}" ToolTip="Son de notification"/>
+                        <ProgressBar Grid.Row="1" Grid.ColumnSpan="4" Style="{StaticResource ThinProgressStyle}"
+                                     Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
+                                     Foreground="{Binding AccentBrush}" Margin="0,4,0,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

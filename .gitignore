@@ -1,0 +1,32 @@
+# Build
+[Bb]in/
+[Oo]bj/
+[Pp]ublish*/
+*.zip
+
+# Utilisateur / IDE
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+.idea/
+*.DotSettings.user
+
+# NuGet / tests
+*.nupkg
+*.snupkg
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+
+# Données locales (jamais publiées)
+*.pcap
+*.pcapng
+*.db
+*.log
+
+# Divers
+.DS_Store
+Thumbs.db

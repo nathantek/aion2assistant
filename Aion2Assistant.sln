@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{12AC1BB7-16D3-4CA6-8DE2-677A003AC395}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aion2Assistant.Core", "src\Aion2Assistant.Core\Aion2Assistant.Core.csproj", "{F4660C79-A110-4C20-AE63-3D9A39263D4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aion2Assistant.Timers", "src\Aion2Assistant.Timers\Aion2Assistant.Timers.csproj", "{8665C781-D1F2-4158-B224-2F9EAEBA8180}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aion2Assistant.Protocol", "src\Aion2Assistant.Protocol\Aion2Assistant.Protocol.csproj", "{E5C7E1A6-7E92-44C2-B365-8C5DA7406699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aion2Assistant.Capture", "src\Aion2Assistant.Capture\Aion2Assistant.Capture.csproj", "{4E3E0DF4-F62C-45FD-8B9E-1C29D843979F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aion2Assistant.Combat", "src\Aion2Assistant.Combat\Aion2Assistant.Combat.csproj", "{C48E124A-667F-43DC-AEE5-0F046DE89095}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aion2Assistant.App", "src\Aion2Assistant.App\Aion2Assistant.App.csproj", "{F20DB0F1-0B6F-4A28-B9CB-52131461B8BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4660C79-A110-4C20-AE63-3D9A39263D4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4660C79-A110-4C20-AE63-3D9A39263D4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4660C79-A110-4C20-AE63-3D9A39263D4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4660C79-A110-4C20-AE63-3D9A39263D4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8665C781-D1F2-4158-B224-2F9EAEBA8180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8665C781-D1F2-4158-B224-2F9EAEBA8180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8665C781-D1F2-4158-B224-2F9EAEBA8180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8665C781-D1F2-4158-B224-2F9EAEBA8180}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5C7E1A6-7E92-44C2-B365-8C5DA7406699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5C7E1A6-7E92-44C2-B365-8C5DA7406699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5C7E1A6-7E92-44C2-B365-8C5DA7406699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5C7E1A6-7E92-44C2-B365-8C5DA7406699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E3E0DF4-F62C-45FD-8B9E-1C29D843979F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E3E0DF4-F62C-45FD-8B9E-1C29D843979F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E3E0DF4-F62C-45FD-8B9E-1C29D843979F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E3E0DF4-F62C-45FD-8B9E-1C29D843979F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48E124A-667F-43DC-AEE5-0F046DE89095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48E124A-667F-43DC-AEE5-0F046DE89095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48E124A-667F-43DC-AEE5-0F046DE89095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48E124A-667F-43DC-AEE5-0F046DE89095}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F20DB0F1-0B6F-4A28-B9CB-52131461B8BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F20DB0F1-0B6F-4A28-B9CB-52131461B8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F20DB0F1-0B6F-4A28-B9CB-52131461B8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F20DB0F1-0B6F-4A28-B9CB-52131461B8BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4660C79-A110-4C20-AE63-3D9A39263D4C} = {12AC1BB7-16D3-4CA6-8DE2-677A003AC395}
+		{8665C781-D1F2-4158-B224-2F9EAEBA8180} = {12AC1BB7-16D3-4CA6-8DE2-677A003AC395}
+		{E5C7E1A6-7E92-44C2-B365-8C5DA7406699} = {12AC1BB7-16D3-4CA6-8DE2-677A003AC395}
+		{4E3E0DF4-F62C-45FD-8B9E-1C29D843979F} = {12AC1BB7-16D3-4CA6-8DE2-677A003AC395}
+		{C48E124A-667F-43DC-AEE5-0F046DE89095} = {12AC1BB7-16D3-4CA6-8DE2-677A003AC395}
+		{F20DB0F1-0B6F-4A28-B9CB-52131461B8BA} = {12AC1BB7-16D3-4CA6-8DE2-677A003AC395}
+	EndGlobalSection
+EndGlobal

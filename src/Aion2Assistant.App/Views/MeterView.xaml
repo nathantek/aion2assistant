@@ -1,0 +1,151 @@
+<UserControl x:Class="Aion2Assistant.App.Views.MeterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels"
+             xmlns:ctl="clr-namespace:Aion2Assistant.App.Controls">
+    <UserControl.Resources>
+        <!-- Bouton courbe / classement : glyphe liste quand la courbe est affichée -->
+        <Style x:Key="ChartToggleStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+            <Setter Property="Content" Value="&#xE9D2;"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChart}" Value="True">
+                    <Setter Property="Content" Value="&#xE8FD;"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Entraînement : bande de choix et état, hors du bloc combat pour rester utilisable sans combat -->
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                        Visibility="{Binding IsTrainingStripOpen, Converter={StaticResource BoolToVisibility}}">
+                <Button Style="{StaticResource TextButtonStyle}" Content="1 min" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="60000"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="3 min" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="180000"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="5 min" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="300000"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="Libre" Margin="0,0,6,0"
+                        Command="{Binding StartTrainingCommand}" CommandParameter="0"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="Annuler"
+                        Command="{Binding ToggleTrainingStripCommand}"/>
+            </StackPanel>
+            <DockPanel Margin="0,0,0,4" Visibility="{Binding HasTrainingText, Converter={StaticResource BoolToVisibility}}">
+                <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Content="Arrêter" Margin="6,0,0,0"
+                        Command="{Binding StopTrainingCommand}"/>
+                <TextBlock Text="{Binding TrainingText}" Foreground="{DynamicResource AlertBrush}"
+                           FontSize="{DynamicResource FontSizeSmall}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+        <!-- Aucun combat -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12"
+                    Visibility="{Binding HasSnapshot, Converter={StaticResource InverseBoolToVisibility}}">
+            <TextBlock Text="Aucun combat en cours." Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="Entraînement" Margin="0,6,0,0" HorizontalAlignment="Center"
+                    Command="{Binding ToggleTrainingStripCommand}" ToolTip="Entraînement chronométré"
+                    Visibility="{Binding ShowTrainingButton, Converter={StaticResource BoolToVisibility}}"/>
+        </StackPanel>
+
+        <Grid Visibility="{Binding HasSnapshot, Converter={StaticResource BoolToVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- En-tête -->
+            <StackPanel Margin="0,0,0,4">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="6,0,0,0"
+                            Content="{Binding CopyText}" Command="{Binding CopyCommand}"
+                            ToolTip="Copier le classement sur une ligne, à coller dans le chat du jeu"/>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource IconButtonStyle}" Content="&#xE722;" Margin="6,0,0,0"
+                            Command="{Binding CopyImageCommand}" ToolTip="Copier une image du tableau (toutes les lignes)"/>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource ChartToggleStyle}" Margin="6,0,0,0"
+                            Command="{Binding ToggleChartCommand}" ToolTip="Courbe / classement"
+                            Visibility="{Binding ShowChartToggle, Converter={StaticResource BoolToVisibility}}"/>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="6,0,0,0"
+                            Content="{Binding BossToggleText}" Command="{Binding ToggleBossCommand}"
+                            ToolTip="Basculer entre les dégâts sur le boss seulement et tous les dégâts"
+                            Visibility="{Binding ShowBossToggle, Converter={StaticResource BoolToVisibility}}"/>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource IconButtonStyle}" Content="&#xE916;" Margin="6,0,0,0"
+                            Command="{Binding ToggleTrainingStripCommand}" ToolTip="Entraînement chronométré"
+                            Visibility="{Binding ShowTrainingButton, Converter={StaticResource BoolToVisibility}}"/>
+                    <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center"/>
+                </DockPanel>
+                <ProgressBar Style="{StaticResource ThinProgressStyle}" Height="3" Minimum="0" Maximum="100"
+                             Value="{Binding TargetHpPct, Mode=OneWay, TargetNullValue=0}" Foreground="{Binding Accent}"
+                             Margin="0,3,0,0"
+                             Visibility="{Binding HasTargetHp, Converter={StaticResource BoolToVisibility}}"/>
+            </StackPanel>
+
+            <!-- Liste -->
+            <Grid Grid.Row="1" Visibility="{Binding ShowList, Converter={StaticResource BoolToVisibility}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding GroupText}" Style="{StaticResource SmallValueStyle}" Margin="0,0,0,4"/>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource MeterRowTemplate}"/>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Courbe -->
+            <Grid Grid.Row="1" Visibility="{Binding IsChart, Converter={StaticResource BoolToVisibility}}">
+                <Grid Visibility="{Binding HasChartData, Converter={StaticResource BoolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" MinHeight="80"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ctl:DpsChart Series="{Binding ChartSeries}" DurationMs="{Binding ChartDurationMs}"/>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding ChartSeries}" Margin="0,4,0,0"
+                                  ItemTemplate="{StaticResource ChartLegendItemTemplate}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
+                <TextBlock Text="Pas de courbe pour ce combat (enregistré avant cette version)."
+                           Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" TextAlignment="Center"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12"
+                           Visibility="{Binding HasChartData, Converter={StaticResource InverseBoolToVisibility}}"/>
+            </Grid>
+
+            <!-- Détail -->
+            <Grid Grid.Row="1" Visibility="{Binding ShowDetail, Converter={StaticResource BoolToVisibility}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <DockPanel Margin="0,0,0,4">
+                    <Button DockPanel.Dock="Left" Style="{StaticResource TextButtonStyle}" Content="‹ Retour"
+                            Command="{Binding BackCommand}"/>
+                    <TextBlock Text="{Binding DetailName}" FontWeight="SemiBold" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"/>
+                </DockPanel>
+                <ContentControl Grid.Row="1" Content="{Binding}" ContentTemplate="{StaticResource SkillHeaderTemplate}"/>
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding DetailSkills}" ItemTemplate="{StaticResource SkillLineTemplate}"/>
+                        <StackPanel Visibility="{Binding ShowRecaps, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="RÉCAP DE MORT" Style="{StaticResource SectionHeaderStyle}"/>
+                            <ItemsControl ItemsSource="{Binding DetailRecaps}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

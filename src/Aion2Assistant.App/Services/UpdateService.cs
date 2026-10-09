@@ -1,0 +1,88 @@
+using System.Net.Http;
+using System.Reflection;
+using System.Windows.Threading;
+using Aion2Assistant.Core.Updates;
+using Serilog;
+
+namespace Aion2Assistant.App.Services;
+
+/// <summary>Une seule vérification de nouvelle version, 10 s après le démarrage, en arrière-plan.</summary>
+internal sealed class UpdateService
+{
+    private const string ReleasesUrl = "https://api.github.com/repos/nathantek/aion2assistant/releases?per_page=10";
+    private const string FallbackUrl = "https://github.com/nathantek/aion2assistant/releases";
+    private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(5) };
+
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(10) };
+    private readonly Func<bool> _isEnabled;
+    private bool _started;
+
+    public UpdateService(Func<bool>? isEnabled = null)
+    {
+        _isEnabled = isEnabled ?? (() => true);
+        CurrentVersionText = ReadVersionText();
+        _timer.Tick += (_, _) =>
+        {
+            _timer.Stop();
+            if (!_isEnabled()) return;
+            _ = CheckAsync();
+        };
+    }
+
+    /// <summary>Version courante affichée (sans le suffixe +hash éventuel).</summary>
+    public string CurrentVersionText { get; }
+    public string? AvailableVersion { get; private set; }
+    public string? AvailableUrl { get; private set; }
+    /// <summary>Vrai une fois la vérification terminée sans erreur.</summary>
+    public bool Checked { get; private set; }
+
+    public event Action? Changed;
+    /// <summary>Levé sur le thread UI quand une version plus récente est trouvée : version, URL.</summary>
+    public event Action<string, string>? UpdateFound;
+
+    public void Start()
+    {
+        if (_started) return;
+        _started = true;
+        _timer.Start();
+    }
+
+    private static string ReadVersionText()
+    {
+        var assembly = typeof(UpdateService).Assembly;
+        var info = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                   ?? assembly.GetName().Version?.ToString(3) ?? "0.0.0";
+        var plus = info.IndexOf('+');
+        return plus >= 0 ? info[..plus] : info;
+    }
+
+    private async Task CheckAsync()
+    {
+        try
+        {
+            if (!AppVersion.TryParse(CurrentVersionText, out var current)) return;
+            var found = await Task.Run(async () =>
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get, ReleasesUrl);
+                request.Headers.UserAgent.ParseAdd("Aion2Assistant/" + CurrentVersionText);
+                request.Headers.Accept.ParseAdd("application/vnd.github+json");
+                using var response = await Http.SendAsync(request).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return UpdateCheck.Newer(UpdateCheck.ParseReleases(json), current);
+            });
+            Checked = true;
+            if (found is not null)
+            {
+                AvailableVersion = found.Tag.TrimStart('v', 'V');
+                AvailableUrl = string.IsNullOrWhiteSpace(found.Url) ? FallbackUrl : found.Url;
+                UpdateFound?.Invoke(AvailableVersion, AvailableUrl);
+            }
+            Changed?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "Vérification de mise à jour échouée");
+        }
+    }
+}

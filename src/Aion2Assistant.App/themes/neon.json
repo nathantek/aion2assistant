@@ -1,0 +1,31 @@
+{
+  "id": "neon",
+  "name": "Néon",
+  "colors": {
+    "text": "#F2FCFF",
+    "textMuted": "#B3A8FF",
+    "surface": "#150F33",
+    "surfaceHover": "#221A4D",
+    "divider": "#4B2FA8",
+    "background": "#07061A",
+    "outline": "#000000",
+    "dps": "#FF2D95",
+    "heal": "#00FF9C",
+    "taken": "#B66BFF",
+    "timer": "#00E5FF",
+    "alert": "#FFB000",
+    "crit": "#EEFF00"
+  },
+  "classes": {
+    "gladiator": "#FF3B30",
+    "templar": "#4A93FF",
+    "ranger": "#2BFF6A",
+    "assassin": "#9C7BFF",
+    "elementalist": "#00F7FF",
+    "sorcerer": "#E05CFF",
+    "cleric": "#FFF200",
+    "chanter": "#FF7A00",
+    "brawler": "#FF2DAA"
+  },
+  "glow": { "color": "#C04DFF", "blur": 8, "opacity": 0.75 }
+}

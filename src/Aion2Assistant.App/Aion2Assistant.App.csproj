@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Aion2Assistant</AssemblyName>
+    <RootNamespace>Aion2Assistant.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Le DPI (PerMonitorV2) est déclaré dans le manifeste pour WPF ; WinForms n'héberge que le NotifyIcon. -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+    <Version>0.3.0</Version>
+    <InformationalVersion>0.3.0-beta.1</InformationalVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WinForms ne sert qu'à l'icône de la zone de notification : on retire ses usings globaux, qui entreraient en conflit avec WPF. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <!-- Le SDK WPF retire System.IO des usings implicites (conflit avec System.Windows.Shapes.Path) : on le remet. -->
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aion2Assistant.Core\Aion2Assistant.Core.csproj" />
+    <ProjectReference Include="..\Aion2Assistant.Timers\Aion2Assistant.Timers.csproj" />
+    <ProjectReference Include="..\Aion2Assistant.Capture\Aion2Assistant.Capture.csproj" />
+    <ProjectReference Include="..\Aion2Assistant.Protocol\Aion2Assistant.Protocol.csproj" />
+    <ProjectReference Include="..\Aion2Assistant.Combat\Aion2Assistant.Combat.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="timers.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="data\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="themes\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="legal\*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

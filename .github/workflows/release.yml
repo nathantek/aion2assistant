@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Check tag matches app version
+        shell: pwsh
+        run: |
+          $csproj = [xml](Get-Content src/Aion2Assistant.App/Aion2Assistant.App.csproj -Raw)
+          $version = ($csproj.Project.PropertyGroup.InformationalVersion | Where-Object { $_ } | Select-Object -First 1)
+          if (-not $version) { throw 'InformationalVersion introuvable dans Aion2Assistant.App.csproj' }
+          if ("v$version" -ne $env:TAG) { throw "Le tag $env:TAG ne correspond pas a la version de l'app (v$version)" }
+
+      - name: Publish
+        run: dotnet publish src/Aion2Assistant.App/Aion2Assistant.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
+
+      - name: Add license files
+        shell: pwsh
+        run: |
+          Copy-Item LICENSE publish/LICENSE
+          Copy-Item data/NOTICE.md publish/NOTICE.md
+          Copy-Item README.md publish/README.md
+
+      - name: Zip
+        shell: pwsh
+        run: Compress-Archive -Path publish/* -DestinationPath "Aion2Assistant-$env:TAG-win-x64.zip"
+
+      - name: Create release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ghArgs = @('release', 'create', $env:TAG, "Aion2Assistant-$env:TAG-win-x64.zip", '--title', $env:TAG, '--generate-notes')
+          if ($env:TAG -like '*-*') { $ghArgs += '--prerelease' }
+          gh @ghArgs

@@ -1,0 +1,30 @@
+{
+  "id": "classique",
+  "name": "Classique",
+  "colors": {
+    "text": "#E8EAED",
+    "textMuted": "#9199A7",
+    "surface": "#1B1F26",
+    "surfaceHover": "#262B34",
+    "divider": "#2A2F38",
+    "background": "#121418",
+    "outline": "#000000",
+    "dps": "#FF6242",
+    "heal": "#2BD67B",
+    "taken": "#B07DFF",
+    "timer": "#22D3EE",
+    "alert": "#FFB020",
+    "crit": "#FFE14D"
+  },
+  "classes": {
+    "gladiator": "#F26B5B",
+    "templar": "#6AA8FF",
+    "ranger": "#4ADE80",
+    "assassin": "#8F86FF",
+    "elementalist": "#2DD4E6",
+    "sorcerer": "#D47BFF",
+    "cleric": "#F5E04A",
+    "chanter": "#FF8F3F",
+    "brawler": "#FF6FA8"
+  }
+}

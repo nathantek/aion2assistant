@@ -1,0 +1,29 @@
+Version 1
+
+CONTRAT DE LICENCE UTILISATEUR FINAL (CLUF) — Aion2Assistant
+
+En cliquant sur « J'accepte », tu reconnais avoir lu et accepté les conditions suivantes.
+
+1. Logiciel fourni « tel quel »
+Aion2Assistant est fourni « tel quel », sans garantie d'aucune sorte, expresse ou implicite (y compris d'exactitude des données affichées, d'adéquation à un usage particulier ou de disponibilité). L'auteur ne peut être tenu responsable d'un dommage résultant de l'utilisation du logiciel.
+
+2. Licence du code
+Le code source d'Aion2Assistant est distribué sous licence GPL-3.0. Le texte de la licence est disponible dans le dépôt du projet : https://github.com/nathantek/aion2assistant
+
+3. Contenus du jeu
+Les noms, textes et données issus du jeu AION 2 sont © NCSOFT et ne sont pas couverts par la licence GPL. Ils restent la propriété de leurs détenteurs.
+
+4. Absence d'affiliation
+Aion2Assistant est un projet indépendant. Il n'est ni affilié à NCSOFT, ni approuvé, ni soutenu par NCSOFT.
+
+5. Fonctionnement
+L'application lit passivement le trafic réseau du jeu pour afficher des informations (combats, timers). Elle n'injecte aucun code dans le jeu, ne lit pas sa mémoire, n'envoie aucun paquet au jeu ni à ses serveurs et ne modifie aucun fichier du jeu.
+
+6. Utilisation à tes risques
+Tu utilises Aion2Assistant à tes propres risques, y compris vis-à-vis des conditions d'utilisation du jeu et des règles de NCSOFT. Il t'appartient de vérifier que cet usage est permis. L'auteur n'est pas responsable d'une sanction éventuelle appliquée à ton compte.
+
+7. Aucune donnée collectée
+Aion2Assistant ne collecte, ne transmet et ne vend aucune donnée personnelle ou de jeu. Tes réglages, historiques, records, captures .pcap optionnelles et journaux restent sur ton ordinateur, dans %AppData%\Aion2Assistant. L'application contacte GitHub uniquement pour connaître la dernière version publiée ; tu peux désactiver cette vérification dans Options › À propos.
+
+8. Modifications
+Ce CLUF peut évoluer. Si une nouvelle version est publiée, il te sera présenté de nouveau au démarrage.
