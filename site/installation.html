@@ -39,6 +39,7 @@
 <div class="download-box" id="telecharger">
 <a class="btn" data-download href="https://github.com/nathantek/aion2assistant/releases">Télécharger</a>
 <p class="dl-meta" data-download-meta aria-live="polite">Windows 64 bits · gratuit · GPL-3.0</p>
+<p class="dl-policy"><a href="legal.html#signature" lang="en">Code signing policy</a></p>
 </div>
 <ol class="steps" role="list">
 <li><h2 id="npcap">Installer Npcap</h2>
@@ -54,6 +55,19 @@
 <li><h2 id="verifier">Vérifier le fichier <span class="step-optional">optionnel</span></h2>
 <p>Chaque version publie l'empreinte SHA-256 du zip dans ses notes (page <a href="notes.html">Versions</a>). Ouvre PowerShell dans le dossier du zip et lance <code>Get-FileHash .\Aion2Assistant-*.zip</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas l'app.</p></li>
 </ol>
+
+<h2 id="desinstaller">Désinstaller</h2>
+<p>Aion2Assistant n'installe rien en dehors du dossier que tu as décompressé : pas de service, pas de clé de registre, pas de raccourci ni de démarrage automatique. Toutes ses données sont dans <code>%AppData%\Aion2Assistant</code>.</p>
+<ol class="steps" role="list">
+<li><h3>Fermer l'application</h3>
+<p>Fais un clic droit sur l'icône d'Aion2Assistant dans la zone de notification (à côté de l'horloge), puis choisis <strong>Quitter</strong>.</p></li>
+<li><h3>Supprimer le dossier de l'application</h3>
+<p>Supprime le dossier dans lequel tu as décompressé le zip.</p></li>
+<li><h3>Supprimer tes données</h3>
+<p>Appuie sur <kbd>Win</kbd> + <kbd>R</kbd>, tape <code>%AppData%</code> puis valide avec Entrée. Dans le dossier qui s'ouvre, supprime le dossier <code>Aion2Assistant</code> : réglages, historique, records, sons, captures et journaux.</p></li>
+<li><h3>Désinstaller Npcap <span class="step-optional">optionnel</span></h3>
+<p>Si aucun autre programme ne l'utilise (Wireshark par exemple), désinstalle Npcap depuis Paramètres › Applications › Applications installées.</p></li>
+</ol>
 <p>Un souci ? Consulte la <a href="faq.html">FAQ</a> ou ouvre une <a href="https://github.com/nathantek/aion2assistant/issues">issue sur GitHub</a>.</p>
 </div>
 </main>
@@ -63,6 +77,7 @@
 <p>Aion2Assistant est un projet de fan indépendant, <strong>non affilié à NCSOFT</strong> ni approuvé par elle. AION et AION 2 sont des marques de NCSOFT.</p>
 <ul class="footer-links">
 <li><a href="legal.html">Légal</a></li>
+<li><a href="legal.html#signature" lang="en">Code signing policy</a></li>
 <li><a href="https://github.com/nathantek/aion2assistant">GitHub</a></li>
 <li><a href="https://github.com/nathantek/aion2assistant/blob/main/LICENSE">Licence GPL-3.0</a></li>
 <li><a href="https://ko-fi.com/nathantek">Soutenir sur Ko-fi</a></li>
