@@ -57,7 +57,8 @@ public static class TimersConfigLoader
                     timer.Category ?? "other",
                     BuildRule(timer),
                     timer.OpenFor is null ? null : ParseDuration(timer.OpenFor, "openFor"),
-                    timer.Verified));
+                    timer.Verified,
+                    string.IsNullOrWhiteSpace(timer.ShortName) ? null : timer.ShortName.Trim()));
             }
             catch (Exception ex) when (ex is FormatException or ArgumentException)
             {

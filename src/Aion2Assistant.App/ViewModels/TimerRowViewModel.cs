@@ -16,6 +16,7 @@ public partial class TimerRowViewModel : ObservableObject
     private readonly Action<string> _toggleSound;
 
     [ObservableProperty] private string _name = "";
+    [ObservableProperty] private string _shortName = "";
     [ObservableProperty] private string _glyph = "";
     [ObservableProperty] private string _subText = "";
     [ObservableProperty] private string _remainingText = "";
@@ -37,6 +38,8 @@ public partial class TimerRowViewModel : ObservableObject
     {
         var assumed = state.Category == FieldBossTracker.Category && state.Name.EndsWith(FieldBossTracker.AssumedSuffix, StringComparison.Ordinal);
         Name = assumed ? state.Name[..^FieldBossTracker.AssumedSuffix.Length] : state.Name;
+        // Nom court (barre minimisée) ; repli sur le nom complet, notamment pour les boss de terrain.
+        ShortName = state.ShortName ?? Name;
         Glyph = CategoryGlyphs.For(state.Category);
         IsOpen = state.Phase == TimerPhase.Open;
         IsSoon = !IsOpen && state.Remaining <= TimeSpan.FromMinutes(settings.SoonThresholdMinutes);

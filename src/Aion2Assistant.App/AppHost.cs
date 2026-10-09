@@ -42,6 +42,7 @@ internal sealed class AppHost : IDisposable
     public NotificationService Notifications { get; }
     public CaptureController Capture { get; }
     public BossFilter BossFilter { get; }
+    public MeterDisplayOptions MeterDisplay { get; }
     public MetersController Meters { get; }
     private MiniBarController _miniBar = null!;
     public HistoryController History { get; }
@@ -64,6 +65,7 @@ internal sealed class AppHost : IDisposable
         // Après les réglages et le thème (la fenêtre utilise les brosses), avant toute fenêtre de l'overlay.
         if (!EnsureEulaAccepted()) throw new EulaDeclinedException();
         BossFilter = new BossFilter(Settings.Combat, Saver.RequestSave);
+        MeterDisplay = new MeterDisplayOptions(Settings.Combat, Saver.RequestSave);
 
         Main = new MainViewModel(Settings, Saver.RequestSave);
         var timersConfig = TimersConfigLoader.Load(AppPaths.TimersFile);
@@ -101,7 +103,7 @@ internal sealed class AppHost : IDisposable
 
         _settingsPage = new SettingsViewModel(
             Settings, Main, Saver.RequestSave, Sound.Play, Hotkeys, TimerDefinitions, SetKeyboardCapture, Docking.ResetPosition,
-            Updates, () => new EulaWindow(readOnly: true) { Owner = Window }.ShowDialog());
+            Updates, () => new EulaWindow(readOnly: true) { Owner = Window }.ShowDialog(), MeterDisplay);
         Main.Pages[OverlayTab.Settings] = _settingsPage;
         Window.Deactivated += (_, _) => _settingsPage.CancelCapture();
         Window.IsVisibleChanged += (_, _) => { if (!Window.IsVisible) _settingsPage.CancelCapture(); };
@@ -120,7 +122,7 @@ internal sealed class AppHost : IDisposable
             Main.Pages[OverlayTab.History] = new PlaceholderViewModel("Historique", npcap, "", "TextBrush");
         }
 
-        Meters = new MetersController(Capture, Settings, Main, Window, "DpsBrush", "HealBrush", "TakenBrush", BossFilter);
+        Meters = new MetersController(Capture, Settings, Main, Window, "DpsBrush", "HealBrush", "TakenBrush", BossFilter, MeterDisplay);
         Meters.EncounterEnded += snapshot => Log.Information("Combat terminé : {Title} — {Outcome} — {Duration} — {GroupDps}/s",
             snapshot.Title, snapshot.Outcome, MeterFormat.Duration(snapshot.DurationMs), MeterFormat.Compact(snapshot.Dps.PerSecond));
         if (npcapInstalled)
@@ -130,7 +132,7 @@ internal sealed class AppHost : IDisposable
             Main.Pages[OverlayTab.Heal] = Meters.Heal;
         }
 
-        History = new HistoryController(Meters, Settings, MapNames.Load(Path.Combine(AppContext.BaseDirectory, "data")), BossFilter);
+        History = new HistoryController(Meters, Settings, MapNames.Load(Path.Combine(AppContext.BaseDirectory, "data")), BossFilter, MeterDisplay);
         if (npcapInstalled) Main.Pages[OverlayTab.History] = History.View;
         Records = new RecordController(History, Notifications);
 

@@ -45,6 +45,8 @@ public partial class MeterRowViewModel : ObservableObject
     [ObservableProperty] private string _shareText = "";
     [ObservableProperty] private double _barFraction;
     [ObservableProperty] private string _deathsText = "";
+    // Suffixe « · puissance » après le nom ; vide si l'option est off ou la valeur inconnue.
+    [ObservableProperty] private string _combatPowerText = "";
     // Brosse de la classe du joueur (nom et barre) ; relue à chaque Update car le thème remplace les brosses.
     [ObservableProperty] private Brush _classBrush = AppHost.Resource("TextBrush");
 
@@ -56,7 +58,7 @@ public partial class MeterRowViewModel : ObservableObject
     public uint ActorId { get; }
 
     public void Update(ActorRow row, long topTotal, bool showDeaths, bool showPerSecond,
-        long durationMs, long meterTotal)
+        long durationMs, long meterTotal, bool showCombatPower = false)
     {
         Name = row.Name;
         ClassBrush = AppHost.Resource(ThemeManager.ClassBrushKey(row.Class));
@@ -65,6 +67,7 @@ public partial class MeterRowViewModel : ObservableObject
         TotalText = MeterFormat.Compact(row.Total);
         ShareText = MeterFormat.Share(row.Share, meterTotal);
         BarFraction = topTotal <= 0 ? 0 : Math.Clamp(row.Total / (double)topTotal, 0, 1);
+        CombatPowerText = CombatPowerFormat.Suffix(row.CombatPower, showCombatPower);
         DeathsText = showDeaths && row.Deaths > 0 ? $"☠ {row.Deaths}" : "";
     }
 }

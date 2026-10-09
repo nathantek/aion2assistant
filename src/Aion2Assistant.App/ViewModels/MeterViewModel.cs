@@ -31,6 +31,7 @@ public partial class MeterViewModel : ObservableObject
     private Brush _textBrush;
     private Brush _healBrush;
     private readonly BossFilter? _bossFilter;
+    private readonly MeterDisplayOptions? _display;
     private uint? _selectedId;
     // Courbes masquées par clic sur la légende ; remis à zéro à chaque nouveau combat.
     private readonly HashSet<uint> _hiddenSeries = new();
@@ -61,9 +62,15 @@ public partial class MeterViewModel : ObservableObject
 
     private readonly Dictionary<uint, MeterRowViewModel> _rowsById = new();
 
-    public MeterViewModel(MeterKind kind, string title, string accentKey, BossFilter? bossFilter = null)
+    public MeterViewModel(MeterKind kind, string title, string accentKey, BossFilter? bossFilter = null,
+        MeterDisplayOptions? display = null)
     {
         _bossFilter = bossFilter;
+        _display = display;
+        if (display is not null) display.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MeterDisplayOptions.ShowCombatPower)) Update(_lastSnapshot);
+        };
         if (bossFilter is not null) bossFilter.PropertyChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(IsBossOnly));
@@ -371,7 +378,8 @@ public partial class MeterViewModel : ObservableObject
             {
                 Rows.Move(Rows.IndexOf(row), i);
             }
-            row.Update(actor, top, Kind == MeterKind.Taken, ShowPerSecond, durationMs, meter.Total);
+            row.Update(actor, top, Kind == MeterKind.Taken, ShowPerSecond, durationMs, meter.Total,
+                _display?.ShowCombatPower == true);
         }
     }
 

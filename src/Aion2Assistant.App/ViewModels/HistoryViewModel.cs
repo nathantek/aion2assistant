@@ -21,12 +21,13 @@ public partial class HistoryViewModel : ObservableObject
     [ObservableProperty] private string? _detailMessage;
     [ObservableProperty] private MeterViewModel _selectedMeter;
 
-    public HistoryViewModel(Func<long, EncounterSnapshot?> load, string dps, string heal, string taken, BossFilter bossFilter)
+    public HistoryViewModel(Func<long, EncounterSnapshot?> load, string dps, string heal, string taken, BossFilter bossFilter,
+        MeterDisplayOptions display)
     {
         _load = load;
-        Dps = new MeterViewModel(MeterKind.Dps, "DPS", dps, bossFilter);
-        Heal = new MeterViewModel(MeterKind.Heal, "Soins", heal);
-        Taken = new MeterViewModel(MeterKind.Taken, "Dégâts reçus", taken);
+        Dps = new MeterViewModel(MeterKind.Dps, "DPS", dps, bossFilter, display);
+        Heal = new MeterViewModel(MeterKind.Heal, "Soins", heal, display: display);
+        Taken = new MeterViewModel(MeterKind.Taken, "Dégâts reçus", taken, display: display);
         _selectedMeter = Dps;
         Items.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsEmpty));
     }

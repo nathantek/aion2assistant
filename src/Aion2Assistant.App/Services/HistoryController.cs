@@ -13,12 +13,13 @@ internal sealed class HistoryController : IDisposable
     private readonly Func<int, string> _mapName;
     private readonly HistoryStore? _store;
 
-    public HistoryController(MetersController meters, AppSettings settings, Func<int, string> mapName, BossFilter bossFilter)
+    public HistoryController(MetersController meters, AppSettings settings, Func<int, string> mapName, BossFilter bossFilter,
+        MeterDisplayOptions display)
     {
         _meters = meters;
         _settings = settings;
         _mapName = mapName;
-        View = new HistoryViewModel(Load, "DpsBrush", "HealBrush", "TakenBrush", bossFilter);
+        View = new HistoryViewModel(Load, "DpsBrush", "HealBrush", "TakenBrush", bossFilter, display);
         _meters.EncounterEnded += OnEncounterEnded;
         try
         {

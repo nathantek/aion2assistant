@@ -9,7 +9,7 @@ public sealed record SkillRow(int SkillCode, string Name, int Hits, long Total, 
     double? CritPct, double? BackPct, double? FrontPct, double? PerfectPct, double? MultiPct, double Share, long? Overheal);
 
 public sealed record ActorRow(uint ActorId, string Name, GameClass Class, bool IsSelf, long Total, double PerSecond,
-    double Share, int Hits, int Deaths, IReadOnlyList<SkillRow> Skills);
+    double Share, int Hits, int Deaths, IReadOnlyList<SkillRow> Skills, long? CombatPower = null);
 
 public sealed record MeterSnapshot(MeterKind Kind, long Total, double PerSecond, IReadOnlyList<ActorRow> Actors);
 
@@ -26,7 +26,8 @@ public sealed record EncounterSnapshot(string Title, long StartMs, long Duration
 public static class MeterBuilder
 {
     public static MeterSnapshot Build(MeterKind kind, IEnumerable<ActorMeter> actors, long durationMs,
-        Func<uint, string> nameOf, Func<uint, GameClass> classOf, Func<int, string> skillName, uint selfId)
+        Func<uint, string> nameOf, Func<uint, GameClass> classOf, Func<int, string> skillName, uint selfId,
+        Func<uint, long?>? combatPowerOf = null)
     {
         var seconds = Math.Max(1, durationMs / 1000.0);
         var list = actors.OrderByDescending(a => a.Total).ThenBy(a => a.ActorId).ToList();
@@ -40,7 +41,7 @@ public static class MeterBuilder
                 a.Total == 0 ? 0 : s.Total / (double)a.Total,
                 s.OverhealKnownRecords == 0 ? null : s.Overheal)).ToList();
             rows.Add(new ActorRow(a.ActorId, nameOf(a.ActorId), classOf(a.ActorId), a.ActorId == selfId, a.Total,
-                a.Total / seconds, sum == 0 ? 0 : a.Total / (double)sum, skills.Sum(s => s.Hits), a.Deaths, skills));
+                a.Total / seconds, sum == 0 ? 0 : a.Total / (double)sum, skills.Sum(s => s.Hits), a.Deaths, skills, combatPowerOf?.Invoke(a.ActorId)));
         }
         return new MeterSnapshot(kind, sum, sum / seconds, rows);
     }

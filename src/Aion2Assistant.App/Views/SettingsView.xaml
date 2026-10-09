@@ -90,6 +90,8 @@
             <TextBlock Text="{Binding CombatIdleSeconds, StringFormat='Fin de combat après inactivité : {0:0} s'}"/>
             <Slider Minimum="3" Maximum="60" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding CombatIdleSeconds}"/>
             <CheckBox Content="Inclure tous les joueurs (sinon : moi seulement)" IsChecked="{Binding IncludeAllPlayers}" Margin="0,6,0,0"/>
+            <CheckBox Content="Afficher la puissance de combat" IsChecked="{Binding ShowCombatPower}" Margin="0,6,0,0"
+                      ToolTip="À côté du nom, dans les meters et l'image copiée. Inconnue pour un joueur tant que le jeu ne l'a pas envoyée."/>
 
             <TextBlock x:Name="SecCapture" Style="{StaticResource SectionHeaderStyle}" Text="CAPTURE"/>
             <StackPanel DataContext="{Binding Capture}">

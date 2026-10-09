@@ -14,6 +14,8 @@ public sealed class EntityRegistry
     private readonly Dictionary<uint, (uint OwnerId, string? OwnerName)> _summons = new();
     private readonly Dictionary<uint, long> _maxHp = new();
     private readonly Dictionary<uint, long> _curHp = new();
+    private readonly Dictionary<uint, (long Power, long TimeMs)> _powerById = new();
+    private readonly Dictionary<string, (long Power, long TimeMs)> _powerByName = new(StringComparer.Ordinal);
     private GameClass _selfClass;
 
     public EntityRegistry(GameData data) => _data = data;
@@ -34,7 +36,12 @@ public sealed class EntityRegistry
             case PlayerSeenEvent p:
                 RegisterPlayer(p.ActorId, p.Name, p.Class);
                 break;
+            case CombatPowerSeenEvent c when CombatPowerRange.IsValid(c.CombatPower):
+                if (c.ActorId != 0) _powerById[c.ActorId] = (c.CombatPower, c.TimeMs);
+                if (!string.IsNullOrEmpty(c.Name)) _powerByName[c.Name] = (c.CombatPower, c.TimeMs);
+                break;
             case NpcSeenEvent n:
+                _powerById.Remove(n.ActorId);
                 var sameNpc = _npcs.TryGetValue(n.ActorId, out var oldCode) && oldCode == n.NpcCode;
                 _players.Remove(n.ActorId);
                 _summons.Remove(n.ActorId);
@@ -43,6 +50,7 @@ public sealed class EntityRegistry
                 if (n.MaxHp > 0) _maxHp[n.ActorId] = n.MaxHp;
                 break;
             case SummonSeenEvent m:
+                _powerById.Remove(m.ActorId);
                 _players.Remove(m.ActorId);
                 _npcs.Remove(m.ActorId);
                 if (!_summons.ContainsKey(m.ActorId)) ForgetHp(m.ActorId);
@@ -53,7 +61,12 @@ public sealed class EntityRegistry
                 if (h.MaxHp > 0) _maxHp[h.ActorId] = h.MaxHp;
                 break;
             case ZoneChangedEvent { IsTeleport: false }:
+                var selfPowerById = _powerById.TryGetValue(SelfId, out var byId) ? byId : (ValueTuple<long, long>?)null;
+                var selfPowerByName = SelfName is not null && _powerByName.TryGetValue(SelfName, out var byName) ? byName : (ValueTuple<long, long>?)null;
                 ClearAll();
+                // La puissance de soi survit au changement de zone (les autres sont réappris).
+                if (selfPowerById is { } sid) _powerById[SelfId] = sid;
+                if (selfPowerByName is { } sname) _powerByName[SelfName!] = sname;
                 if (SelfId != 0 && SelfName is not null) RegisterPlayer(SelfId, SelfName, _selfClass);
                 break;
             case StreamStartedEvent:
@@ -90,6 +103,8 @@ public sealed class EntityRegistry
 
     private void ClearAll()
     {
+        _powerById.Clear();
+        _powerByName.Clear();
         _players.Clear();
         _inferred.Clear();
         _npcs.Clear();
@@ -125,6 +140,17 @@ public sealed class EntityRegistry
 
     /// <summary>Vrai si un vrai nom a été capturé (joueur annoncé ou soi-même) ; faux pour un joueur seulement déduit (« #id »), un PNJ ou un inconnu.</summary>
     public bool HasName(uint id) => _players.ContainsKey(id) && !_inferred.Contains(id);
+
+    /// <summary>Puissance de combat connue d'un joueur : la plus récente entre la source par id et celle par nom ; null si inconnue.</summary>
+    public long? CombatPowerOf(uint id)
+    {
+        // Les sources par nom (roster, inspection) ne distinguent pas deux joueurs de même nom sur des serveurs différents : la valeur la plus récente gagne.
+        if (KindOf(id) != EntityKind.Player) return null;
+        (long Power, long TimeMs)? best = _powerById.TryGetValue(id, out var byId) ? byId : null;
+        if (_powerByName.TryGetValue(NameOf(id), out var byName) && (best is null || byName.TimeMs > best.Value.TimeMs))
+            best = byName;
+        return best?.Power;
+    }
 
     public GameClass ClassOf(uint id) => _players.TryGetValue(id, out var p) ? p.Class : GameClass.Unknown;
 

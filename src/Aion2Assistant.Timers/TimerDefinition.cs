@@ -8,4 +8,5 @@ public sealed record TimerDefinition(
     string Category,
     IScheduleRule Rule,
     TimeSpan? OpenFor,
-    bool Verified);
+    bool Verified,
+    string? ShortName = null);

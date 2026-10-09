@@ -19,6 +19,8 @@ public static class Opcodes
     public const ushort HpMp = 0x1B92;
     public const ushort PartyRoster = 0x0297;
     public const ushort FieldBossList = 0x0191;
+    public const ushort CombatPowerUpdate = 0x1C56;
+    public const ushort Inspect = 0x5036;
 
     private static readonly Dictionary<ushort, string> Names = new()
     {
@@ -26,6 +28,7 @@ public static class Opcodes
         [Spawn] = "Apparition", [Death] = "Mort", [MapLoad] = "Carte", [Teleport] = "Téléportation", [Cast] = "Lancement",
         [Damage] = "Dégâts", [Dot] = "DoT/HoT", [RemainHp] = "PV restants", [KillCredit] = "Mort + tueur", [HpMp] = "PV/PM",
         [PartyRoster] = "Groupe", [FieldBossList] = "Boss de terrain",
+        [CombatPowerUpdate] = "Puissance", [Inspect] = "Inspection",
     };
 
     public static bool IsKnown(ushort opcode) => Names.ContainsKey(opcode);

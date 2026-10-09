@@ -30,6 +30,17 @@ public sealed record SelfIdentifiedEvent(long TimeMs, uint ActorId, string Name,
 
 public sealed record PlayerSeenEvent(long TimeMs, uint ActorId, string Name, int ServerId, GameClass Class) : GameEvent(TimeMs);
 
+/// <summary>Puissance de combat actuelle d'un joueur. <see cref="ActorId"/> = 0 quand la source ne donne que le nom (roster, inspection).</summary>
+public sealed record CombatPowerSeenEvent(long TimeMs, uint ActorId, string? Name, long CombatPower) : GameEvent(TimeMs);
+
+public static class CombatPowerRange
+{
+    public const long Min = 1, Max = 100_000;
+
+    /// <summary>Hors de 1..100 000 (dont 0) = puissance inconnue.</summary>
+    public static bool IsValid(long value) => value is >= Min and <= Max;
+}
+
 public sealed record NpcSeenEvent(long TimeMs, uint ActorId, int NpcCode, long MaxHp, float X, float Y, float Z) : GameEvent(TimeMs);
 
 /// <summary>Invocation, esprit ou effet persistant. Propriétaire connu par id (<see cref="OwnerId"/> ≠ 0) ou par nom.</summary>

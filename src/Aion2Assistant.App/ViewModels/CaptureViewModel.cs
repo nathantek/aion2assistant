@@ -64,8 +64,24 @@ public partial class CaptureViewModel(Action toggleRecording, Action openFolder)
     {
         var name = self.Name.Length == 0 ? "(sans nom)" : self.Name;
         var details = self.ServerId != 0 ? $" — serveur {self.ServerId} — {self.Class} niv. {self.Level}" : "";
-        SelfText = name + details;
+        _selfBase = name + details;
+        ComposeSelfText();
     }
+
+    private string _selfBase = "Personnage non détecté";
+    private long? _selfCombatPower;
+
+    /// <summary>Puissance de combat de soi (null = inconnue) ajoutée au texte du personnage.</summary>
+    public void SetSelfCombatPower(long? value)
+    {
+        _selfCombatPower = value;
+        ComposeSelfText();
+    }
+
+    private void ComposeSelfText() =>
+        SelfText = _selfCombatPower is { } power
+            ? _selfBase + " — puissance " + power.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))
+            : _selfBase;
 
     public void SetStats(PipelineStats stats, long dropped)
     {

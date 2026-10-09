@@ -13,7 +13,8 @@ public sealed record TimerState(
     TimerPhase Phase,
     DateTimeOffset? OpenUntil,
     double Progress,
-    bool Verified);
+    bool Verified,
+    string? ShortName = null);
 
 /// <summary>Timers de boss de terrain alimentés par la capture réseau (étape 5).</summary>
 public interface IFieldBossSource

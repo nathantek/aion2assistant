@@ -13,6 +13,7 @@ Téléchargements : [page des Releases](https://github.com/nathantek/aion2assist
 - **Boss de terrain** : suivi dédié des boss de terrain.
 - **Meters** : DPS, soins et dégâts reçus, par joueur.
 - **Boss seul / Tout** : bascule entre les dégâts faits au boss uniquement et l'ensemble du combat.
+- **Puissance de combat** à côté du nom (option, Réglages › Combat).
 - **Courbe** : évolution du DPS au fil du combat.
 - **Copie texte et image** : copie d'un résumé de combat en texte ou en image.
 - **Historique** : consultation des combats passés.

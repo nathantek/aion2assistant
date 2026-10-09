@@ -70,8 +70,13 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Name, Mode=OneWay}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                 <Setter Property="Foreground" Value="{Binding ClassBrush}"/>
@@ -83,10 +88,13 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <TextBlock Text="{Binding DeathsText}" Foreground="{DynamicResource AlertBrush}"
+                    <TextBlock Grid.Column="1" Text="{Binding CombatPowerText, Mode=OneWay}"
+                               Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}"
+                               FontWeight="Normal" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="{Binding DeathsText}" Foreground="{DynamicResource AlertBrush}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="6,0,0,0"
                                VerticalAlignment="Center"/>
-                </StackPanel>
+                </Grid>
                 <TextBlock Grid.Column="1" Text="{Binding PerSecondText}" Typography.NumeralAlignment="Tabular"
                            Margin="6,0,0,0" VerticalAlignment="Center" MinWidth="52" TextAlignment="Right"
                            Visibility="{Binding DataContext.ShowPerSecond, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibility}}"/>

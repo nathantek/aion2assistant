@@ -50,7 +50,7 @@ internal sealed class MiniBarController : IDisposable
         if (LiveSummary.SelfDps(_snapshot(), _bossFilter.BossOnly) is { } dps)
             Set($"{MeterFormat.Compact(dps)}/s", AppHost.Resource("DpsBrush"), "Ton DPS (combat en cours)");
         else if (_timers.NextTimer is { } t)
-            Set($"{t.Name} {t.RemainingText}", AppHost.Resource(t.IsSoon ? "AlertBrush" : "TimerBrush"), "Prochain timer");
+            Set($"{t.ShortName} {t.RemainingText}", AppHost.Resource(t.IsSoon ? "AlertBrush" : "TimerBrush"), "Prochain timer");
         else
             Set(null, null, null);
     }

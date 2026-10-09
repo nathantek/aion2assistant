@@ -21,6 +21,14 @@ public partial class SettingsViewModel : ObservableObject
     private readonly Action _resetPosition;
     private readonly UpdateService _updates;
     private readonly Action _showEula;
+    private readonly MeterDisplayOptions _display;
+
+    /// <summary>Puissance de combat après le nom, dans les meters et l'image copiée.</summary>
+    public bool ShowCombatPower
+    {
+        get => _display.ShowCombatPower;
+        set => _display.ShowCombatPower = value;
+    }
 
     [ObservableProperty] private double _fontScale;
     [ObservableProperty] private double _opacity;
@@ -34,8 +42,13 @@ public partial class SettingsViewModel : ObservableObject
 
     internal SettingsViewModel(AppSettings settings, MainViewModel main, Action requestSave, Action<AppSettings> playSound,
         HotkeyService hotkeys, IReadOnlyList<TimerDefinition> timers, Action<bool> setKeyboardCapture, Action resetPosition,
-        UpdateService updates, Action showEula)
+        UpdateService updates, Action showEula, MeterDisplayOptions display)
     {
+        _display = display;
+        display.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MeterDisplayOptions.ShowCombatPower)) OnPropertyChanged(nameof(ShowCombatPower));
+        };
         _updates = updates;
         _showEula = showEula;
         _checkForUpdates = settings.CheckForUpdates;

@@ -27,6 +27,8 @@ internal sealed class CaptureController : IDisposable
     private readonly Dispatcher _dispatcher = Application.Current.Dispatcher;
     private string? _lastFlow;
     private string? _lastSelf;
+    private SelfIdentifiedEvent? _self;
+    private long? _selfPower;
     private long _lastSummaryMs;
 
     public CaptureController()
@@ -72,6 +74,9 @@ internal sealed class CaptureController : IDisposable
             var self = batch.OfType<SelfIdentifiedEvent>().LastOrDefault();
             if (self is not null)
             {
+                // Nouveau personnage : l'ancienne puissance ne vaut plus.
+                if (_self is null || _self.ActorId != self.ActorId) _selfPower = null;
+                _self = self;
                 View.SetSelf(self);
                 var description = $"{(self.Name.Length == 0 ? "(sans nom)" : self.Name)} (id {self.ActorId}, serveur {self.ServerId}, {self.Class} niv. {self.Level})";
                 if (description != _lastSelf)
@@ -80,6 +85,14 @@ internal sealed class CaptureController : IDisposable
                     Log.Information("Personnage détecté : {Self}", description);
                 }
             }
+            if (_self is not null)
+            {
+                // Puissance de soi : par id, à défaut (roster, inspection) par nom.
+                var power = batch.OfType<CombatPowerSeenEvent>().LastOrDefault(p =>
+                    p.ActorId == _self.ActorId || (p.ActorId == 0 && p.Name == _self.Name));
+                if (power is not null) _selfPower = power.CombatPower;
+            }
+            View.SetSelfCombatPower(_selfPower);
             count = batch.Count;
             EventsReceived?.Invoke(batch);
         }
@@ -107,6 +120,10 @@ internal sealed class CaptureController : IDisposable
             if (stats.LockedFlow != _lastFlow)
             {
                 _lastFlow = stats.LockedFlow;
+                // Nouvelle session de jeu : le personnage et sa puissance précédents ne valent plus.
+                _self = null;
+                _selfPower = null;
+                View.SetSelfCombatPower(null);
                 if (_lastFlow is not null) Log.Information("Flux du jeu verrouillé : {Flow}", _lastFlow);
             }
             if (_live.Status.State == CaptureState.Capturing && now - _lastSummaryMs >= 30_000)

@@ -18,6 +18,8 @@ public sealed class CombatSettings
     public bool IncludeAllPlayers { get; set; } = true;
     /// <summary>Bascule uniquement la vue du compteur de DPS (en direct et dans l'historique) entre les dégâts sur les boss seuls et tous les dégâts ; rien n'est filtré à l'enregistrement.</summary>
     public bool BossOnly { get; set; }
+    /// <summary>Affiche la puissance de combat après le nom des joueurs (meters, historique, image copiée).</summary>
+    public bool ShowCombatPower { get; set; }
 }
 
 public sealed class HistorySettings

@@ -64,6 +64,9 @@ public sealed class PacketParser(Action<GameEvent> emit)
         Opcodes.Cast => SimpleParsers.Cast(body, TimeMs, emit),
         Opcodes.Spawn => SpawnParser.Parse(body, TimeMs, emit),
         Opcodes.FieldBossList => FieldBossListParser.Parse(body, TimeMs, emit),
+        Opcodes.CombatPowerUpdate => CombatPowerParsers.Update(body, TimeMs, emit),
+        Opcodes.Inspect => CombatPowerParsers.Inspect(body, TimeMs, emit),
+        Opcodes.PartyRoster => CombatPowerParsers.PartyRoster(body, TimeMs, emit),
         _ => null,
     };
 }

@@ -31,6 +31,9 @@ public static class IdentityParser
                 && tail.TryU32(out var level) && level is >= 1 and <= 99)
             {
                 emit(new SelfIdentifiedEvent(timeMs, id, name, server, gameClass, (int)level));
+                // Puissance actuelle, puis une seconde valeur ignorée ; tail tronqué ou valeur hors plage = pas d'événement.
+                if (tail.TryU32(out var selfPower) && tail.TryU32(out _) && CombatPowerRange.IsValid(selfPower))
+                    emit(new CombatPowerSeenEvent(timeMs, id, name, selfPower));
             }
             else
             {
@@ -39,8 +42,11 @@ public static class IdentityParser
             return true;
         }
 
+        var afterName = r.Position;
         var otherClass = r.TryU32(out var wire) ? GameClasses.FromWire(wire) : GameClass.Unknown;
         emit(new PlayerSeenEvent(timeMs, id, name, 0, otherClass));
+        if (CombatPowerParsers.ScanPlayerRecord(body, afterName) is { } power)
+            emit(new CombatPowerSeenEvent(timeMs, id, name, power));
         return true;
     }
 }

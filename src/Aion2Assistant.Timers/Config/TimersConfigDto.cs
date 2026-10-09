@@ -10,6 +10,7 @@ public sealed class TimerDto
 {
     public string Id { get; set; } = "";
     public string? Name { get; set; }
+    public string? ShortName { get; set; }
     public TimerKind Kind { get; set; }
     public string? Category { get; set; }
     public string? Anchor { get; set; }

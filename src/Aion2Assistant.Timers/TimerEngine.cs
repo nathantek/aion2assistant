@@ -62,6 +62,7 @@ public sealed class TimerEngine(
             openUntil is null ? TimerPhase.Waiting : TimerPhase.Open,
             openUntil,
             progress,
-            definition.Verified);
+            definition.Verified,
+            definition.ShortName);
     }
 }

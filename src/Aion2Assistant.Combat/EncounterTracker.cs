@@ -442,9 +442,9 @@ public sealed class EncounterTracker
     private EncounterSnapshot Build(long durationMs, bool active, EncounterOutcome? outcome)
     {
         var self = Entities.SelfId;
-        var dps = MeterBuilder.Build(MeterKind.Dps, _dps.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self);
-        var heal = MeterBuilder.Build(MeterKind.Heal, _heal.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self);
-        var taken = MeterBuilder.Build(MeterKind.Taken, _taken.Values, durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self);
+        var dps = MeterBuilder.Build(MeterKind.Dps, _dps.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
+        var heal = MeterBuilder.Build(MeterKind.Heal, _heal.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
+        var taken = MeterBuilder.Build(MeterKind.Taken, _taken.Values, durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
 
         // Cibles boss évaluées à l'instantané : les PV max peuvent arriver après les premiers coups.
         MeterSnapshot? bossDps = null;
@@ -459,7 +459,7 @@ public sealed class EncounterTracker
             }
         }
         if (merged.Values.Any(IsRealActor))
-            bossDps = MeterBuilder.Build(MeterKind.Dps, merged.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self);
+            bossDps = MeterBuilder.Build(MeterKind.Dps, merged.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
 
         var dpsTimeline = Timeline.Build(dps, _secondsByTarget, durationMs);
         var bossTimeline = bossDps is null ? null
