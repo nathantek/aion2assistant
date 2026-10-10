@@ -8,6 +8,7 @@ using Aion2Assistant.App.ViewModels;
 using Aion2Assistant.Capture;
 using Aion2Assistant.Combat;
 using Aion2Assistant.Core;
+using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Hotkeys;
 using Aion2Assistant.Core.Settings;
 using Aion2Assistant.Timers;
@@ -102,7 +103,7 @@ internal sealed class AppHost : IDisposable
             "Télécharge-la depuis la page du projet (Options › À propos).", Resource("TimerBrush"), "");
 
         _settingsPage = new SettingsViewModel(
-            Settings, Main, Saver.RequestSave, Sound.Play, Hotkeys, TimerDefinitions, SetKeyboardCapture, Docking.ResetPosition,
+            Settings, Main, Saver.RequestSave, sound => Sound.Play(sound, Settings.Volume), Hotkeys, TimerDefinitions, SetKeyboardCapture, Docking.ResetPosition,
             Updates, () => new EulaWindow(readOnly: true) { Owner = Window }.ShowDialog(), MeterDisplay);
         Main.Pages[OverlayTab.Settings] = _settingsPage;
         Window.Deactivated += (_, _) => _settingsPage.CancelCapture();
@@ -262,7 +263,8 @@ internal sealed class AppHost : IDisposable
             var accent = Resource(alert.Kind == AlertKind.Soon ? "AlertBrush" : "TimerBrush");
             Notifications.Show(alert.Name, message, accent, CategoryGlyphs.For(alert.Category));
         }
-        if (Settings.GetTimer(alert.TimerId).Sound) Sound.Play(Settings);
+        var timer = Settings.GetTimer(alert.TimerId);
+        if (timer.Sound) Sound.Play(SoundResolver.ForTimer(Settings, timer), Settings.Volume);
     }
 
     private void EnsureVisible()

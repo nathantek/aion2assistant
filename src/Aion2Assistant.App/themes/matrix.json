@@ -1,0 +1,31 @@
+{
+  "id": "matrix",
+  "name": "Matrix",
+  "colors": {
+    "text": "#B8FFB8",
+    "textMuted": "#6FC77A",
+    "surface": "#07160B",
+    "surfaceHover": "#0E2514",
+    "divider": "#1F5C2E",
+    "background": "#020A04",
+    "outline": "#000000",
+    "dps": "#FFB000",
+    "heal": "#39FF6A",
+    "taken": "#E8FFE8",
+    "timer": "#33E6D0",
+    "alert": "#FF8A3D",
+    "crit": "#D8FF3A"
+  },
+  "classes": {
+    "gladiator": "#FF9A2E",
+    "templar": "#E6FFE6",
+    "ranger": "#2BFF5E",
+    "assassin": "#7DDC9A",
+    "elementalist": "#26E6E6",
+    "sorcerer": "#4FB8FF",
+    "cleric": "#F2FF5C",
+    "chanter": "#B4D600",
+    "brawler": "#FFD27A"
+  },
+  "glow": { "color": "#2BFF5E", "blur": 6, "opacity": 0.6 }
+}

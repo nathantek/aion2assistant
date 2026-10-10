@@ -27,6 +27,9 @@ internal static class ThemeManager
     private const string SolidBackgroundKey = "SolidBackgroundBrush";
     private const string OutlineKey = "TextOutlineEffect";
 
+    /// <summary>Opacité minimale du fond pour un thème à contraste élevé.</summary>
+    private const double HighContrastMinOpacity = 0.95;
+
     // Clé de ressource -> couleur du thème.
     private static readonly (string Key, Func<ThemeColors, Rgb> Pick)[] ColorKeys =
     [
@@ -83,7 +86,9 @@ internal static class ThemeManager
         }
 
         // Alpha 0 rendrait le fond transparent aux clics (fenêtre layered) : on garde 1 pour pouvoir déplacer l'overlay à 0 %.
-        var alpha = (byte)Math.Max(1, Math.Round(settings.Opacity * 255));
+        // Thème à contraste élevé : fond quasi opaque, sans toucher au réglage de l'utilisateur.
+        var opacity = EffectiveOpacity(theme, settings.Opacity);
+        var alpha = (byte)Math.Max(1, Math.Round(opacity * 255));
         var baseColor = theme is not null ? ToColor(theme.Colors.Background) : ((SolidColorBrush)resources[BackgroundKey]).Color;
         resources[BackgroundKey] = NewBrush(Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B));
         // Fond opaque pour l'image copiée : même couleur que le fond, sans l'opacité de l'overlay.
@@ -91,7 +96,7 @@ internal static class ThemeManager
 
         // Priorité : lisibilité d'abord (contour sombre sous le seuil d'opacité), puis lueur du thème si activée.
         Effect? textEffect = null;
-        if (theme is not null && settings.Opacity < AppSettings.OutlineThreshold)
+        if (theme is not null && opacity < AppSettings.OutlineThreshold)
         {
             textEffect = new DropShadowEffect
             {
@@ -110,6 +115,10 @@ internal static class ThemeManager
 
         ThemeChanged?.Invoke();
     }
+
+    /// <summary>Opacité réellement appliquée au fond : plancher pour un thème à contraste élevé, réglage sinon.</summary>
+    public static double EffectiveOpacity(ThemeDefinition? theme, double opacity) =>
+        theme is { HighContrast: true } ? Math.Max(opacity, HighContrastMinOpacity) : opacity;
 
     private static SolidColorBrush NewBrush(Color color)
     {

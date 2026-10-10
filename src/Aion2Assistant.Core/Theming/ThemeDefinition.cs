@@ -65,6 +65,8 @@ public sealed record ThemeGlow(Rgb Color, double Blur, double Opacity)
     public const double MinBlur = 1, MaxBlur = 20;
 }
 
-public sealed record ThemeDefinition(string Id, string Name, ThemeColors Colors, ClassColors Classes, ThemeGlow? Glow = null);
+/// <summary>HighContrast : exige 7:1 pour tout le texte et force un fond quasi opaque.</summary>
+public sealed record ThemeDefinition(string Id, string Name, ThemeColors Colors, ClassColors Classes, ThemeGlow? Glow = null,
+    bool HighContrast = false);
 
 public sealed class ThemeFormatException(string message) : Exception(message);

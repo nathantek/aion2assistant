@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Aion2Assistant.App.Services;
+using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Hotkeys;
 using Aion2Assistant.Core.Settings;
 using Aion2Assistant.Core.Theming;
@@ -15,7 +16,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly AppSettings _settings;
     private readonly MainViewModel _main;
     private readonly Action _requestSave;
-    private readonly Action<AppSettings> _playSound;
+    private readonly Action<SoundRef> _playSound;
     private readonly HotkeyService _hotkeys;
     private readonly Action<bool> _setKeyboardCapture;
     private readonly Action _resetPosition;
@@ -34,13 +35,12 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private double _opacity;
     [ObservableProperty] private ThemeDefinition? _selectedTheme;
     [ObservableProperty] private double _volume;
-    [ObservableProperty] private string _soundLabel = "";
     [ObservableProperty] private double _combatIdleSeconds;
     [ObservableProperty] private bool _includeAllPlayers;
     [ObservableProperty] private bool _glowEnabled;
     [ObservableProperty] private bool _checkForUpdates;
 
-    internal SettingsViewModel(AppSettings settings, MainViewModel main, Action requestSave, Action<AppSettings> playSound,
+    internal SettingsViewModel(AppSettings settings, MainViewModel main, Action requestSave, Action<SoundRef> playSound,
         HotkeyService hotkeys, IReadOnlyList<TimerDefinition> timers, Action<bool> setKeyboardCapture, Action resetPosition,
         UpdateService updates, Action showEula, MeterDisplayOptions display)
     {
@@ -73,16 +73,15 @@ public partial class SettingsViewModel : ObservableObject
         _combatIdleSeconds = settings.Combat.IdleTimeoutSeconds;
         _includeAllPlayers = settings.Combat.IncludeAllPlayers;
         _glowEnabled = settings.GlowEnabled;
-        UpdateSoundLabel();
 
         foreach (var action in Enum.GetValues<HotkeyAction>())
             Hotkeys.Add(new HotkeyRowViewModel(action, HotkeyLabels.For(action), BeginCapture));
         RefreshHotkeys();
 
         foreach (var timer in timers)
-            Timers.Add(new TimerSettingRowViewModel(timer.Id, timer.Name, settings.GetTimer(timer.Id), requestSave));
+            Timers.Add(new TimerSettingRowViewModel(timer.Id, timer.Name, settings.GetTimer(timer.Id), requestSave, settings, playSound));
         Timers.Add(new TimerSettingRowViewModel(AppSettings.FieldBossTimersKey, "Boss de terrain",
-            settings.GetTimer(AppSettings.FieldBossTimersKey), requestSave));
+            settings.GetTimer(AppSettings.FieldBossTimersKey), requestSave, settings, playSound));
 
         main.PropertyChanged += OnMainChanged;
     }
@@ -105,7 +104,7 @@ public partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<ThemeDefinition> Themes => ThemeManager.Themes;
 
     /// <summary>Le texte est détouré sous le seuil d'opacité : on le signale sous le curseur.</summary>
-    public bool ShowOutlineHint => Opacity < AppSettings.OutlineThreshold;
+    public bool ShowOutlineHint => ThemeManager.EffectiveOpacity(SelectedTheme, Opacity) < AppSettings.OutlineThreshold;
 
     public ObservableCollection<HotkeyRowViewModel> Hotkeys { get; } = new();
     public ObservableCollection<TimerSettingRowViewModel> Timers { get; } = new();
@@ -141,6 +140,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.ThemeId = value.Id;
         ThemeManager.Apply(_settings);
         OnPropertyChanged(nameof(SelectedThemeHasGlow));
+        OnPropertyChanged(nameof(ShowOutlineHint));
         _requestSave();
     }
 
@@ -199,25 +199,7 @@ public partial class SettingsViewModel : ObservableObject
     private void ResetPosition() => _resetPosition();
 
     [RelayCommand]
-    private void ChooseSound()
-    {
-        var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "Son WAV (*.wav)|*.wav", Title = "Son de notification" };
-        if (dialog.ShowDialog() != true) return;
-        _settings.CustomSoundPath = dialog.FileName;
-        UpdateSoundLabel();
-        _requestSave();
-    }
-
-    [RelayCommand]
-    private void ResetSound()
-    {
-        _settings.CustomSoundPath = null;
-        UpdateSoundLabel();
-        _requestSave();
-    }
-
-    [RelayCommand]
-    private void TestSound() => _playSound(_settings);
+    private void TestSound() => _playSound(new SoundRef(AlertSounds.DefaultId, null));
 
     /// <summary>Termine la capture d'un raccourci. <paramref name="gesture"/> null = annulé (Échap).</summary>
     public void CompleteCapture(HotkeyGesture? gesture)
@@ -268,9 +250,6 @@ public partial class SettingsViewModel : ObservableObject
             row.Error = _hotkeys.Failures.TryGetValue(row.Action, out var failure) ? failure : null;
         }
     }
-
-    private void UpdateSoundLabel() =>
-        SoundLabel = _settings.CustomSoundPath is { } path ? Path.GetFileName(path) : "Son par défaut";
 
     private void OnMainChanged(object? sender, PropertyChangedEventArgs e)
     {

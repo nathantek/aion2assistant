@@ -1,0 +1,31 @@
+{
+  "id": "contraste-eleve",
+  "name": "Contraste élevé",
+  "colors": {
+    "text": "#FFFFFF",
+    "textMuted": "#EBEBEB",
+    "surface": "#141414",
+    "surfaceHover": "#262626",
+    "divider": "#808080",
+    "background": "#000000",
+    "outline": "#000000",
+    "dps": "#FF8A7E",
+    "heal": "#33FF77",
+    "taken": "#D9B3FF",
+    "timer": "#33E5FF",
+    "alert": "#FFAA00",
+    "crit": "#FFF000"
+  },
+  "classes": {
+    "gladiator": "#FF8585",
+    "templar": "#7DB3FF",
+    "ranger": "#33FF77",
+    "assassin": "#C9B0FF",
+    "elementalist": "#00FFFF",
+    "sorcerer": "#FF80FF",
+    "cleric": "#FFF000",
+    "chanter": "#FFA848",
+    "brawler": "#FF99C7"
+  },
+  "highContrast": true
+}

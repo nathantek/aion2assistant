@@ -1,6 +1,5 @@
 using System.Windows.Media;
 using Aion2Assistant.Core.Audio;
-using Aion2Assistant.Core.Settings;
 using Serilog;
 
 namespace Aion2Assistant.App.Services;
@@ -8,20 +7,26 @@ namespace Aion2Assistant.App.Services;
 internal sealed class SoundService
 {
     private readonly MediaPlayer _player = new();
+    private readonly string _soundsDirectory;
     private string _currentPath = "";
 
     public SoundService(string soundsDirectory)
     {
         Directory.CreateDirectory(soundsDirectory);
-        DefaultSoundPath = Path.Combine(soundsDirectory, "chime.wav");
-        // Toujours réécrit : un ancien chime.wav plus faible serait sinon conservé.
-        try
+        _soundsDirectory = soundsDirectory;
+        DefaultSoundPath = Path.Combine(soundsDirectory, SoundResolver.FileName(AlertSounds.DefaultId));
+        // Toujours réécrits : un ancien fichier plus faible serait sinon conservé.
+        foreach (var sound in AlertSounds.BuiltIn)
         {
-            File.WriteAllBytes(DefaultSoundPath, WavGenerator.CreateChime());
-        }
-        catch (IOException ex)
-        {
-            Log.Warning(ex, "Impossible de régénérer le son par défaut : {Path}", DefaultSoundPath);
+            var path = Path.Combine(soundsDirectory, SoundResolver.FileName(sound.Id));
+            try
+            {
+                File.WriteAllBytes(path, AlertSounds.Create(sound.Id));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Log.Warning(ex, "Impossible de régénérer le son intégré : {Path}", path);
+            }
         }
         _player.MediaFailed += (_, e) =>
         {
@@ -42,15 +47,15 @@ internal sealed class SoundService
 
     public string DefaultSoundPath { get; }
 
-    /// <summary>Joue le .wav choisi par l'utilisateur s'il existe toujours, sinon le son par défaut, au volume global.</summary>
-    public void Play(AppSettings settings)
+    /// <summary>Joue le son choisi (intégré ou fichier perso s'il existe toujours), sinon le carillon, au volume donné.</summary>
+    public void Play(SoundRef sound, double volume)
     {
-        var path = settings.CustomSoundPath is { } custom && File.Exists(custom) ? custom : DefaultSoundPath;
+        var path = SoundResolver.Resolve(sound.Id, sound.CustomPath, _soundsDirectory, File.Exists);
         try
         {
             _currentPath = path;
             _player.Open(new Uri(path));
-            _player.Volume = settings.Volume;
+            _player.Volume = volume;
             _player.Play();
         }
         catch (Exception ex)

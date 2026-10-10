@@ -35,7 +35,7 @@ public static partial class ThemeLoader
             var classes = new ClassColors(
                 Color(k, "gladiator"), Color(k, "templar"), Color(k, "ranger"), Color(k, "assassin"),
                 Color(k, "elementalist"), Color(k, "sorcerer"), Color(k, "cleric"), Color(k, "chanter"), Color(k, "brawler"));
-            return new ThemeDefinition(id, name, colors, classes, ReadGlow(root));
+            return new ThemeDefinition(id, name, colors, classes, ReadGlow(root), ReadHighContrast(root));
         }
         catch (JsonException ex)
         {
@@ -56,6 +56,18 @@ public static partial class ThemeLoader
         if (opacity < 0 || opacity > 1)
             throw new ThemeFormatException($"« glow.opacity » doit être compris entre 0 et 1 (reçu : {opacity}).");
         return new ThemeGlow(color, blur, opacity);
+    }
+
+    /// <summary>Indicateur facultatif : absent = false ; présent, il doit être un booléen.</summary>
+    private static bool ReadHighContrast(JsonElement root)
+    {
+        if (!root.TryGetProperty("highContrast", out var v)) return false;
+        return v.ValueKind switch
+        {
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            _ => throw new ThemeFormatException("« highContrast » doit être un booléen."),
+        };
     }
 
     private static double ReadNumber(JsonElement obj, string key)
@@ -102,6 +114,14 @@ public static partial class ThemeLoader
                 onInvalid?.Invoke(file, ex);
             }
         }
-        return result;
+        return Order(result);
     }
+
+    /// <summary>Thème par défaut en tête, puis les autres par nom d'affichage (ordre stable).</summary>
+    public static IReadOnlyList<ThemeDefinition> Order(IEnumerable<ThemeDefinition> themes) =>
+        themes
+            .OrderBy(t => t.Id == Settings.AppSettings.DefaultThemeId ? 0 : 1)
+            .ThenBy(t => t.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(t => t.Id, StringComparer.Ordinal)
+            .ToList();
 }

@@ -9,7 +9,7 @@ Téléchargements : [page des Releases](https://github.com/nathantek/aion2assist
 
 ## Fonctionnalités
 
-- **Timers** : suivi des temps d'apparition, avec alertes.
+- **Timers** : suivi des temps d'apparition, avec alertes et un son au choix par événement (6 sons intégrés ou ton propre .wav/.mp3).
 - **Boss de terrain** : suivi dédié des boss de terrain.
 - **Meters** : DPS, soins et dégâts reçus, par joueur.
 - **Boss seul / Tout** : bascule entre les dégâts faits au boss uniquement et l'ensemble du combat.
@@ -19,7 +19,7 @@ Téléchargements : [page des Releases](https://github.com/nathantek/aion2assist
 - **Historique** : consultation des combats passés.
 - **Records** : meilleurs résultats conservés.
 - **Entraînement** : mode pour s'exercer sur un mannequin.
-- **Thèmes** : plusieurs thèmes visuels au choix.
+- **Thèmes** : Classique, Néon, Asgard, Matrix, Pastel (clair) et Contraste élevé.
 
 ## Raccourcis clavier
 

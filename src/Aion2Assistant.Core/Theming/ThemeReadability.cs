@@ -36,16 +36,18 @@ public static class ThemeReadability
         }
 
         OnBackground("text", c.Text, MainText);
-        OnBackground("textMuted", c.TextMuted, Secondary);
+        // Contraste élevé : le texte secondaire, les stats et les classes passent aussi à 7:1.
+        var secondary = theme.HighContrast ? MainText : Secondary;
+        OnBackground("textMuted", c.TextMuted, secondary);
 
         var stats = new (string Name, Rgb Color)[]
         {
             ("dps", c.Dps), ("heal", c.Heal), ("taken", c.Taken), ("timer", c.Timer), ("alert", c.Alert), ("crit", c.Crit),
         };
-        foreach (var (name, color) in stats) OnBackground(name, color, Secondary);
+        foreach (var (name, color) in stats) OnBackground(name, color, secondary);
 
         var classes = theme.Classes.Entries().ToArray();
-        foreach (var (name, color) in classes) OnBackground(name, color, Secondary);
+        foreach (var (name, color) in classes) OnBackground(name, color, secondary);
 
         foreach (var (name, surface) in new[] { ("surface", c.Surface), ("surfaceHover", c.SurfaceHover) })
         {

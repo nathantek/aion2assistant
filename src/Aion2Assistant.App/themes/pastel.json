@@ -1,0 +1,30 @@
+{
+  "id": "pastel",
+  "name": "Pastel",
+  "colors": {
+    "text": "#2E1F33",
+    "textMuted": "#53405A",
+    "surface": "#F1E8EC",
+    "surfaceHover": "#E6DAE2",
+    "divider": "#CBB9C6",
+    "background": "#FBF7F0",
+    "outline": "#FFFFFF",
+    "dps": "#9E352D",
+    "heal": "#1F6847",
+    "taken": "#6A459A",
+    "timer": "#13606F",
+    "alert": "#7F4500",
+    "crit": "#615900"
+  },
+  "classes": {
+    "gladiator": "#9E352D",
+    "templar": "#2A55A0",
+    "ranger": "#276428",
+    "assassin": "#6E3FA8",
+    "elementalist": "#115A6A",
+    "sorcerer": "#86357F",
+    "cleric": "#615900",
+    "chanter": "#8F4310",
+    "brawler": "#A03264"
+  }
+}

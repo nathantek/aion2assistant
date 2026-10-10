@@ -52,11 +52,7 @@
             <TextBlock x:Name="SecSon" Style="{StaticResource SectionHeaderStyle}" Text="SON"/>
             <TextBlock Text="{Binding Volume, StringFormat='Volume : {0:P0}'}"/>
             <Slider Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding Volume}"/>
-            <TextBlock Text="{Binding SoundLabel}" Foreground="{DynamicResource TextMutedBrush}"
-                       FontSize="{DynamicResource FontSizeSmall}" Margin="0,4"/>
             <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource TextButtonStyle}" Content="Choisir un .wav…" Command="{Binding ChooseSoundCommand}"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="Par défaut" Command="{Binding ResetSoundCommand}"/>
                 <Button Style="{StaticResource TextButtonStyle}" Content="Tester" Command="{Binding TestSoundCommand}"/>
             </StackPanel>
 
@@ -69,7 +65,21 @@
                             <WrapPanel>
                                 <CheckBox Content="Afficher" IsChecked="{Binding Visible}" Margin="0,2,10,2"/>
                                 <CheckBox Content="Notifier" IsChecked="{Binding Notify}" Margin="0,2,10,2"/>
-                                <CheckBox Content="Son" IsChecked="{Binding Sound}" Margin="0,2,10,2"/>
+                                <CheckBox Content="Son" IsChecked="{Binding Sound}" Margin="0,2,6,2"/>
+                                <ComboBox ItemsSource="{x:Static vm:SoundChoiceViewModel.Choices}"
+                                          SelectedItem="{Binding SoundChoice.SelectedChoice}" IsEnabled="{Binding Sound}"
+                                          MinWidth="110" Margin="0,2,10,2" VerticalAlignment="Center">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Label}" Foreground="{DynamicResource TextBrush}"
+                                                       FontSize="{DynamicResource FontSizeSmall}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Button Style="{StaticResource IconButtonStyle}" Content="&#xE712;" Margin="0,0,10,0"
+                                        Command="{Binding SoundChoice.ChooseFileCommand}" ToolTip="Choisir un autre fichier"
+                                        IsEnabled="{Binding Sound}"
+                                        Visibility="{Binding SoundChoice.IsCustom, Converter={StaticResource BoolToVisibility}}"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Prévenir" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
                                     <Button Style="{StaticResource IconButtonStyle}" Content="&#xE738;"
@@ -81,6 +91,9 @@
                                     <TextBlock Text="avant" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </WrapPanel>
+                            <TextBlock Text="{Binding SoundChoice.Label}" Foreground="{DynamicResource TextMutedBrush}"
+                                       FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"
+                                       Visibility="{Binding SoundChoice.Label, Converter={StaticResource NullToCollapsed}}"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

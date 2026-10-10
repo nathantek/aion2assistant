@@ -1,3 +1,4 @@
+using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -18,14 +19,22 @@ public partial class TimerSettingRowViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ThresholdText))]
     private int _threshold;
 
-    public TimerSettingRowViewModel(string id, string name, TimerSettings settings, Action requestSave)
+    public TimerSettingRowViewModel(string id, string name, TimerSettings settings, Action requestSave,
+        AppSettings app, Action<SoundRef> playSound)
     {
         Id = id;
         Name = name;
         _settings = settings;
         _requestSave = requestSave;
+        SoundChoice = new SoundChoiceViewModel(
+            () => SoundResolver.ForTimer(app, settings),
+            sound => { settings.SoundId = sound.Id; settings.CustomSoundPath = sound.CustomPath; },
+            requestSave, playSound);
         Reload();
     }
+
+    /// <summary>Son propre à la ligne (hérite du réglage global tant qu'il n'est pas choisi).</summary>
+    public SoundChoiceViewModel SoundChoice { get; }
 
     public string Id { get; }
     public string Name { get; }
@@ -38,6 +47,7 @@ public partial class TimerSettingRowViewModel : ObservableObject
         Notify = _settings.Notify;
         Sound = _settings.Sound;
         Threshold = _settings.SoonThresholdMinutes;
+        SoundChoice?.Reload();
     }
 
     [RelayCommand]

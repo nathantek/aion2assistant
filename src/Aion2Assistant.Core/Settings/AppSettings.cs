@@ -1,3 +1,4 @@
+using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Hotkeys;
 
 namespace Aion2Assistant.Core.Settings;
@@ -10,6 +11,9 @@ public sealed class TimerSettings
     public bool Notify { get; set; } = true;
     public bool Sound { get; set; } = true;
     public int SoonThresholdMinutes { get; set; } = 5;
+    /// <summary>Son propre au timer (intégré ou <see cref="AlertSounds.CustomId"/>) ; null = celui du réglage global.</summary>
+    public string? SoundId { get; set; }
+    public string? CustomSoundPath { get; set; }
 }
 
 public sealed class CombatSettings
@@ -37,7 +41,7 @@ public sealed class AppSettings
     public const double MinFontScale = 0.8, MaxFontScale = 1.5;
     public const double MinOpacity = 0.0, MaxOpacity = 1.0;
 
-    public const int CurrentVersion = 4;
+    public const int CurrentVersion = 5;
     public const string DefaultThemeId = "classique";
     /// <summary>Version du CLUF en vigueur ; l'utilisateur doit l'accepter à nouveau quand elle change.</summary>
     public const string EulaVersion = "1";
@@ -60,6 +64,8 @@ public sealed class AppSettings
     public bool CheckForUpdates { get; set; } = true;
     /// <summary>Version du CLUF acceptée (null = jamais acceptée).</summary>
     public string? EulaAcceptedVersion { get; set; }
+    /// <summary>Son d'alerte : identifiant intégré (voir <see cref="AlertSounds"/>) ou <see cref="AlertSounds.CustomId"/> pour le fichier perso.</summary>
+    public string SoundId { get; set; } = AlertSounds.DefaultId;
     public string? CustomSoundPath { get; set; }
     public Dictionary<string, TimerSettings> Timers { get; set; } = new();
     public Dictionary<string, string> Hotkeys { get; set; } = HotkeyDefaults.Create();
@@ -110,11 +116,18 @@ public sealed class AppSettings
         if (SettingsVersion < 3) { History.RetentionDays = HistorySettings.MaxRetentionDays; History.MaxEncounters = HistorySettings.MaxEncountersCap; }
         // v4 : raccourcis d'onglet réordonnés comme les onglets (DPS, Reçus, Soins, Historique, Timers).
         if (SettingsVersion < 4) MigrateTabHotkeysV4(Hotkeys);
+        // v5 : choix du son d'alerte ; un fichier perso déjà configuré reste celui utilisé.
+        if (SettingsVersion < 5 && !string.IsNullOrWhiteSpace(CustomSoundPath)) SoundId = AlertSounds.CustomId;
+        if (SoundId != AlertSounds.CustomId && !AlertSounds.IsBuiltIn(SoundId)) SoundId = AlertSounds.DefaultId;
         SettingsVersion = CurrentVersion;
         foreach (var (action, gesture) in HotkeyDefaults.Create())
             Hotkeys.TryAdd(action, gesture);
         foreach (var timer in Timers.Values)
+        {
             timer.SoonThresholdMinutes = Math.Clamp(timer.SoonThresholdMinutes, 1, 120);
+            // Son propre inconnu (fichier édité à la main) : retour à l'héritage du réglage global.
+            if (timer.SoundId is { } id && id != AlertSounds.CustomId && !AlertSounds.IsBuiltIn(id)) timer.SoundId = null;
+        }
     }
 
     /// <summary>
