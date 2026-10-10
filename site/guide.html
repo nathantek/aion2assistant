@@ -38,53 +38,88 @@
 <p class="lead">Tout ce que fait l'overlay, onglet par onglet.</p>
 <nav class="chips" aria-label="Sections du guide">
 <ul>
-<li><a href="#timers">Timers</a></li>
+<li><a href="#interface">Interface</a></li>
 <li><a href="#meters">Meters</a></li>
 <li><a href="#courbe">Courbe</a></li>
 <li><a href="#partage">Copie</a></li>
 <li><a href="#historique">Historique</a></li>
 <li><a href="#records">Records</a></li>
 <li><a href="#entrainement">Entraînement</a></li>
+<li><a href="#timers">Timers</a></li>
 <li><a href="#themes">Thèmes</a></li>
 <li><a href="#raccourcis">Raccourcis</a></li>
 <li><a href="#apropos">À propos</a></li>
 </ul>
 </nav>
 
-<h2 id="timers">Timers</h2>
-<p>Les temps d'apparition et de réinitialisation : failles, quotidiennes, hebdos, donjons, resets et boss de terrain. Des alertes visuelles et sonores te préviennent avant l'événement ; elles se règlent dans les Options.</p>
-<figure class="shot"><img src="assets/shots/timers.png" alt="Onglet Timers : faille, reset quotidien et reset hebdomadaire avec leurs comptes à rebours" width="483" height="335" loading="lazy"><figcaption>Timers et comptes à rebours</figcaption></figure>
+<h2 id="interface">Interface</h2>
+<p>La barre d'onglets suit l'ordre <strong>DPS</strong> (épée), <strong>Reçus</strong> (bouclier), <strong>Soins</strong> (cœur), <strong>Historique</strong> et <strong>Timers</strong> (sablier). À droite se trouvent les boutons pour ancrer et réduire la fenêtre, puis la roue dentée qui ouvre les <strong>Réglages</strong> ; elle reste allumée tant qu'ils sont ouverts.</p>
+<p>En haut des Réglages, des puces mènent directement à chaque section : Affichage, Son, Timers, Combat, Capture, Raccourcis et À propos.</p>
+<p>Réduite, la fenêtre garde une valeur en direct : ton DPS pendant un combat, sinon le prochain timer avec un nom court (Faille, Shugo, Reset jour, Reset hebdo), en couleur d'alerte quand il approche.</p>
 
 <h2 id="meters">Meters</h2>
-<p>Trois vues : <strong>DPS</strong>, <strong>Soins</strong> et <strong>Dégâts reçus</strong>. Un clic sur un joueur ouvre le détail par compétence et, s'il est tombé, le récap de sa mort.</p>
+<p>Trois onglets : <strong>DPS</strong>, <strong>Dégâts reçus</strong> et <strong>Soins</strong>. Un clic sur un joueur ouvre le détail par compétence et, s'il est tombé, le récap de sa mort.</p>
 <figure class="shot"><img src="assets/shots/meter-neon.png" alt="Meter de dégâts d’un combat de boss, thème Néon, pseudos floutés" width="485" height="330" loading="lazy"><figcaption>Meter d’un combat (thème Néon)</figcaption></figure>
-<p>Le bouton <strong>Boss seul / Tout</strong> bascule entre les seuls dégâts infligés au boss et l'ensemble des dégâts du combat.</p>
+<p>Le sélecteur <strong>[Boss | Tout]</strong>, en haut du meter, bascule entre les seuls dégâts infligés au boss et l'ensemble des dégâts du combat. Ton choix est gardé au redémarrage et vaut aussi pour l'historique.</p>
+<p>Sous la liste, la barre d'actions regroupe <strong>Entraînement</strong>, <strong>Copier texte</strong> et <strong>Copier image</strong>. Hors combat, le meter affiche le <strong>dernier combat</strong>, avec un lien <strong>Voir dans l'historique</strong>.</p>
+<h3>Puissance de combat</h3>
+<p>L'option <strong>Afficher la puissance de combat</strong> (Réglages › Combat, désactivée par défaut) ajoute la puissance après le nom de chaque joueur, en discret : <code>Joueur · 1 782</code>, ou <code>32,5 k</code> au-delà de 10 000. Elle vient de toi, des joueurs proches, des membres du groupe ou d'un joueur inspecté ; un joueur inconnu n'en a pas.</p>
+<p>Dans l'historique, c'est la valeur au moment du combat (les combats enregistrés avant la 0.3.2 n'en ont pas). Elle figure sur l'image copiée, mais pas dans le texte copié pour le chat. Ta propre puissance s'affiche aussi dans Réglages › Capture.</p>
 
 <h2 id="courbe">Courbe de DPS</h2>
-<p>L'évolution du DPS au fil du combat. La légende est cliquable : clique sur un joueur pour afficher ou masquer sa courbe.</p>
+<p>L'évolution du DPS au fil du combat. La légende est cliquable : clique sur un joueur pour afficher ou masquer sa courbe. La barre d'actions est aussi disponible sous la courbe.</p>
 <figure class="shot"><img src="assets/shots/courbe.png" alt="Courbe de DPS du groupe sur un combat de 4 min 50, pseudos floutés" width="468" height="270" loading="lazy"><figcaption>Courbe de DPS du groupe</figcaption></figure>
 
 <h2 id="partage">Copie dans le chat et en image</h2>
-<p>Copie un résumé du combat en <strong>texte</strong>, prêt à coller dans le chat du jeu, ou en <strong>image</strong>.</p>
+<p>Les boutons <strong>Copier texte</strong> et <strong>Copier image</strong> de la barre d'actions copient un résumé du combat : en texte, prêt à coller dans le chat du jeu, ou en image.</p>
 
 <h2 id="historique">Historique</h2>
-<p>Les combats passés sont conservés, jusqu'à 100 combats sur 30 jours, et consultables à tout moment.</p>
+<p>Les combats passés sont conservés, jusqu'à 100 combats sur 30 jours, et consultables à tout moment. L'historique utilise le même choix <strong>[Boss | Tout]</strong> que le meter.</p>
 <figure class="shot"><img src="assets/shots/historique.png" alt="Historique des combats avec des trophées sur les records personnels" width="478" height="332" loading="lazy"><figcaption>Historique et records personnels</figcaption></figure>
 
 <h2 id="records">Records personnels</h2>
 <p>Tes meilleurs résultats sont conservés et signalés par un trophée dans l'historique.</p>
 
 <h2 id="entrainement">Entraînement</h2>
-<p>Lance une session chronométrée de <strong>1, 3 ou 5 minutes</strong>, ou libre, par exemple sur un mannequin. Tu peux ensuite <strong>comparer deux essais</strong>.</p>
+<p>Le bouton <strong>Entraînement</strong> de la barre d'actions lance une session chronométrée de <strong>1, 3 ou 5 minutes</strong>, ou libre, par exemple sur un mannequin. Tu peux ensuite <strong>comparer deux essais</strong>.</p>
+
+<h2 id="timers">Timers</h2>
+<p>Les temps d'apparition et de réinitialisation : failles, quotidiennes, hebdos, donjons, resets et boss de terrain, ainsi que le <strong>Festival Shugo</strong>, toutes les heures pile. Des alertes visuelles et sonores te préviennent avant l'événement.</p>
+<figure class="shot"><img src="assets/shots/timers.png" alt="Onglet Timers : faille, reset quotidien et reset hebdomadaire avec leurs comptes à rebours" width="483" height="335" loading="lazy"><figcaption>Timers et comptes à rebours</figcaption></figure>
+<h3>Sons d'alerte</h3>
+<p>Chaque timer a son propre son, choisi dans Réglages › Timers avec un aperçu à la sélection : six sons intégrés (Carillon, Cloche, Double bip, Gong, Harpe, Alarme) ou ton propre fichier <code>.wav</code> ou <code>.mp3</code>. Si ce fichier a disparu, l'alerte joue le carillon, qui est aussi le son par défaut. Réglages › Son règle le volume et propose un bouton <strong>Tester</strong>.</p>
+<p>Un son personnalisé choisi avant la 0.3.3 reste utilisé pour tous les timers tant que tu ne leur choisis pas un son propre.</p>
 
 <h2 id="themes">Thèmes</h2>
-<p>Deux thèmes, <strong>Classique</strong> et <strong>Néon</strong>. La lueur se désactive, l'opacité et l'échelle de l'overlay se règlent.</p>
+<p>Six thèmes, au choix dans Réglages › Affichage : <strong>Classique</strong>, <strong>Néon</strong>, <strong>Asgard</strong>, <strong>Matrix</strong>, <strong>Pastel</strong> (thème clair) et <strong>Contraste élevé</strong>. Avec Contraste élevé, le fond reste presque opaque (95 % minimum), quelle que soit l'opacité réglée, sans que ton réglage soit modifié.</p>
+<p>La lueur se désactive, l'opacité et l'échelle de l'overlay se règlent.</p>
 
 <h2 id="raccourcis">Raccourcis clavier</h2>
-<p>Des raccourcis globaux fonctionnent même quand le jeu a le focus. Ils se configurent dans les Options.</p>
+<p>Des raccourcis globaux fonctionnent même quand le jeu a le focus. Ils se modifient dans Réglages › Raccourcis. <kbd>Verr Num</kbd> doit être activé.</p>
+<div class="table-wrap">
+<table class="keys">
+<thead><tr><th scope="col">Raccourci</th><th scope="col">Action</th></tr></thead>
+<tbody>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num1</kbd></td><td>Onglet DPS</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num2</kbd></td><td>Onglet Dégâts reçus</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num3</kbd></td><td>Onglet Soins</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num4</kbd></td><td>Onglet Historique</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num5</kbd></td><td>Onglet Timers</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num/</kbd></td><td>Onglet précédent</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num*</kbd></td><td>Onglet suivant</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num0</kbd></td><td>Masquer / afficher</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num7</kbd></td><td>Ancrer / libérer</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num8</kbd></td><td>Réduire / agrandir</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num9</kbd></td><td>Réinitialiser le combat</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num+</kbd></td><td>Agrandir l'interface</td></tr>
+<tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num-</kbd></td><td>Rétrécir l'interface</td></tr>
+</tbody>
+</table>
+</div>
+<p>Depuis la 0.3.1, les onglets suivent l'ordre DPS, Reçus, Soins, Historique, Timers. Un raccourci d'onglet resté à son ancienne valeur par défaut est mis à jour automatiquement ; un raccourci personnalisé est conservé.</p>
 
 <h2 id="apropos">À propos et mises à jour</h2>
-<p>Au démarrage, l'app vérifie si une nouvelle version est disponible ; la section À propos des Options affiche la version installée et le résultat. Cette vérification est la seule connexion de l'app vers Internet (GitHub) ; tu peux la désactiver dans Options › À propos.</p>
+<p>Au démarrage, l'app vérifie si une nouvelle version est disponible ; la section À propos des Réglages affiche la version installée et le résultat. Cette vérification est la seule connexion de l'app vers Internet (GitHub) ; tu peux la désactiver dans Réglages › À propos.</p>
 </div>
 </main>
 <footer class="site-footer">

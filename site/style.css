@@ -320,6 +320,15 @@ details.release[open] > summary::after { content: "−"; color: var(--accent); }
   color: var(--text-soft); font: 400 .92rem/1.65 var(--font);
 }
 
+/* Tableau des raccourcis (Guide) */
+.table-wrap { overflow-x: auto; margin: 16px 0 20px; border: 1px solid var(--line); border-radius: var(--radius); }
+.keys { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.keys th, .keys td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.keys th { background: var(--surface); color: var(--muted); font-weight: 600; font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; }
+.keys tbody tr:last-child td { border-bottom: 0; }
+.keys td:first-child { white-space: nowrap; }
+.keys td:last-child { color: var(--text-soft); }
+
 /* Toujours en dernier */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
