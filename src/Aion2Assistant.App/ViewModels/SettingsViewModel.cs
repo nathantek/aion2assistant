@@ -20,7 +20,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly HotkeyService _hotkeys;
     private readonly Action<bool> _setKeyboardCapture;
     private readonly Action _resetPosition;
-    private readonly UpdateService _updates;
+    private readonly UpdateController _updates;
     private readonly Action _showEula;
     private readonly MeterDisplayOptions _display;
 
@@ -42,7 +42,7 @@ public partial class SettingsViewModel : ObservableObject
 
     internal SettingsViewModel(AppSettings settings, MainViewModel main, Action requestSave, Action<SoundRef> playSound,
         HotkeyService hotkeys, IReadOnlyList<TimerDefinition> timers, Action<bool> setKeyboardCapture, Action resetPosition,
-        UpdateService updates, Action showEula, MeterDisplayOptions display)
+        UpdateController updates, Action showEula, MeterDisplayOptions display)
     {
         _display = display;
         display.PropertyChanged += (_, e) =>
@@ -52,12 +52,7 @@ public partial class SettingsViewModel : ObservableObject
         _updates = updates;
         _showEula = showEula;
         _checkForUpdates = settings.CheckForUpdates;
-        updates.Changed += () =>
-        {
-            OnPropertyChanged(nameof(UpdateStatusText));
-            OnPropertyChanged(nameof(HasUpdate));
-            OnPropertyChanged(nameof(UpdateUrl));
-        };
+        updates.Changed += RefreshUpdateStatus;
         _settings = settings;
         _main = main;
         _requestSave = requestSave;
@@ -91,15 +86,26 @@ public partial class SettingsViewModel : ObservableObject
 
     public string VersionText => $"Version {_updates.CurrentVersionText}";
 
-    /// <summary>Null (ligne masquée) si la vérification est désactivée ou pas encore faite.</summary>
-    public string? UpdateStatusText =>
-        !CheckForUpdates ? null
-        : _updates.AvailableVersion is { } v ? $"Version {v} disponible"
-        : _updates.Checked ? "À jour"
-        : null;
+    /// <summary>État des mises à jour (désactivées, à jour, téléchargement, prête, installation via Setup.exe…).</summary>
+    public string UpdateStatusText => _updates.StatusText;
 
-    public bool HasUpdate => CheckForUpdates && _updates.AvailableUrl is not null;
-    public string? UpdateUrl => _updates.AvailableUrl;
+    /// <summary>Hors installation : lien vers la page de la nouvelle version (Setup.exe).</summary>
+    public bool HasUpdate => _updates.DownloadUrl is not null;
+    public string? UpdateUrl => _updates.DownloadUrl;
+
+    /// <summary>Une version téléchargée attend : bouton « Redémarrer » (utile après « Plus tard »).</summary>
+    public bool CanRestartForUpdate => _updates.CanRestart;
+
+    private void RefreshUpdateStatus()
+    {
+        OnPropertyChanged(nameof(UpdateStatusText));
+        OnPropertyChanged(nameof(HasUpdate));
+        OnPropertyChanged(nameof(UpdateUrl));
+        OnPropertyChanged(nameof(CanRestartForUpdate));
+    }
+
+    [RelayCommand]
+    private void RestartForUpdate() => _updates.RequestRestart();
 
     public IReadOnlyList<ThemeDefinition> Themes => ThemeManager.Themes;
 
@@ -154,9 +160,8 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnCheckForUpdatesChanged(bool value)
     {
         _settings.CheckForUpdates = value;
-        if (value) _updates.Start();
-        OnPropertyChanged(nameof(UpdateStatusText));
-        OnPropertyChanged(nameof(HasUpdate));
+        _updates.SetEnabled(value);
+        RefreshUpdateStatus();
         _requestSave();
     }
 

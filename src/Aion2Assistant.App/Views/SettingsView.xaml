@@ -175,14 +175,21 @@
                         Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nathantek/aion2assistant"/>
                 <Button Style="{StaticResource TextButtonStyle}" Content="Lire le CLUF" Command="{Binding ReadEulaCommand}"/>
             </StackPanel>
-            <DockPanel Margin="0,6,0,0" Visibility="{Binding UpdateStatusText, Converter={StaticResource NullToCollapsed}}">
-                <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="Télécharger"
-                        Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}"
-                        Command="{Binding OpenLinkCommand}" CommandParameter="{Binding UpdateUrl}"/>
-                <TextBlock Text="{Binding UpdateStatusText}" VerticalAlignment="Center"/>
+            <CheckBox Content="Mises à jour automatiques" IsChecked="{Binding CheckForUpdates}" Margin="0,6,0,0"/>
+            <DockPanel Margin="0,4,0,0">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="Télécharger"
+                            ToolTip="Page de la nouvelle version : télécharge Setup.exe"
+                            Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}"
+                            Command="{Binding OpenLinkCommand}" CommandParameter="{Binding UpdateUrl}"/>
+                    <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="Redémarrer"
+                            ToolTip="Installer la mise à jour et relancer"
+                            Visibility="{Binding CanRestartForUpdate, Converter={StaticResource BoolToVisibility}}"
+                            Command="{Binding RestartForUpdateCommand}"/>
+                </StackPanel>
+                <TextBlock Text="{Binding UpdateStatusText}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,6,0"/>
             </DockPanel>
-            <CheckBox Content="Vérifier les mises à jour au démarrage" IsChecked="{Binding CheckForUpdates}" Margin="0,6,0,0"/>
-            <TextBlock Text="L'app contacte GitHub uniquement pour connaître la dernière version. Aucune autre donnée n'est envoyée."
+            <TextBlock Text="L'app contacte GitHub pour vérifier et télécharger les mises à jour ; désactivable ci-dessus. Aucune autre donnée n'est envoyée."
                        Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
         </StackPanel>
     </ScrollViewer>

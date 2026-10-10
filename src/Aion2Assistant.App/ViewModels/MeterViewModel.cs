@@ -220,7 +220,9 @@ public partial class MeterViewModel : ObservableObject
     {
         if (_lastSnapshot is null) return;
         var text = CombatShareFormatter.Format(_lastSnapshot, Kind, bossOnly: _bossFilter?.BossOnly == true);
-        CopyTextLabel = TrySetClipboard(() => Clipboard.SetText(text)) ? "✓ Copié" : "Échec de la copie";
+        var data = new DataObject();
+        data.SetText(text);
+        CopyTextLabel = TrySetClipboard(data) ? "✓ Copié" : "Échec de la copie";
         StartCopyReset();
     }
 
@@ -229,23 +231,39 @@ public partial class MeterViewModel : ObservableObject
     private void CopyImage()
     {
         var image = ShareImageRenderer.Render(this);
-        CopyImageLabel = image is not null && TrySetClipboard(() => Clipboard.SetImage(image))
-            ? "✓ Image copiée" : "Échec de la copie";
+        var ok = false;
+        if (image is not null)
+        {
+            var data = new DataObject();
+            data.SetImage(image);
+            ok = TrySetClipboard(data);
+        }
+        CopyImageLabel = ok ? "✓ Image copiée" : "Échec de la copie";
         StartCopyReset();
     }
 
-    private static bool TrySetClipboard(Action set)
+    private static bool TrySetClipboard(DataObject data)
     {
-        // Le presse-papiers peut être verrouillé un instant par une autre application.
+        // Sans copie forcée (copy: false) : pas d'OleFlushClipboard, qui échoue avec CLIPBRD_E_CANT_OPEN quand
+        // l'historique du presse-papiers de Windows lit les données au même instant. Les données restent servies
+        // par l'app tant qu'elle tourne.
         for (var attempt = 0; attempt < 5; attempt++)
         {
             try
             {
-                set();
+                Clipboard.SetDataObject(data, copy: false);
                 return true;
             }
-            catch (COMException ex) when (attempt < 4)
+            catch (COMException ex)
             {
+                // L'erreur peut survenir alors que nos données sont bien en place.
+                if (IsOnClipboard(data)) return true;
+                if (attempt == 4)
+                {
+                    Log.Warning(ex, "Impossible de copier dans le presse-papiers");
+                    return false;
+                }
+                // Le presse-papiers peut être verrouillé un instant par une autre application.
                 Log.Debug(ex, "Presse-papiers occupé, nouvel essai");
                 Thread.Sleep(50);
             }
@@ -256,6 +274,12 @@ public partial class MeterViewModel : ObservableObject
             }
         }
         return false;
+    }
+
+    private static bool IsOnClipboard(DataObject data)
+    {
+        try { return Clipboard.IsCurrent(data); }
+        catch (Exception) { return false; }
     }
 
     /// <summary>Un seul minuteur remet les deux libellés de copie à leur état de repos après 1,5 s.</summary>

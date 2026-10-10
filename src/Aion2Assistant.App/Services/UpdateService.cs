@@ -6,7 +6,10 @@ using Serilog;
 
 namespace Aion2Assistant.App.Services;
 
-/// <summary>Une seule vérification de nouvelle version, 10 s après le démarrage, en arrière-plan.</summary>
+/// <summary>
+/// Application non installée (build de dev, ancien zip) : une seule vérification de nouvelle version, 10 s après
+/// le démarrage, en arrière-plan, pour guider vers Setup.exe. Installée : voir <see cref="UpdateController"/>.
+/// </summary>
 internal sealed class UpdateService
 {
     private const string ReleasesUrl = "https://api.github.com/repos/nathantek/aion2assistant/releases?per_page=10";
@@ -47,7 +50,8 @@ internal sealed class UpdateService
         _timer.Start();
     }
 
-    private static string ReadVersionText()
+    /// <summary>InformationalVersion de l'application, sans le suffixe +hash.</summary>
+    internal static string ReadVersionText()
     {
         var assembly = typeof(UpdateService).Assembly;
         var info = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion

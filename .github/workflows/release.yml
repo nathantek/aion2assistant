@@ -9,6 +9,11 @@ permissions:
   contents: write
   actions: read # SignPath lit l'artefact non signé du job
 
+concurrency:
+  # Un seul groupe : deux tags proches ne doivent pas empaqueter en parallèle contre la même release précédente.
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: windows-latest
@@ -82,19 +87,145 @@ jobs:
           Remove-Item publish -Recurse -Force
           Move-Item signed publish
 
-      - name: Zip
+      # --- Paquets Velopack (vpk épinglé à la même version que le NuGet Velopack de l'app).
+      - name: Install vpk
         shell: pwsh
-        run: Compress-Archive -Path publish/* -DestinationPath "Aion2Assistant-$env:TAG-win-x64.zip"
+        run: |
+          dotnet tool install -g vpk --version 1.2.161
+          if ($LASTEXITCODE -ne 0) { throw "Installation de vpk 1.2.161 impossible" }
+          "$env:USERPROFILE\.dotnet\tools" >> $env:GITHUB_PATH
 
-      - name: Create release
+      - name: Download previous Velopack release
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $zip = "Aion2Assistant-$env:TAG-win-x64.zip"
-          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
-          "$hash  $zip" | Set-Content -Encoding ascii "$zip.sha256"
-          $notes = "**SHA-256** ``$zip`` : ``$hash```n`nVérification : ``Get-FileHash .\$zip`` doit afficher la même valeur."
-          $ghArgs = @('release', 'create', $env:TAG, $zip, "$zip.sha256", '--title', $env:TAG, '--notes', $notes, '--generate-notes')
-          if ($env:TAG -like '*-*') { $ghArgs += '--prerelease' }
-          gh @ghArgs
+          New-Item -ItemType Directory -Force releases | Out-Null
+          # Les anciennes releases (zip 0.3.x) n'ont pas de releases.win.json : rien à télécharger
+          # pour la première release Velopack, le pack sera alors complet, sans delta.
+          $names = gh api "repos/${{ github.repository }}/releases?per_page=100" --paginate --jq '.[] | select(.draft | not) | .assets[].name'
+          if ($LASTEXITCODE -ne 0) { throw "Lecture des releases GitHub impossible" }
+          if (@($names) -notcontains 'releases.win.json') {
+            Write-Host "Aucune release Velopack precedente (pas de releases.win.json) : premiere release Velopack, pas de delta."
+            exit 0
+          }
+          # Sans jeton : l'accès anonyme ne voit que les releases publiées, jamais un brouillon resté d'un run échoué.
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" --pre -o releases
+          if ($LASTEXITCODE -ne 0) { throw "vpk download a echoue alors qu'une release Velopack precedente existe" }
+
+      - name: Pack
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # Icône du projet (logo du site) pour Setup.exe et les raccourcis.
+          $icon = 'src/Aion2Assistant.App/app.ico'
+          if (-not (Test-Path $icon)) { throw "Icone introuvable : $icon" }
+          vpk pack -u Aion2Assistant -v $env:VERSION -r win-x64 -p publish -e Aion2Assistant.exe --packTitle Aion2Assistant --packAuthors nathantek -i $icon -o releases
+          if ($LASTEXITCODE -ne 0) { throw "vpk pack a echoue" }
+          $expected = @(
+            'Aion2Assistant-win-Setup.exe',
+            'Aion2Assistant-win-Portable.zip',
+            "Aion2Assistant-$env:VERSION-full.nupkg",
+            'releases.win.json',
+            'RELEASES',
+            'assets.win.json'
+          )
+          $missing = $expected | Where-Object { -not (Test-Path (Join-Path releases $_)) }
+          if ($missing) { throw "Livrables vpk manquants : $($missing -join ', ')" }
+          Get-ChildItem releases | Format-Table Name, Length -AutoSize
+
+      # Les releases immuables refusent tout ajout une fois publiées : la release est créée en BROUILLON,
+      # complétée (sha256, notes), vérifiée, puis publiée EN DERNIER.
+      - name: Upload Velopack release (draft)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Toutes nos releases sont des pré-versions ; le tag est déjà poussé. Pas de --publish : brouillon.
+          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" --pre --tag $env:TAG --releaseName $env:TAG --token $env:GH_TOKEN -o releases
+          if ($LASTEXITCODE -ne 0) { throw "vpk upload a echoue" }
+
+      - name: Checksums, notes, verify and publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $repo = '${{ github.repository }}'
+
+          # Un brouillon n'est pas fiable à adresser par tag avec gh : on résout son id via l'API.
+          $ids = @(gh api "repos/$repo/releases?per_page=100" --paginate --jq ".[] | select(.draft and .tag_name == `"$env:TAG`") | .id")
+          if ($LASTEXITCODE -ne 0) { throw "Lecture des releases GitHub impossible" }
+          if ($ids.Count -ne 1) { throw "Attendu : exactement 1 brouillon pour $env:TAG, trouvé : $($ids.Count)" }
+          $id = $ids[0]
+
+          $files = 'Aion2Assistant-win-Setup.exe', 'Aion2Assistant-win-Portable.zip'
+          New-Item -ItemType Directory -Force checksums | Out-Null
+          $lines = @()
+          foreach ($f in $files) {
+            $path = Join-Path releases $f
+            if (-not (Test-Path $path)) { throw "Livrable manquant : $f" }
+            $hash = (Get-FileHash $path -Algorithm SHA256).Hash
+            "$hash  $f" | Set-Content -Encoding ascii "checksums/$f.sha256"
+            $lines += "- ``$f`` : ``$hash``"
+          }
+
+          # Envoi des .sha256 sur le brouillon (API d'envoi par id de release).
+          foreach ($f in $files) {
+            $name = "$f.sha256"
+            gh api --method POST "https://uploads.github.com/repos/$repo/releases/$id/assets?name=$name" -H "Content-Type: text/plain" --input "checksums/$name" | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Envoi de $name impossible" }
+          }
+
+          # Notes.
+          $install = @(
+            '## Installation',
+            '',
+            '- **Recommandé** : `Aion2Assistant-win-Setup.exe` (installation et mises à jour automatiques).',
+            '- **Alternative** : `Aion2Assistant-win-Portable.zip` (version portable, à extraire dans un dossier ; se met aussi à jour automatiquement).',
+            '- **Migration depuis l''ancien zip** : ferme d''abord l''ancienne version (icône de notification › Quitter), puis lance `Setup.exe`.',
+            '',
+            '## SHA-256',
+            ''
+          ) + $lines + @(
+            '',
+            'Vérification : `Get-FileHash .\<fichier>` doit afficher la même valeur.'
+          )
+          $notes = $install -join "`n"
+          # Notes générées par GitHub (changements depuis la release précédente), facultatives.
+          $generated = gh api "repos/$repo/releases/generate-notes" -f "tag_name=$env:TAG" --jq '.body'
+          if ($LASTEXITCODE -eq 0 -and $generated) {
+            $notes += "`n`n" + ($generated -join "`n")
+          } else {
+            Write-Host "Notes generees indisponibles, notes d'installation seules."
+          }
+          $notes | Set-Content -Encoding utf8 release-notes.md
+          gh api --method PATCH "repos/$repo/releases/$id" -F "body=@release-notes.md" | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "Mise a jour des notes de release impossible" }
+
+          # Vérifie que le brouillon contient exactement les livrables attendus.
+          $expected = @(
+            'Aion2Assistant-win-Setup.exe',
+            'Aion2Assistant-win-Portable.zip',
+            "Aion2Assistant-$env:VERSION-full.nupkg",
+            'releases.win.json',
+            'assets.win.json',
+            'RELEASES',
+            'Aion2Assistant-win-Setup.exe.sha256',
+            'Aion2Assistant-win-Portable.zip.sha256'
+          )
+          if (Test-Path (Join-Path releases "Aion2Assistant-$env:VERSION-delta.nupkg")) {
+            $expected += "Aion2Assistant-$env:VERSION-delta.nupkg"
+          }
+          $assets = @(gh api "repos/$repo/releases/$id" --jq '.assets[].name')
+          if ($LASTEXITCODE -ne 0) { throw "Lecture du brouillon impossible" }
+          $missing = $expected | Where-Object { $assets -notcontains $_ }
+          if ($missing) { throw "Le brouillon $env:TAG ne contient pas : $($missing -join ', ')" }
+          $extra = $assets | Where-Object { $expected -notcontains $_ }
+          if ($extra) { Write-Host "::warning::Le brouillon $env:TAG contient des fichiers non listes (non bloquant) : $($extra -join ', ')" }
+          Write-Host "Assets verifies : $($assets -join ', ')"
+
+          # Publication EN DERNIER (la release devient immuable).
+          gh api --method PATCH "repos/$repo/releases/$id" -F draft=false -F prerelease=true | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "Publication de la release impossible" }

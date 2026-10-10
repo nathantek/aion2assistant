@@ -49,7 +49,7 @@ internal sealed class AppHost : IDisposable
     public HistoryController History { get; }
     public RecordController Records { get; }
     public FieldBossController FieldBosses { get; }
-    public UpdateService Updates { get; }
+    public UpdateController Updates { get; }
     private SettingsViewModel _settingsPage = null!;
     private IntPtr _foregroundBeforeCapture;
 
@@ -98,9 +98,7 @@ internal sealed class AppHost : IDisposable
         Sound = new SoundService(AppPaths.SoundsDirectory);
         Notifications = new NotificationService(Window, Main);
         TimersCtl.AlertRaised += OnTimerAlert;
-        Updates = new UpdateService(() => Settings.CheckForUpdates);
-        Updates.UpdateFound += (version, _) => Notifications.Show($"Version {version} disponible",
-            "Télécharge-la depuis la page du projet (Options › À propos).", Resource("TimerBrush"), "");
+        Updates = new UpdateController(Settings, Main, Notifications, Window.Dispatcher);
 
         _settingsPage = new SettingsViewModel(
             Settings, Main, Saver.RequestSave, sound => Sound.Play(sound, Settings.Volume), Hotkeys, TimerDefinitions, SetKeyboardCapture, Docking.ResetPosition,
@@ -220,7 +218,7 @@ internal sealed class AppHost : IDisposable
         TimersCtl.Start();
         Capture.Start();
         Meters.Start();
-        if (Settings.CheckForUpdates) Updates.Start();
+        Updates.Start();
         Log.Information("Aion2Assistant démarré");
     }
 
@@ -298,6 +296,8 @@ internal sealed class AppHost : IDisposable
 
     public void Dispose()
     {
+        // Arrête les cycles ; l'installation éventuelle se fait après, en toute fin de fermeture (App.OnExit).
+        Updates.Dispose();
         _miniBar.Dispose();
         Meters.Dispose();
         Records.Dispose();

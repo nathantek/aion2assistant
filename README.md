@@ -9,6 +9,7 @@ Téléchargements : [page des Releases](https://github.com/nathantek/aion2assist
 
 ## Fonctionnalités
 
+- **Mises à jour automatiques** : téléchargées en arrière-plan, installées seulement quand tu cliques sur « Redémarrer » ou à la fermeture.
 - **Timers** : suivi des temps d'apparition, avec alertes et un son au choix par événement (6 sons intégrés ou ton propre .wav/.mp3).
 - **Boss de terrain** : suivi dédié des boss de terrain.
 - **Meters** : DPS, soins et dégâts reçus, par joueur.
@@ -46,9 +47,11 @@ Depuis la 0.3.1, les onglets suivent l'ordre DPS, Reçus, Soins, Historique, Tim
 ## Installation (courte)
 
 1. Installe [Npcap](https://npcap.com) (nécessaire pour lire le trafic réseau du jeu) et **laisse décochée** l'option « Restrict Npcap driver's access to Administrators only ».
-2. Télécharge le dernier zip `Aion2Assistant-<version>-win-x64.zip` depuis la [page des Releases](https://github.com/nathantek/aion2assistant/releases).
-3. Décompresse-le dans un dossier de ton choix.
-4. Lance `Aion2Assistant.exe`.
+2. Télécharge `Aion2Assistant-win-Setup.exe` depuis la [page des Releases](https://github.com/nathantek/aion2assistant/releases) et lance-le (sans droits administrateur). Windows SmartScreen peut afficher un avertissement la première fois : « Informations complémentaires › Exécuter quand même ».
+3. L'app se lance et se met ensuite à jour toute seule (désactivable dans Options › À propos).
+
+Sans installeur : `Aion2Assistant-win-Portable.zip`, à décompresser où tu veux ; il se met aussi à jour.
+Depuis un ancien zip 0.3.x : ferme l'ancienne version, installe avec `Setup.exe`, puis supprime l'ancien dossier. Tes réglages et ton historique (`%AppData%\Aion2Assistant`) sont conservés.
 
 Le détail (prérequis, dépannage) est sur le [site du projet](https://nathantek.github.io/aion2assistant/).
 

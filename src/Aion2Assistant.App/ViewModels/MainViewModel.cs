@@ -21,8 +21,22 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private double _uiScale;
     [ObservableProperty] private bool _isDocked;
-    [ObservableProperty] private bool _isMinimized;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowUpdateBanner))]
+    private bool _isMinimized;
     [ObservableProperty] private string? _warningMessage;
+
+    // Bandeau « Version X prête » ; null = masqué. Alimenté par UpdateController.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowUpdateBanner))]
+    private string? _updateBannerText;
+
+    /// <summary>Le bandeau est masqué en mode réduit (la notification a déjà prévenu).</summary>
+    public bool ShowUpdateBanner => UpdateBannerText is not null && !IsMinimized;
+
+    /// <summary>Actions du bandeau, affectées par UpdateController.</summary>
+    public Action? RestartUpdate { get; set; }
+    public Action? DeferUpdate { get; set; }
 
     // Valeur clé de la barre réduite (DPS en combat, sinon prochain timer) ; null hors réduction. Alimentée par MiniBarController.
     [ObservableProperty] private string? _miniValueText;
@@ -75,6 +89,12 @@ public partial class MainViewModel : ObservableObject
 
     [RelayCommand]
     private void DismissWarning() => WarningMessage = null;
+
+    [RelayCommand]
+    private void RestartForUpdate() => RestartUpdate?.Invoke();
+
+    [RelayCommand]
+    private void DeferUpdateBanner() => DeferUpdate?.Invoke();
 
     partial void OnUiScaleChanged(double value)
     {

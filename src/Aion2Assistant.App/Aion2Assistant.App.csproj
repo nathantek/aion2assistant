@@ -8,10 +8,14 @@
     <AssemblyName>Aion2Assistant</AssemblyName>
     <RootNamespace>Aion2Assistant.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Icône de l'exe : reprise par les raccourcis créés à l'installation et par la barre des tâches. -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
     <!-- Le DPI (PerMonitorV2) est déclaré dans le manifeste pour WPF ; WinForms n'héberge que le NotifyIcon. -->
     <NoWarn>$(NoWarn);WFAC010</NoWarn>
-    <Version>0.3.3</Version>
-    <InformationalVersion>0.3.3-beta.1</InformationalVersion>
+    <Version>0.3.4</Version>
+    <InformationalVersion>0.3.4-beta.1</InformationalVersion>
+    <!-- Point d'entrée explicite (Program.Main dans App.xaml.cs) : Velopack doit s'exécuter avant tout. -->
+    <StartupObject>Aion2Assistant.App.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +30,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Velopack" Version="[1.2.161]" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +39,12 @@
     <ProjectReference Include="..\Aion2Assistant.Capture\Aion2Assistant.Capture.csproj" />
     <ProjectReference Include="..\Aion2Assistant.Protocol\Aion2Assistant.Protocol.csproj" />
     <ProjectReference Include="..\Aion2Assistant.Combat\Aion2Assistant.Combat.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- App.xaml devient une simple Page : le Main généré est remplacé par celui de App.xaml.cs. -->
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
   </ItemGroup>
 
   <ItemGroup>

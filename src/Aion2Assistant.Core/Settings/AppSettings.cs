@@ -44,7 +44,7 @@ public sealed class AppSettings
     public const int CurrentVersion = 5;
     public const string DefaultThemeId = "classique";
     /// <summary>Version du CLUF en vigueur ; l'utilisateur doit l'accepter à nouveau quand elle change.</summary>
-    public const string EulaVersion = "1";
+    public const string EulaVersion = "2";
     /// <summary>Le texte reçoit un contour quand Opacity est sous ce seuil.</summary>
     public const double OutlineThreshold = 0.9;
 

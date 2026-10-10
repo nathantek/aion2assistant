@@ -1,5 +1,6 @@
 using System.Windows;
 using Serilog;
+using Velopack;
 
 namespace Aion2Assistant.App;
 
@@ -7,6 +8,20 @@ public partial class App : Application
 {
     private Mutex? _singleInstance;
     private AppHost? _host;
+
+    /// <summary>
+    /// Point d'entrée : Velopack traite ses hooks (install, mise à jour, désinstallation) avant toute UI.
+    /// Pas d'installation automatique au lancement : un second lancement ne doit jamais redémarrer l'overlay en cours ;
+    /// une version déjà téléchargée est reproposée par le bandeau.
+    /// </summary>
+    [STAThread]
+    public static void Main()
+    {
+        VelopackApp.Build().SetAutoApplyOnStartup(false).Run();
+        var app = new App();
+        app.InitializeComponent();
+        app.Run();
+    }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -61,9 +76,13 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         _host?.Dispose();
+        _host?.Updates.LogPendingApply();
         Log.CloseAndFlush();
         if (_host is not null) _singleInstance?.ReleaseMutex();
         _singleInstance?.Dispose();
         base.OnExit(e);
+        // Toute dernière étape : l'outil de mise à jour attend la fin du processus (60 s au plus).
+        try { _host?.Updates.ApplyOnExit(); }
+        catch { /* logs déjà fermés : Velopack réessaiera au prochain lancement */ }
     }
 }

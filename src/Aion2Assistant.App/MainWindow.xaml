@@ -9,6 +9,7 @@
         WindowStartupLocation="Manual" Left="0" Top="0" Width="320" Height="260"
         FontFamily="{DynamicResource UiFont}">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <DataTemplate DataType="{x:Type vm:PlaceholderViewModel}">
             <views:PlaceholderView/>
         </DataTemplate>
@@ -33,6 +34,7 @@
                 <ScaleTransform ScaleX="{Binding UiScale}" ScaleY="{Binding UiScale}"/>
             </Grid.LayoutTransform>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -100,7 +102,28 @@
                 </DockPanel>
             </Border>
 
-            <ContentControl Grid.Row="2" Margin="10,0,10,10" Content="{Binding CurrentPage}"
+            <!-- Mise à jour téléchargée : jamais de redémarrage sans clic. Masqué en mode réduit. -->
+            <Border Grid.Row="2" Margin="8,0,8,6" Padding="8,4" CornerRadius="4" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource TimerBrush}" BorderThickness="2,0,0,0"
+                    Visibility="{Binding ShowUpdateBanner, Converter={StaticResource BoolToVisibility}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding UpdateBannerText}" ToolTip="{Binding UpdateBannerText}"
+                               FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource TextButtonStyle}" Content="Redémarrer"
+                                Command="{Binding RestartForUpdateCommand}" ToolTip="Installer la mise à jour et relancer"/>
+                        <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="Plus tard"
+                                Command="{Binding DeferUpdateBannerCommand}" ToolTip="Installer à la fermeture de l'app"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ContentControl Grid.Row="3" Margin="10,0,10,10" Content="{Binding CurrentPage}"
                             Visibility="{Binding IsMinimized, Converter={StaticResource InverseBoolToVisibility}}"/>
         </Grid>
     </Border>
