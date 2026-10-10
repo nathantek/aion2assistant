@@ -52,11 +52,12 @@
 </details>
 <details class="faq" id="authenticite">
 <summary>Comment vérifier que mon fichier est authentique ?</summary>
-<p>Télécharge l'app uniquement depuis ce site ou la page <a href="https://github.com/nathantek/aion2assistant/releases">Releases GitHub</a>. Chaque version publie l'empreinte SHA-256 du zip dans ses notes. Pour la comparer, ouvre PowerShell dans le dossier du zip et lance <code>Get-FileHash .\Aion2Assistant-*.zip</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas l'app.</p>
+<p>Télécharge l'app uniquement depuis ce site ou la page <a href="https://github.com/nathantek/aion2assistant/releases">Releases GitHub</a>. Chaque fichier d'une version est accompagné de son empreinte SHA-256 (fichier <code>.sha256</code>). Pour la comparer, ouvre PowerShell dans le dossier du fichier téléchargé et lance <code>Get-FileHash .\Aion2Assistant-win-Setup.exe</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas le fichier.</p>
 </details>
 <details class="faq" id="antivirus">
 <summary>Mon antivirus ou SmartScreen bloque l'app</summary>
-<p>Cette bêta n'est pas signée numériquement, ce qui déclenche l'avertissement SmartScreen : clique sur « Informations complémentaires », puis « Exécuter quand même ». Un antivirus peut aussi réagir à la capture réseau. Le code source est public et tu peux compiler l'app toi-même (voir le <a href="https://github.com/nathantek/aion2assistant">dépôt</a>).</p>
+<p>Cette bêta n'est pas signée numériquement : SmartScreen s'affiche donc une fois, au lancement de l'installateur. Clique sur « Informations complémentaires », puis « Exécuter quand même ».</p>
+<p>Un antivirus peut aussi signaler à tort un programme non signé et peu répandu, ou réagir à la capture réseau. Vérifie d'abord l'empreinte <code>.sha256</code> publiée avec la version (voir <a href="#authenticite">la question ci-dessus</a>), puis signale le faux positif à l'éditeur de ton antivirus et ouvre une <a href="https://github.com/nathantek/aion2assistant/issues">issue</a> sur le dépôt. Le code source est public et tu peux compiler l'app toi-même (voir le <a href="https://github.com/nathantek/aion2assistant">dépôt</a>).</p>
 </details>
 </div>
 
@@ -82,12 +83,16 @@
 <div class="faq-list">
 <details class="faq" id="donnees-envoyees">
 <summary>Quelles données sont envoyées ?</summary>
-<p>Aucune donnée personnelle ni donnée de jeu n'est collectée ou transmise. Tes réglages et historiques restent sur ton ordinateur. L'application contacte uniquement GitHub pour connaître la dernière version publiée ; cette vérification se désactive dans Réglages › À propos.</p>
+<p>Aucune donnée personnelle ni donnée de jeu n'est collectée ou transmise. Tes réglages et historiques restent sur ton ordinateur. L'application contacte uniquement GitHub, pour vérifier et télécharger les mises à jour ; tu peux le désactiver dans Réglages › À propos.</p>
 <p>Ce site n'utilise ni cookie ni pisteur. Seules les pages Accueil, Installation et Versions interrogent l'API publique de GitHub depuis ton navigateur pour afficher la dernière version (GitHub reçoit alors ton adresse IP et ton user-agent). Le bouton Télécharger de l'en-tête est un simple lien et ne contacte pas GitHub.</p>
+</details>
+<details class="faq" id="mises-a-jour">
+<summary>Les mises à jour sont-elles automatiques ?</summary>
+<p>Oui. L'app vérifie GitHub au démarrage puis toutes les 6 heures et télécharge la nouvelle version en arrière-plan. Elle ne l'installe qu'après ton clic sur « Redémarrer » dans le bandeau « Version X prête », ou à la fermeture de l'app. Pour couper, décoche « Mises à jour automatiques » dans Réglages › À propos : l'app ne fait alors plus aucun appel réseau.</p>
 </details>
 <details class="faq" id="desinstallation">
 <summary>Comment désinstaller ?</summary>
-<p>Aion2Assistant n'installe ni service, ni clé de registre, ni raccourci, ni démarrage automatique : quitte l'app, supprime son dossier et le dossier <code>%AppData%\Aion2Assistant</code>. Toutes les étapes sont dans <a href="installation.html#desinstaller">Installation › Désinstaller</a>.</p>
+<p>Quitte l'app, puis désinstalle-la depuis Paramètres › Applications › Applications installées (version portable : supprime son dossier). Supprime ensuite <code>%AppData%\Aion2Assistant</code> pour effacer tes données. L'app ne crée ni service ni démarrage automatique. Toutes les étapes sont dans <a href="installation.html#desinstaller">Installation › Désinstaller</a>.</p>
 </details>
 </div>
 </div>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Installation — Aion2Assistant</title>
-<meta name="description" content="Installer Aion2Assistant : Npcap, décompression, premier lancement, SmartScreen et vérification du fichier.">
+<meta name="description" content="Installer Aion2Assistant : Npcap, installateur, version portable, mises à jour, SmartScreen et désinstallation.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0B0D12">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://api.github.com; object-src 'none'; base-uri 'self'; form-action 'none'">
@@ -35,7 +35,7 @@
 <main id="contenu">
 <div class="wrap prose">
 <h1>Installation</h1>
-<p class="lead">Cinq étapes, environ cinq minutes. Windows 64 bits requis.</p>
+<p class="lead">Quatre étapes, environ cinq minutes. Windows 64 bits requis.</p>
 <div class="download-box" id="telecharger">
 <a class="btn" data-download href="https://github.com/nathantek/aion2assistant/releases">Télécharger</a>
 <p class="dl-meta" data-download-meta aria-live="polite">Windows 64 bits · gratuit · GPL-3.0</p>
@@ -45,24 +45,39 @@
 <li><h2 id="npcap">Installer Npcap</h2>
 <p>Aion2Assistant a besoin de Npcap pour lire le trafic réseau du jeu. Télécharge-le depuis <a href="https://npcap.com">npcap.com</a> et lance l'installateur.</p>
 <div class="callout callout-warn"><p><strong>Important :</strong> ne coche <strong>pas</strong> l'option « Restrict Npcap driver's access to Administrators only ». Laisse-la décochée, sinon l'app ne pourra pas capturer sans droits administrateur.</p></div></li>
-<li><h2 id="decompresser">Décompresser l'archive</h2>
-<p>Télécharge le zip <code>Aion2Assistant-&lt;version&gt;-win-x64.zip</code> avec le bouton ci-dessus, puis décompresse-le dans un dossier de ton choix.</p></li>
-<li><h2 id="lancer">Lancer l'application</h2>
-<p>Double-clique sur <code>Aion2Assistant.exe</code>. Au premier lancement, le contrat de licence (CLUF) s'affiche : lis-le et accepte pour continuer.</p>
-<p>Comme cette bêta n'est pas signée, Windows SmartScreen peut afficher « Windows a protégé votre ordinateur ». Clique sur <strong>« Informations complémentaires »</strong>, puis sur <strong>« Exécuter quand même »</strong>. Voir aussi la <a href="faq.html#antivirus">FAQ</a>.</p></li>
+<li><h2 id="installer">Lancer l'installateur</h2>
+<p>Télécharge <code>Aion2Assistant-win-Setup.exe</code> avec le bouton ci-dessus et lance-le. Il installe l'app pour ton compte Windows, sans droits administrateur, dans <code>%LocalAppData%\Aion2Assistant</code>, et crée un raccourci sur le Bureau et dans le menu Démarrer. Au premier lancement, le contrat de licence (CLUF) s'affiche : lis-le et accepte pour continuer.</p>
+<p>Comme cette bêta n'est pas signée, Windows SmartScreen affiche une fois « Windows a protégé votre ordinateur ». Clique sur <strong>« Informations complémentaires »</strong>, puis sur <strong>« Exécuter quand même »</strong>. Voir aussi la <a href="faq.html#antivirus">FAQ</a>.</p></li>
 <li><h2 id="fenetre">Jouer en fenêtré sans bordure</h2>
 <p>Dans les options graphiques d'AION 2, choisis le mode <strong>fenêtré sans bordure</strong>. En plein écran exclusif, le jeu masque les overlays et l'application ne sera pas visible.</p></li>
 <li><h2 id="verifier">Vérifier le fichier <span class="step-optional">optionnel</span></h2>
-<p>Chaque version publie l'empreinte SHA-256 du zip dans ses notes (page <a href="notes.html">Versions</a>). Ouvre PowerShell dans le dossier du zip et lance <code>Get-FileHash .\Aion2Assistant-*.zip</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas l'app.</p></li>
+<p>Chaque fichier d'une version est accompagné de son empreinte SHA-256 (fichier <code>.sha256</code> sur la <a href="https://github.com/nathantek/aion2assistant/releases">page de la version</a>). Ouvre PowerShell dans le dossier du fichier téléchargé et lance <code>Get-FileHash .\Aion2Assistant-win-Setup.exe</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas le fichier.</p></li>
+</ol>
+
+<h2 id="portable">Version portable</h2>
+<p>Tu préfères ne rien installer ? Sur la <a href="https://github.com/nathantek/aion2assistant/releases">page de la version</a>, télécharge <code>Aion2Assistant-win-Portable.zip</code>, décompresse-le dans le dossier de ton choix et lance <code>Aion2Assistant.exe</code>. La version portable se met aussi à jour toute seule.</p>
+
+<h2 id="mises-a-jour">Mises à jour</h2>
+<p>Une fois installée, l'app se met à jour toute seule. Elle vérifie GitHub au démarrage puis toutes les 6 heures, télécharge la nouvelle version en arrière-plan et affiche un bandeau <strong>« Version X prête »</strong>. La mise à jour s'installe quand tu cliques sur <strong>Redémarrer</strong>, ou à la fermeture de l'app si tu choisis <strong>Plus tard</strong>. Tu peux tout désactiver dans Réglages › À propos.</p>
+
+<h2 id="migrer">Passer de l'ancien zip à l'installateur</h2>
+<p>Si tu utilisais une version téléchargée en zip (0.3.3 ou avant) :</p>
+<ol class="steps" role="list">
+<li><h3>Fermer l'ancienne version</h3>
+<p>Clic droit sur son icône dans la zone de notification, puis <strong>Quitter</strong>. Sinon, la nouvelle version ne pourra pas démarrer : une seule instance de l'app peut tourner à la fois.</p></li>
+<li><h3>Installer avec <code>Setup.exe</code></h3>
+<p>Suis l'étape <a href="#installer">Lancer l'installateur</a> ci-dessus.</p></li>
+<li><h3>Supprimer l'ancien dossier</h3>
+<p>Supprime le dossier où tu avais décompressé l'ancien zip. Tes réglages, ton historique, tes records et tes sons sont conservés : ils sont dans <code>%AppData%\Aion2Assistant</code>, que la nouvelle version réutilise.</p></li>
 </ol>
 
 <h2 id="desinstaller">Désinstaller</h2>
-<p>Aion2Assistant n'installe rien en dehors du dossier que tu as décompressé : pas de service, pas de clé de registre, pas de raccourci ni de démarrage automatique. Toutes ses données sont dans <code>%AppData%\Aion2Assistant</code>.</p>
+<p>L'installateur ne crée ni service ni démarrage automatique. Il ajoute l'app à la liste des applications installées de Windows et crée deux raccourcis, retirés à la désinstallation. Toutes tes données sont dans <code>%AppData%\Aion2Assistant</code>.</p>
 <ol class="steps" role="list">
 <li><h3>Fermer l'application</h3>
 <p>Fais un clic droit sur l'icône d'Aion2Assistant dans la zone de notification (à côté de l'horloge), puis choisis <strong>Quitter</strong>.</p></li>
-<li><h3>Supprimer le dossier de l'application</h3>
-<p>Supprime le dossier dans lequel tu as décompressé le zip.</p></li>
+<li><h3>Désinstaller l'application</h3>
+<p>Ouvre Paramètres › Applications › Applications installées, cherche <strong>Aion2Assistant</strong>, puis choisis <strong>Désinstaller</strong>. Pour la version portable, supprime simplement son dossier.</p></li>
 <li><h3>Supprimer tes données</h3>
 <p>Appuie sur <kbd>Win</kbd> + <kbd>R</kbd>, tape <code>%AppData%</code> puis valide avec Entrée. Dans le dossier qui s'ouvre, supprime le dossier <code>Aion2Assistant</code> : réglages, historique, records, sons, captures et journaux.</p></li>
 <li><h3>Désinstaller Npcap <span class="step-optional">optionnel</span></h3>

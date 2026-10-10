@@ -41,15 +41,28 @@
     parent.appendChild(p);
   }
 
+  // Nom affiché d'une version : l'étiquette, sauf une étiquette provisoire « untagged-… » (on prend alors le nom).
+  function label(rel) {
+    var tag = typeof rel.tag_name === 'string' ? rel.tag_name : '';
+    if (tag && tag.indexOf('untagged-') !== 0) { return tag; }
+    return typeof rel.name === 'string' && rel.name ? rel.name : tag;
+  }
+
+  function findAsset(rel, pattern) {
+    var found = null;
+    (rel.assets || []).forEach(function (a) {
+      if (!found && typeof a.name === 'string' && pattern.test(a.name)) { found = a; }
+    });
+    return found;
+  }
+
   function fillDownload(releases) {
     var rel = releases[0];
-    var asset = null;
-    (rel.assets || []).forEach(function (a) {
-      if (!asset && typeof a.name === 'string' && /-win-x64\.zip$/.test(a.name)) { asset = a; }
-    });
+    // Installateur depuis la 0.3.4, ancien zip pour les versions précédentes.
+    var asset = findAsset(rel, /-win-Setup\.exe$/) || findAsset(rel, /-win-x64\.zip$/);
     var href = asset && isHttps(asset.browser_download_url) ? asset.browser_download_url
       : (isHttps(rel.html_url) ? rel.html_url : RELEASES);
-    var tag = rel.tag_name || '';
+    var tag = label(rel);
     setDownloads(href, tag ? 'Télécharger ' + tag : 'Télécharger');
     var d = frDate(rel.published_at || rel.created_at);
     setMeta(tag + (d ? ' · publiée le ' + d : '') + (asset ? '' : ' · page de la version'));
@@ -66,7 +79,7 @@
 
   function releaseMeta(rel) {
     var d = frDate(rel.published_at || rel.created_at);
-    return (rel.tag_name || '') + (d ? ' · ' + d : '');
+    return label(rel) + (d ? ' · ' + d : '');
   }
 
   function releaseContent(rel, parent) {
@@ -128,6 +141,10 @@
       if (!Array.isArray(data)) { throw new Error('format'); }
       var releases = data.filter(function (r) { return r && !r.draft; });
       if (!releases.length) { degrade(EMPTY, EMPTY); return; }
+      // L'API trie par date de création : on veut la dernière publiée en premier.
+      releases.sort(function (a, b) {
+        return (Date.parse(b.published_at || b.created_at) || 0) - (Date.parse(a.published_at || a.created_at) || 0);
+      });
       fillDownload(releases);
       fillNotes(releases);
     })
