@@ -210,7 +210,6 @@ jobs:
             'Aion2Assistant-win-Portable.zip',
             "Aion2Assistant-$env:VERSION-full.nupkg",
             'releases.win.json',
-            'assets.win.json',
             'RELEASES',
             'Aion2Assistant-win-Setup.exe.sha256',
             'Aion2Assistant-win-Portable.zip.sha256'
@@ -227,5 +226,12 @@ jobs:
           Write-Host "Assets verifies : $($assets -join ', ')"
 
           # Publication EN DERNIER (la release devient immuable).
-          gh api --method PATCH "repos/$repo/releases/$id" -F draft=false -F prerelease=true | Out-Null
+          # tag_name explicite : la 0.3.4-beta.1, publiée à la main, s'est retrouvée sur un tag « untagged-… ».
+          gh api --method PATCH "repos/$repo/releases/$id" -f "tag_name=$env:TAG" -F draft=false -F prerelease=true | Out-Null
           if ($LASTEXITCODE -ne 0) { throw "Publication de la release impossible" }
+          $publishedTag = gh api "repos/$repo/releases/$id" --jq '.tag_name'
+          $stillDraft = gh api "repos/$repo/releases/$id" --jq '.draft'
+          if ($publishedTag -ne $env:TAG -or $stillDraft -ne 'false') {
+            throw "Release publiee avec un etat inattendu : tag=$publishedTag draft=$stillDraft (attendu : $env:TAG, false)"
+          }
+          Write-Host "Release publiee sur $publishedTag"
