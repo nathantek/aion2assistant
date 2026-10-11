@@ -13,6 +13,9 @@ public sealed class EncounterTracker
     /// <summary>Coups tardifs sur (ou d') un acteur mort : ils ne doivent pas ouvrir un nouveau combat (combat fantôme de 0 s).</summary>
     private const long PostDeathIgnoreMs = 10_000;
 
+    /// <summary>Plafond d'un soin quand les PV max de la cible sont inconnus.</summary>
+    private const long UnknownMaxHpHealCap = 1_000_000;
+
     private readonly record struct RecapEntry(long AtMs, uint Source, int Skill, long Amount, bool IsHeal);
 
     private readonly GameData _data;
@@ -58,6 +61,38 @@ public sealed class EncounterTracker
 
     /// <summary>Levé quand le traitement d'un événement (ou Tick/Reset/Snapshot) a échoué ; le suivi continue.</summary>
     public event Action<Exception>? Faulted;
+
+    /// <summary>Message de diagnostic (niveau Debug) : soin écarté, etc.</summary>
+    public event Action<string>? DebugMessage;
+
+    /// <summary>Message de diagnostic (niveau Information) : une ligne par combat, si des soins ont été écartés.</summary>
+    public event Action<string>? InfoMessage;
+
+    private int _droppedHeals;
+
+    private void Info(string message)
+    {
+        try
+        {
+            InfoMessage?.Invoke(message);
+        }
+        catch
+        {
+            // Un abonné défaillant ne doit pas casser le suivi.
+        }
+    }
+
+    private void Debug(string message)
+    {
+        try
+        {
+            DebugMessage?.Invoke(message);
+        }
+        catch
+        {
+            // Un abonné défaillant ne doit pas casser le suivi.
+        }
+    }
 
     private void Fault(Exception ex)
     {
@@ -159,7 +194,9 @@ public sealed class EncounterTracker
     {
         if (SkillCodes.IsNonDamage(e.SkillCode)) return;
         var src = Entities.ResolveOwner(e.SourceId);
-        InferPlayer(src, e.SkillCode);
+        // Sur un coup reçu par un joueur, un code de classe peut être le bouclier de la cible (ex. Nezekan's Shield)
+        // attribué au PNJ attaquant : il ne prouve pas que l'auteur est un joueur.
+        if (!TrackedTarget(e.TargetId)) InferPlayer(src, e.SkillCode);
         if (TrackedSource(src, e.SkillCode))
         {
             if (TrackedTarget(e.TargetId))
@@ -196,13 +233,22 @@ public sealed class EncounterTracker
 
     private void OnHeal(long timeMs, uint sourceId, uint targetId, int skillCode, long amount, HitFlags flags, int hits)
     {
-        if (!IsActive) return;
+        if (!IsActive || SkillCodes.IsSpiritLinkRecord(skillCode)) return;
         var src = Entities.ResolveOwner(sourceId);
         if (!TrackedSource(src, skillCode)) return;
+
+        // Un soin ne peut dépasser les PV max de la cible : au-delà, valeur mal décodée.
+        var max = Entities.MaxHpOf(targetId);
+        var cap = max > 0 ? max : UnknownMaxHpHealCap;
+        if (amount > cap)
+        {
+            _droppedHeals++;
+            Debug($"Soin écarté : {amount} > {cap} (skill {skillCode}, {sourceId} → {targetId})");
+            return;
+        }
         _lastActivityMs = Math.Max(_lastActivityMs, timeMs);
 
         long? overheal = null; // null : PV de la cible inconnus, surplus non mesurable
-        var max = Entities.MaxHpOf(targetId);
         if (Entities.CurrentHpOf(targetId) is { } cur && max > 0)
         {
             overheal = Math.Max(0, amount - Math.Max(0, max - cur));
@@ -395,6 +441,7 @@ public sealed class EncounterTracker
         _damageToTarget.Clear();
         _recap.Clear();
         _deaths.Clear();
+        _droppedHeals = 0;
     }
 
     public EncounterSnapshot? Snapshot(long nowMs)
@@ -422,6 +469,8 @@ public sealed class EncounterTracker
         IsActive = false;
         IsTraining = false;
         _frozen = snap;
+        if (_droppedHeals > 0) Info($"Combat terminé : {_droppedHeals} soin(s) écarté(s) (supérieurs aux PV max de la cible)");
+        _droppedHeals = 0;
         try
         {
             EncounterEnded?.Invoke(snap);

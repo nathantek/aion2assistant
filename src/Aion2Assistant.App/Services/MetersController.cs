@@ -36,11 +36,17 @@ internal sealed class MetersController : IDisposable
         Log.Information("Données de jeu : {Skills} skills, {Npcs} PNJ", data.SkillCount, data.NpcCount);
         if (data.SkillCount == 0 && data.NpcCount == 0)
             Log.Warning("Aucun fichier de noms dans data/ : les codes s'afficheront");
+        Data = data;
         _tracker = new EncounterTracker(data, _options);
         _tracker.Faulted += OnFaulted;
+        _tracker.DebugMessage += message => Log.Debug("Combat : {Message}", message);
+        _tracker.InfoMessage += message => Log.Information("{Message}", message);
         _tracker.EncounterEnded += snapshot => EncounterEnded?.Invoke(snapshot);
         _timer.Tick += (_, _) => Tick();
     }
+
+    /// <summary>Noms de jeu chargés (aussi utilisés pour ré-résoudre les noms de l'historique).</summary>
+    public GameData Data { get; }
 
     private bool _faultLogged;
     private int _suppressedFaults;

@@ -54,7 +54,8 @@ internal sealed class HistoryController : IDisposable
     {
         try
         {
-            return _store?.Load(id);
+            var snapshot = _store?.Load(id);
+            return snapshot is null ? null : _meters.Data.Rename(snapshot);
         }
         catch (Exception ex)
         {

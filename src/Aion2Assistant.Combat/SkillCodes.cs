@@ -15,9 +15,14 @@ public static class SkillCodes
         return raw;
     }
 
-    /// <summary>Enregistrements de lien d'esprit (Élémentaliste) émis sur l'opcode de dégâts sans être des dégâts.</summary>
-    public static bool IsNonDamage(int raw) =>
-        raw is >= 16_990_000 and <= 16_999_999 or >= 16_770_000 and <= 16_779_999;
+    /// <summary>Enregistrements du lien d'esprit (Élémentaliste, 1699xxxx) : ni dégâts ni soins.</summary>
+    public static bool IsSpiritLinkRecord(int raw) => raw is >= 16_990_000 and <= 16_999_999;
+
+    /// <summary>Spirit Communion (Élémentaliste, 1677xxxx) : vrai soin, mais pas un dégât.</summary>
+    public static bool IsSpiritCommunion(int raw) => raw is >= 16_770_000 and <= 16_779_999;
+
+    /// <summary>Codes émis sur l'opcode de dégâts sans être des dégâts.</summary>
+    public static bool IsNonDamage(int raw) => IsSpiritLinkRecord(raw) || IsSpiritCommunion(raw);
 
     public static bool IsPlayerSkill(int code) =>
         (IsClassRange(code) && (code / 10_000) % 100 != 0) || IsDivineStone(code);
