@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels">
+                    xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels"
+                    xmlns:combat="clr-namespace:Aion2Assistant.Combat;assembly=Aion2Assistant.Combat">
     <!-- Gabarits partagés par MeterView et ShareCardView (image du tableau) -->
     <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     <Style x:Key="SmallMutedStyle" TargetType="TextBlock">
@@ -176,5 +177,29 @@
                        FontSize="{DynamicResource FontSizeSmall}" Typography.NumeralAlignment="Tabular"
                        Margin="6,0,0,0"/>
         </Grid>
+    </DataTemplate>
+    <!-- Badge d'issue (cartes de l'historique et titre du détail) : fond = brosse du ton à faible opacité, jamais
+         une brosse d'application modifiée. -->
+    <DataTemplate DataType="{x:Type combat:OutcomeBadge}">
+        <Grid VerticalAlignment="Center">
+            <Border x:Name="Tint" CornerRadius="3" Background="{DynamicResource TextMutedBrush}" Opacity="0.16"/>
+            <TextBlock x:Name="Label" Text="{Binding Text}" Margin="6,1" FontWeight="SemiBold"
+                       FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource TextMutedBrush}"
+                       Typography.NumeralAlignment="Tabular" TextTrimming="CharacterEllipsis"/>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Tone}" Value="{x:Static combat:OutcomeTone.Kill}">
+                <Setter TargetName="Tint" Property="Background" Value="{DynamicResource HealBrush}"/>
+                <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource HealBrush}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tone}" Value="{x:Static combat:OutcomeTone.Wipe}">
+                <Setter TargetName="Tint" Property="Background" Value="{DynamicResource AlertBrush}"/>
+                <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource AlertBrush}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Tone}" Value="{x:Static combat:OutcomeTone.Training}">
+                <Setter TargetName="Tint" Property="Background" Value="{DynamicResource TakenBrush}"/>
+                <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TakenBrush}"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 </ResourceDictionary>

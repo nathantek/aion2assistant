@@ -24,6 +24,9 @@ internal sealed class HistoryController : IDisposable
         try
         {
             _store = new HistoryStore(AppPaths.HistoryDatabase);
+            if (_store.BackfillError is { } backfill) Log.Warning(backfill, "Historique : remplissage des anciens combats échoué");
+            if (_store.BackfillSkipped > 0)
+                Log.Information("Historique : {Count} combats illisibles ignorés au remplissage", _store.BackfillSkipped);
             var now = DateTimeOffset.UtcNow;
             var removed = _store.Purge(now, Options());
             if (removed > 0) Log.Information("Historique : {Count} combats purgés", removed);
@@ -75,8 +78,7 @@ internal sealed class HistoryController : IDisposable
                 {
                     var zone = _mapName(snapshot.MapId);
                     id = _store.Save(snapshot, zone);
-                    View.Insert(new EncounterSummary(id.Value, DateTimeOffset.FromUnixTimeMilliseconds(snapshot.StartMs), snapshot.DurationMs,
-                        zone, snapshot.Title, snapshot.Outcome ?? EncounterOutcome.Manual, snapshot.Dps.PerSecond), DateTime.Now);
+                    View.Insert(EncounterSummary.From(id.Value, snapshot, zone), DateTime.Now);
                     Log.Information("Combat enregistré : {Title}", snapshot.Title);
                 }
             }

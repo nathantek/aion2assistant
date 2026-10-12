@@ -133,6 +133,10 @@ internal sealed class AppHost : IDisposable
 
         History = new HistoryController(Meters, Settings, MapNames.Load(Path.Combine(AppContext.BaseDirectory, "data")), BossFilter, MeterDisplay);
         if (npcapInstalled) Main.Pages[OverlayTab.History] = History.View;
+        // Recherche de l'historique : focus clavier le temps de la saisie, rendu au jeu ensuite.
+        History.View.SetKeyboardInput = SetKeyboardCapture;
+        Window.Deactivated += (_, _) => History.View.EndTyping();
+        Window.IsVisibleChanged += (_, _) => { if (!Window.IsVisible) History.View.EndTyping(); };
         Records = new RecordController(History, Notifications);
 
         // Barre réduite : lit l'instantané du suivi (les meters ne se mettent pas à jour fenêtre réduite).

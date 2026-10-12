@@ -35,10 +35,13 @@ internal sealed class UpdateController : IDisposable
 
         if (_backend.IsInstalled && AppVersion.TryParse(CurrentVersionText, out var current))
         {
-            _orchestrator = new UpdateOrchestrator(_backend, new TimerUpdateScheduler(), current);
+            // Lecture du paquet téléchargé (disque) hors du fil de l'interface ; le résultat revient par StateChanged.
+            _orchestrator = new UpdateOrchestrator(_backend, new TimerUpdateScheduler(), current, read => Task.Run(read));
             // Événements possiblement levés depuis le pool, voire sous le verrou de l'orchestrateur : jamais d'appel bloquant.
             _orchestrator.StateChanged += () => _dispatcher.BeginInvoke(Refresh);
             _orchestrator.Failed += OnFailed;
+            _orchestrator.PendingPackageFound += version => Log.Information(
+                "Mise à jour {Version} téléchargée mais pas encore installée (installation précédente interrompue ?)", version);
             _main.RestartUpdate = RequestRestart;
             _main.DeferUpdate = Defer;
         }

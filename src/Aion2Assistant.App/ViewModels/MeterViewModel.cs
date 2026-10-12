@@ -39,6 +39,8 @@ public partial class MeterViewModel : ObservableObject
 
     [ObservableProperty] private bool _hasSnapshot;
     [ObservableProperty] private string _headerText = "";
+    // Badge d'issue à droite du titre (historique seulement) ; null = état en texte dans le titre.
+    [ObservableProperty] private OutcomeBadge? _badge;
     [ObservableProperty] private double? _targetHpPct;
     [ObservableProperty] private string _groupText = "";
     [ObservableProperty] private bool _isDetail;
@@ -142,6 +144,9 @@ public partial class MeterViewModel : ObservableObject
 
     public MeterKind Kind { get; }
     public string Title { get; }
+
+    /// <summary>Historique : l'issue d'un combat terminé s'affiche en badge plutôt qu'en texte dans le titre.</summary>
+    public bool ShowOutcomeBadge { get; init; }
     public Brush Accent => AppHost.Resource(_accentKey);
     public ObservableCollection<MeterRowViewModel> Rows { get; } = new();
     public bool ShowPerSecond => Kind == MeterKind.Dps;
@@ -305,6 +310,7 @@ public partial class MeterViewModel : ObservableObject
         if (snapshot is null)
         {
             HasSnapshot = false;
+            Badge = null;
             if (Rows.Count > 0) Rows.Clear();
             _rowsById.Clear();
             ChartSeries = [];
@@ -320,7 +326,10 @@ public partial class MeterViewModel : ObservableObject
             _hiddenSeries.Clear();
             _chartStartMs = snapshot.StartMs;
         }
-        HeaderText = $"{snapshot.Title} · {MeterFormat.Duration(snapshot.DurationMs)} · {CombatShareFormatter.StateLabel(snapshot)}";
+        Badge = ShowOutcomeBadge && !snapshot.Active ? OutcomeBadge.For(snapshot.Outcome, snapshot.TargetHpPct) : null;
+        HeaderText = Badge is null
+            ? $"{snapshot.Title} · {MeterFormat.Duration(snapshot.DurationMs)} · {CombatShareFormatter.StateLabel(snapshot)}"
+            : $"{snapshot.Title} · {MeterFormat.Duration(snapshot.DurationMs)}";
         TargetHpPct = snapshot.TargetHpPct is { } pct ? Math.Clamp(pct, 0, 100) : null;
 
         var meter = MeterOf(snapshot);

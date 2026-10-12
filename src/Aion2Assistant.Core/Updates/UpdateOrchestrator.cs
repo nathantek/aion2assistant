@@ -41,12 +41,23 @@ public sealed class UpdateOrchestrator : IDisposable
     private bool _disposed;
     private bool _stopped;
     private CancellationTokenSource? _cycleCts;
+    // Chaque SetEnabled invalide les lectures du disque encore en cours.
+    private int _readGeneration;
+    private bool _pendingNoticed;
 
-    public UpdateOrchestrator(IUpdateBackend backend, IUpdateScheduler scheduler, AppVersion current)
+    private readonly Func<Func<AppVersion?>, Task<AppVersion?>> _diskRead;
+
+    /// <param name="diskRead">
+    /// Exécute la lecture locale du paquet téléchargé ; par défaut sur place. L'App la passe sur un fil
+    /// d'arrière-plan pour ne pas bloquer l'interface (le résultat est adopté dès qu'il arrive).
+    /// </param>
+    public UpdateOrchestrator(IUpdateBackend backend, IUpdateScheduler scheduler, AppVersion current,
+        Func<Func<AppVersion?>, Task<AppVersion?>>? diskRead = null)
     {
         _backend = backend;
         _scheduler = scheduler;
         _current = current;
+        _diskRead = diskRead ?? (read => Task.FromResult(read()));
     }
 
     public UpdateState State { get { lock (_gate) return _state; } }
@@ -63,6 +74,12 @@ public sealed class UpdateOrchestrator : IDisposable
     /// <summary>Levé quand une vérification, un téléchargement ou une application échoue (pour journaliser).</summary>
     public event Action<Exception>? Failed;
 
+    /// <summary>
+    /// Levé une seule fois quand un paquet plus récent, téléchargé lors d'un lancement précédent, est encore en
+    /// attente : l'installation à la fermeture précédente a probablement échoué (pour journaliser).
+    /// </summary>
+    public event Action<AppVersion>? PendingPackageFound;
+
     /// <summary>Démarre la planification si le réglage est activé et que l'application est installée.</summary>
     public void Start(bool enabled) => SetEnabled(enabled);
 
@@ -72,24 +89,59 @@ public sealed class UpdateOrchestrator : IDisposable
     /// </summary>
     public void SetEnabled(bool enabled)
     {
-        // Lecture locale faite hors verrou : le paquet d'un lancement précédent, sans nouveau téléchargement.
-        var local = enabled ? ReadDownloadedVersion() : null;
-        var adopted = false;
+        int generation;
         lock (_gate)
         {
             if (_disposed) return;
             _enabled = enabled;
+            generation = ++_readGeneration;
             if (!enabled) CancelCycleLocked();
-            else if (local is not null && _version is null && _state == UpdateState.Idle
-                     && !_exitApplied && !_stopped && local.CompareTo(_current) > 0)
+            RescheduleLocked();
+        }
+        if (!enabled) return;
+
+        // Lecture locale (paquet d'un lancement précédent, sans réseau) hors verrou, éventuellement différée.
+        Task<AppVersion?> read;
+        try { read = _diskRead(ReadDownloadedVersion); }
+        catch (Exception ex)
+        {
+            RaiseFailed(ex);
+            return;
+        }
+        if (read.IsCompleted) AdoptLocal(read, generation);
+        else read.ContinueWith(t => AdoptLocal(t, generation), CancellationToken.None,
+            TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+    }
+
+    // Une version déjà téléchargée redevient « prête », sauf si le réglage a changé entre-temps.
+    private void AdoptLocal(Task<AppVersion?> read, int generation)
+    {
+        if (read.IsFaulted)
+        {
+            RaiseFailed(read.Exception!.GetBaseException());
+            return;
+        }
+        if (!read.IsCompletedSuccessfully || read.Result is not { } local) return;
+        bool adopted = false, notice = false;
+        lock (_gate)
+        {
+            if (_disposed || generation != _readGeneration || !_enabled) return;
+            if (_version is null && _state == UpdateState.Idle && !_exitApplied && !_stopped && local.CompareTo(_current) > 0)
             {
                 _version = local;
                 _state = UpdateState.Ready;
                 adopted = true;
+                notice = !_pendingNoticed;
+                _pendingNoticed = true;
             }
-            RescheduleLocked();
         }
-        if (adopted) Raise();
+        if (!adopted) return;
+        if (notice)
+        {
+            try { PendingPackageFound?.Invoke(local); }
+            catch (Exception ex) { RaiseFailed(ex); }
+        }
+        Raise();
     }
 
     private AppVersion? ReadDownloadedVersion()

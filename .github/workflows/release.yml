@@ -5,10 +5,6 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
-  actions: read # SignPath lit l'artefact non signé du job
-
 concurrency:
   # Un seul groupe : deux tags proches ne doivent pas empaqueter en parallèle contre la même release précédente.
   group: release
@@ -17,12 +13,18 @@ concurrency:
 jobs:
   release:
     runs-on: windows-latest
+    # Permissions au niveau du job : un futur job n'en héritera pas.
+    permissions:
+      contents: write
+      actions: read # SignPath lit l'artefact non signé du job
+      id-token: write # jeton OIDC pour le certificat Sigstore des attestations
+      attestations: write # enregistrement des attestations de provenance
     env:
       TAG: ${{ github.ref_name }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (node24)
 
-      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0 (node24)
         with:
           dotnet-version: 8.0.x
 
@@ -95,28 +97,87 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Installation de vpk 1.2.161 impossible" }
           "$env:USERPROFILE\.dotnet\tools" >> $env:GITHUB_PATH
 
+      # Base du delta. `vpk download github` (anonyme) a échoué en 0.3.5-beta.1 sur « 403 rate limit exceeded »
+      # (IP partagées des runners GitHub) : on reproduit ce qu'il fait, avec le GITHUB_TOKEN du job.
+      # `vpk download github` dépose dans le dossier de sortie releases.win.json et le dernier -full.nupkg ;
+      # `vpk pack -o releases` lit ensuite les paquets présents dans ce dossier, prend la dernière release
+      # COMPLÈTE de version inférieure comme base et génère le -delta.nupkg contre elle (sans base : paquet
+      # complet seul). Le releases.win.json téléchargé est réécrit par vpk pack.
+      # Sécurité : jamais un brouillon comme base (un brouillon resté d'un run échoué n'a pas été vérifié) ;
+      # seules les releases publiées sont retenues, triées par date de publication (pas l'ordre de la liste :
+      # la 0.3.4-beta.1 publiée sur « untagged-… » y apparaît hors ordre et reste une base valable).
       - name: Download previous Velopack release
+        id: base
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          $repo = '${{ github.repository }}'
           New-Item -ItemType Directory -Force releases | Out-Null
-          # Les anciennes releases (zip 0.3.x) n'ont pas de releases.win.json : rien à télécharger
-          # pour la première release Velopack, le pack sera alors complet, sans delta.
-          $names = gh api "repos/${{ github.repository }}/releases?per_page=100" --paginate --jq '.[] | select(.draft | not) | .assets[].name'
+
+          $json = @(gh api "repos/$repo/releases?per_page=100" --paginate --jq '.[] | select(.draft | not) | {id, tag_name, created_at, published_at, assets: [.assets[] | {id, name, size}]} | tojson')
           if ($LASTEXITCODE -ne 0) { throw "Lecture des releases GitHub impossible" }
-          if (@($names) -notcontains 'releases.win.json') {
-            Write-Host "Aucune release Velopack precedente (pas de releases.win.json) : premiere release Velopack, pas de delta."
+          $published = @($json | Where-Object { $_ } | ForEach-Object { $_ | ConvertFrom-Json -NoEnumerate })
+          # ConvertFrom-Json convertit déjà les dates ISO en [datetime] ; [datetime] les normalise dans tous les cas.
+          $candidates = @($published |
+            Where-Object { @($_.assets.name) -contains 'releases.win.json' } |
+            Sort-Object -Descending -Property @{ Expression = { [datetime]$(if ($_.published_at) { $_.published_at } else { $_.created_at }) } })
+
+          # Les anciennes releases (zip 0.3.x) n'ont pas de releases.win.json : première release Velopack,
+          # le pack sera alors complet, sans delta.
+          if ($candidates.Count -eq 0) {
+            Write-Host "Aucune release Velopack publiee (pas de releases.win.json) : premiere release Velopack, pas de delta."
             exit 0
           }
-          # Sans jeton : l'accès anonyme ne voit que les releases publiées, jamais un brouillon resté d'un run échoué.
-          vpk download github --repoUrl "https://github.com/${{ github.repository }}" --pre -o releases
-          if ($LASTEXITCODE -ne 0) { throw "vpk download a echoue alors qu'une release Velopack precedente existe" }
+          $base = $candidates[0]
+          if ($base.tag_name -eq $env:TAG) { throw "La release $env:TAG est deja publiee : rien a empaqueter." }
+          Write-Host "Base du delta : release $($base.tag_name) (id $($base.id), publiee le $($base.published_at))"
+
+          # Téléchargement d'un asset par son id (fonctionne aussi pour une release sur « untagged-… »,
+          # que `gh release download <tag>` ne sait pas adresser). Le jeton n'est envoyé qu'à api.github.com :
+          # PowerShell retire l'en-tête Authorization lors de la redirection vers le stockage des assets.
+          function Get-ReleaseAsset([object] $asset) {
+            $out = Join-Path releases $asset.name
+            $headers = @{
+              Authorization          = "Bearer $env:GH_TOKEN"
+              Accept                 = 'application/octet-stream'
+              'X-GitHub-Api-Version' = '2022-11-28'
+            }
+            Invoke-WebRequest -Uri "https://api.github.com/repos/$repo/releases/assets/$($asset.id)" -Headers $headers -OutFile $out -MaximumRetryCount 3 -RetryIntervalSec 5
+            $len = (Get-Item $out).Length
+            if ($len -ne $asset.size) { throw "Taille inattendue pour $($asset.name) : $len au lieu de $($asset.size)" }
+            return $out
+          }
+          function Find-Asset([string] $name) { $base.assets | Where-Object { $_.name -ceq $name } | Select-Object -First 1 }
+
+          $feedPath = Get-ReleaseAsset (Find-Asset 'releases.win.json')
+          $feed = Get-Content $feedPath -Raw | ConvertFrom-Json
+          $full = @($feed.Assets | Where-Object { $_.Type -eq 'Full' -and $_.PackageId -eq 'Aion2Assistant' } |
+            Sort-Object -Descending -Property @{ Expression = { [System.Management.Automation.SemanticVersion]$_.Version } }) |
+            Select-Object -First 1
+          if (-not $full) { throw "releases.win.json de $($base.tag_name) ne reference aucun paquet complet Aion2Assistant" }
+          # Nom de fichier issu d'un fichier téléchargé : on refuse tout ce qui n'est pas un simple nom de paquet.
+          if ($full.FileName -notmatch '^[A-Za-z0-9._-]+-full\.nupkg$') { throw "Nom de paquet complet inattendu : '$($full.FileName)'" }
+          $fullAsset = Find-Asset $full.FileName
+          if (-not $fullAsset) { throw "La release $($base.tag_name) ne contient pas $($full.FileName), reference par son releases.win.json : base du delta introuvable" }
+          $fullPath = Get-ReleaseAsset $fullAsset
+          $hash = (Get-FileHash $fullPath -Algorithm SHA256).Hash
+          if (-not $full.SHA256) { throw "releases.win.json de $($base.tag_name) ne donne pas de SHA-256 pour $($full.FileName) : base du delta non verifiable" }
+          if ($hash -ne $full.SHA256) { throw "SHA-256 de $($full.FileName) different de releases.win.json ($hash au lieu de $($full.SHA256))" }
+
+          $legacy = Find-Asset 'RELEASES'
+          if ($legacy) { Get-ReleaseAsset $legacy | Out-Null }
+
+          Write-Host "Base du delta : $($full.FileName) $($full.Version) (SHA-256 verifie)"
+          "base=true" >> $env:GITHUB_OUTPUT
+          Get-ChildItem releases | Format-Table Name, Length -AutoSize
 
       - name: Pack
+        id: pack
         shell: pwsh
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          BASE_DOWNLOADED: ${{ steps.base.outputs.base }}
         run: |
           # Icône du projet (logo du site) pour Setup.exe et les raccourcis.
           $icon = 'src/Aion2Assistant.App/app.ico'
@@ -134,6 +195,32 @@ jobs:
           $missing = $expected | Where-Object { -not (Test-Path (Join-Path releases $_)) }
           if ($missing) { throw "Livrables vpk manquants : $($missing -join ', ')" }
           Get-ChildItem releases | Format-Table Name, Length -AutoSize
+
+          # Sujets des attestations : uniquement les fichiers produits par CE pack. Pas de glob sur *.nupkg :
+          # le -full.nupkg de la release précédente (base du delta) est aussi dans releases/ (et un glob
+          # « -$VERSION-* » attraperait une 0.3.6-beta.1 en publiant la 0.3.6).
+          $subjects = @(
+            'releases/Aion2Assistant-win-Setup.exe',
+            'releases/Aion2Assistant-win-Portable.zip',
+            "releases/Aion2Assistant-$env:VERSION-full.nupkg"
+          )
+          if (Test-Path "releases/Aion2Assistant-$env:VERSION-delta.nupkg") {
+            $subjects += "releases/Aion2Assistant-$env:VERSION-delta.nupkg"
+          } elseif ($env:BASE_DOWNLOADED -eq 'true') {
+            throw "Une base de delta a ete telechargee mais vpk pack n'a produit aucun -delta.nupkg"
+          } else {
+            Write-Host "Pas de delta.nupkg (premiere release Velopack)"
+          }
+          "subjects<<EOF_SUBJECTS" >> $env:GITHUB_OUTPUT
+          $subjects >> $env:GITHUB_OUTPUT
+          "EOF_SUBJECTS" >> $env:GITHUB_OUTPUT
+
+      # Attestations de provenance (Sigstore) des livrables de cette version, avant leur envoi.
+      # Vérification côté utilisateur : gh attestation verify <fichier> --repo nathantek/aion2assistant
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ steps.pack.outputs.subjects }}
 
       # Les releases immuables refusent tout ajout une fois publiées : la release est créée en BROUILLON,
       # complétée (sha256, notes), vérifiée, puis publiée EN DERNIER.

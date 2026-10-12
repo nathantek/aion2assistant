@@ -75,6 +75,9 @@
                             </RadioButton>
                         </StackPanel>
                     </Border>
+                    <ContentControl DockPanel.Dock="Right" Content="{Binding Badge}" Focusable="False" Margin="6,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding Badge, Converter={StaticResource NullToCollapsed}}"/>
                     <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                VerticalAlignment="Center"/>
                 </DockPanel>

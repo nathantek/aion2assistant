@@ -6,7 +6,11 @@
              FontFamily="{DynamicResource UiFont}">
     <!-- Carte rendue hors écran pour la copie en image : pas de ScrollViewer, toutes les lignes. DataContext = MeterViewModel. -->
     <StackPanel Margin="10">
-        <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+        <DockPanel>
+            <ContentControl DockPanel.Dock="Right" Content="{Binding Badge}" Focusable="False" Margin="6,0,0,0"
+                            VerticalAlignment="Center" Visibility="{Binding Badge, Converter={StaticResource NullToCollapsed}}"/>
+            <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+        </DockPanel>
         <ProgressBar Style="{StaticResource ThinProgressStyle}" Height="3" Minimum="0" Maximum="100"
                      Value="{Binding TargetHpPct, Mode=OneWay, TargetNullValue=0}" Foreground="{Binding Accent}"
                      Margin="0,3,0,0"

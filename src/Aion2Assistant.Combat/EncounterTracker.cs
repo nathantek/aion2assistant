@@ -488,11 +488,20 @@ public sealed class EncounterTracker
     private bool IsRealActor(ActorMeter m) =>
         m.ActorId == Entities.SelfId || Entities.HasName(m.ActorId) || m.Skills.Keys.Any(SkillCodes.IsClassSkill);
 
+    /// <summary>
+    /// Soins : en plus, seul un acteur identifié comme joueur (annoncé, ou déduit par un skill de joueur hors cible
+    /// joueur) est affiché. Les boucliers absorbants arrivent avec le PNJ attaquant comme auteur et un code de classe ;
+    /// un PNJ jamais annoncé apparaissait ainsi en « #id ». L'enregistrement est conservé : un vrai joueur pas encore
+    /// annoncé apparaît, avec tous ses soins, dès qu'il est identifié.
+    /// </summary>
+    private bool IsRealHealer(ActorMeter m) =>
+        IsRealActor(m) && (m.ActorId == Entities.SelfId || Entities.KindOf(m.ActorId) == EntityKind.Player);
+
     private EncounterSnapshot Build(long durationMs, bool active, EncounterOutcome? outcome)
     {
         var self = Entities.SelfId;
         var dps = MeterBuilder.Build(MeterKind.Dps, _dps.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
-        var heal = MeterBuilder.Build(MeterKind.Heal, _heal.Values.Where(IsRealActor), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
+        var heal = MeterBuilder.Build(MeterKind.Heal, _heal.Values.Where(IsRealHealer), durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
         var taken = MeterBuilder.Build(MeterKind.Taken, _taken.Values, durationMs, Entities.NameOf, Entities.ClassOf, _data.SkillName, self, Entities.CombatPowerOf);
 
         // Cibles boss évaluées à l'instantané : les PV max peuvent arriver après les premiers coups.

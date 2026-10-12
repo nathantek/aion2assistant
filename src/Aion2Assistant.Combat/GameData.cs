@@ -87,7 +87,22 @@ public sealed class GameData
         Heal = Rename(s.Heal),
         Taken = Rename(s.Taken),
         BossDps = s.BossDps is null ? null : Rename(s.BossDps),
+        Deaths = s.Deaths.Select(Rename).ToList(),
     };
+
+    // Les récaps ne gardent que le texte : seul « Skill N » contient encore le code de façon fiable.
+    private DeathRecap Rename(DeathRecap d) => d with
+    {
+        Lines = d.Lines.Select(l => TryParseSkillN(l.Skill, out var code) ? l with { Skill = SkillName(code) } : l).ToList(),
+    };
+
+    private static bool TryParseSkillN(string text, out int code)
+    {
+        code = 0;
+        return text.StartsWith("Skill ", StringComparison.Ordinal)
+            && int.TryParse(text.AsSpan(6), System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture, out code);
+    }
 
     private MeterSnapshot Rename(MeterSnapshot m) => m with
     {
