@@ -53,6 +53,7 @@
 <details class="faq" id="authenticite">
 <summary>Comment vérifier que mon fichier est authentique ?</summary>
 <p>Télécharge l'app uniquement depuis ce site ou la page <a href="https://github.com/nathantek/aion2assistant/releases">Releases GitHub</a>. Chaque fichier d'une version est accompagné de son empreinte SHA-256 (fichier <code>.sha256</code>). Pour la comparer, ouvre PowerShell dans le dossier du fichier téléchargé et lance <code>Get-FileHash .\Aion2Assistant-win-Setup.exe</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas le fichier.</p>
+<p>Tu peux aussi vérifier d'où vient le fichier : depuis la 0.3.6, chaque fichier publié a une attestation de build qui prouve qu'il a été construit par GitHub Actions à partir du dépôt public. Avec <a href="https://cli.github.com/">GitHub CLI</a>, lance <code>gh attestation verify Aion2Assistant-win-Setup.exe --repo nathantek/aion2assistant</code> : la vérification doit réussir.</p>
 </details>
 <details class="faq" id="antivirus">
 <summary>Mon antivirus ou SmartScreen bloque l'app</summary>

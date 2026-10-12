@@ -51,7 +51,8 @@
 <li><h2 id="fenetre">Jouer en fenêtré sans bordure</h2>
 <p>Dans les options graphiques d'AION 2, choisis le mode <strong>fenêtré sans bordure</strong>. En plein écran exclusif, le jeu masque les overlays et l'application ne sera pas visible.</p></li>
 <li><h2 id="verifier">Vérifier le fichier <span class="step-optional">optionnel</span></h2>
-<p>Chaque fichier d'une version est accompagné de son empreinte SHA-256 (fichier <code>.sha256</code> sur la <a href="https://github.com/nathantek/aion2assistant/releases">page de la version</a>). Ouvre PowerShell dans le dossier du fichier téléchargé et lance <code>Get-FileHash .\Aion2Assistant-win-Setup.exe</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas le fichier.</p></li>
+<p>Chaque fichier d'une version est accompagné de son empreinte SHA-256 (fichier <code>.sha256</code> sur la <a href="https://github.com/nathantek/aion2assistant/releases">page de la version</a>). Ouvre PowerShell dans le dossier du fichier téléchargé et lance <code>Get-FileHash .\Aion2Assistant-win-Setup.exe</code> : la valeur affichée doit être identique. Si elle diffère, ne lance pas le fichier.</p>
+<p>Tu peux aussi vérifier d'où vient le fichier : depuis la 0.3.6, chaque fichier publié a une attestation de build qui prouve qu'il a été construit par GitHub Actions à partir du dépôt public. Avec <a href="https://cli.github.com/">GitHub CLI</a>, lance <code>gh attestation verify Aion2Assistant-win-Setup.exe --repo nathantek/aion2assistant</code> : la vérification doit réussir.</p></li>
 </ol>
 
 <h2 id="portable">Version portable</h2>
