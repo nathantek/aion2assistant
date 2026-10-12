@@ -9,19 +9,26 @@ namespace Aion2Assistant.Combat;
 /// Ligne de l'historique. Les champs « Self* » viennent du meter DPS du combat (même base que GroupDps) ;
 /// ils sont nuls si le personnage n'a pas été détecté ou si le combat est illisible.
 /// TrainingTargetMs : durée cible d'un entraînement (0 = libre), nul hors entraînement.
+/// IsBoss : cible principale avec PV max ≥ seuil boss à l'enregistrement ; nul si inconnu (voir <see cref="GuessBoss"/>).
 /// </summary>
 public sealed record EncounterSummary(long Id, DateTimeOffset StartedAt, long DurationMs, string Zone, string Boss,
     EncounterOutcome Outcome, double GroupDps,
     double? SelfDps = null, int? SelfRank = null, int? PartySize = null, double? SelfShare = null,
-    double? TargetHpPct = null, long? TrainingTargetMs = null)
+    double? TargetHpPct = null, long? TrainingTargetMs = null, bool? IsBoss = null)
 {
+    /// <summary>
+    /// Repli pour un ancien combat sans l'information : avant la 0.3.7, seul un boss pouvait finir en Kill
+    /// et seul un combat de boss était typiquement suivi jusqu'au Wipe.
+    /// </summary>
+    public static bool GuessBoss(EncounterOutcome outcome) => outcome is EncounterOutcome.Kill or EncounterOutcome.Wipe;
+
     /// <summary>Ligne d'historique d'un combat qui vient d'être enregistré.</summary>
     public static EncounterSummary From(long id, EncounterSnapshot s, string zone)
     {
         var st = SelfStats.Compute(s);
         return new EncounterSummary(id, DateTimeOffset.FromUnixTimeMilliseconds(s.StartMs), s.DurationMs, zone, s.Title,
             s.Outcome ?? EncounterOutcome.Manual, s.Dps.PerSecond,
-            st.SelfDps, st.SelfRank, st.PartySize, st.SelfShare, st.TargetHpPct, st.TrainingTargetMs);
+            st.SelfDps, st.SelfRank, st.PartySize, st.SelfShare, st.TargetHpPct, st.TrainingTargetMs, s.IsBoss);
     }
 }
 
@@ -138,12 +145,21 @@ public sealed class HistoryStore : IDisposable
             // Un remplissage raté ne doit jamais rendre l'historique indisponible : les lignes « Toi » restent vides.
             BackfillError = ex;
         }
+        try
+        {
+            BackfillBoss();
+        }
+        catch (Exception ex)
+        {
+            // Même règle : sans remplissage, le filtre Boss se rabat sur l'issue (EncounterSummary.GuessBoss).
+            BackfillError ??= ex;
+        }
     }
 
     private static readonly (string Name, string Type)[] ExtraColumns =
     [
         ("self_dps", "REAL"), ("self_rank", "INTEGER"), ("party_size", "INTEGER"), ("self_share", "REAL"),
-        ("target_hp_pct", "REAL"), ("training_target_ms", "INTEGER"),
+        ("target_hp_pct", "REAL"), ("training_target_ms", "INTEGER"), ("is_boss", "INTEGER"),
     ];
 
     // Anciennes bases : on ajoute les colonnes absentes sans toucher aux données existantes.
@@ -207,6 +223,49 @@ public sealed class HistoryStore : IDisposable
         tx.Commit();
     }
 
+    // Remplissage de is_boss : drapeau IsBoss du snapshot s'il y figure (présent depuis la première version),
+    // sinon issue Kill/Wipe ⇒ boss. Toujours une valeur écrite : la ligne n'est traitée qu'une fois.
+    private void BackfillBoss()
+    {
+        var rows = new List<(long Id, string Outcome, string Json)>();
+        using (var cmd = _db.CreateCommand())
+        {
+            cmd.CommandText = "SELECT id, outcome, snapshot_json FROM encounters WHERE is_boss IS NULL;";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) rows.Add((r.GetInt64(0), r.GetString(1), r.GetString(2)));
+        }
+        if (rows.Count == 0) return;
+        using var tx = _db.BeginTransaction();
+        using var upd = _db.CreateCommand();
+        upd.Transaction = tx;
+        upd.CommandText = "UPDATE encounters SET is_boss = $b WHERE id = $id;";
+        foreach (var (id, outcome, json) in rows)
+        {
+            upd.Parameters.Clear();
+            upd.Parameters.AddWithValue("$b", BossFlagOf(outcome, json) ? 1 : 0);
+            upd.Parameters.AddWithValue("$id", id);
+            upd.ExecuteNonQuery();
+        }
+        tx.Commit();
+    }
+
+    private static bool BossFlagOf(string outcome, string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.ValueKind == JsonValueKind.Object
+                && doc.RootElement.TryGetProperty("IsBoss", out var flag)
+                && flag.ValueKind is JsonValueKind.True or JsonValueKind.False)
+                return flag.GetBoolean();
+        }
+        catch (JsonException)
+        {
+            // Snapshot illisible : heuristique sur l'issue.
+        }
+        return Enum.TryParse<EncounterOutcome>(outcome, out var o) && EncounterSummary.GuessBoss(o);
+    }
+
     private static void Bind(SqliteCommand cmd, SelfStats st)
     {
         cmd.Parameters.AddWithValue("$sd", (object?)st.SelfDps ?? DBNull.Value);
@@ -226,9 +285,9 @@ public sealed class HistoryStore : IDisposable
         using var cmd = _db.CreateCommand();
         cmd.CommandText = """
             INSERT INTO encounters (started_at, duration_ms, zone, boss, outcome, group_dps, snapshot_json,
-                self_dps, self_rank, party_size, self_share, target_hp_pct, training_target_ms)
+                self_dps, self_rank, party_size, self_share, target_hp_pct, training_target_ms, is_boss)
             VALUES ($started, $duration, $zone, $boss, $outcome, $dps, $json,
-                $sd, $sr, $ps, $ss, $hp, $tt);
+                $sd, $sr, $ps, $ss, $hp, $tt, $isBoss);
             SELECT last_insert_rowid();
             """;
         cmd.Parameters.AddWithValue("$started", DateTimeOffset.FromUnixTimeMilliseconds(snapshot.StartMs).UtcDateTime.ToString("O", CultureInfo.InvariantCulture));
@@ -239,6 +298,7 @@ public sealed class HistoryStore : IDisposable
         cmd.Parameters.AddWithValue("$dps", snapshot.Dps.PerSecond);
         cmd.Parameters.AddWithValue("$json", JsonSerializer.Serialize(snapshot, Json));
         Bind(cmd, SelfStats.Compute(snapshot));
+        cmd.Parameters.AddWithValue("$isBoss", snapshot.IsBoss ? 1 : 0);
         return (long)cmd.ExecuteScalar()!;
     }
 
@@ -247,7 +307,7 @@ public sealed class HistoryStore : IDisposable
         using var cmd = _db.CreateCommand();
         cmd.CommandText = """
             SELECT id, started_at, duration_ms, zone, boss, outcome, group_dps,
-                self_dps, self_rank, party_size, self_share, target_hp_pct, training_target_ms
+                self_dps, self_rank, party_size, self_share, target_hp_pct, training_target_ms, is_boss
             FROM encounters ORDER BY started_at DESC, id DESC LIMIT $limit;
             """;
         cmd.Parameters.AddWithValue("$limit", limit);
@@ -261,7 +321,8 @@ public sealed class HistoryStore : IDisposable
             list.Add(new EncounterSummary(r.GetInt64(0), startedAt,
                 r.GetInt64(2), r.GetString(3), r.GetString(4), outcome, r.GetDouble(6),
                 NullableDouble(r, 7), r.IsDBNull(8) ? null : r.GetInt32(8), r.IsDBNull(9) ? null : r.GetInt32(9),
-                NullableDouble(r, 10), NullableDouble(r, 11), r.IsDBNull(12) ? null : r.GetInt64(12)));
+                NullableDouble(r, 10), NullableDouble(r, 11), r.IsDBNull(12) ? null : r.GetInt64(12),
+                r.IsDBNull(13) ? null : r.GetInt64(13) != 0));
         }
         return list;
     }

@@ -147,13 +147,16 @@ internal sealed class UpdateController : IDisposable
     public void ApplyOnExit()
     {
         if (_orchestrator is null) return;
-        try { _orchestrator.ApplyOnExit(); }
+        // L'attente bornée de la lecture a déjà eu lieu dans LogPendingApply : pas de seconde attente.
+        try { _orchestrator.ApplyOnExit(TimeSpan.Zero); }
         finally { _orchestrator.Dispose(); }
     }
 
     /// <summary>À journaliser avant la fermeture des logs : l'installation elle-même a lieu après.</summary>
     public void LogPendingApply()
     {
+        // Fermeture juste après le lancement : la lecture du paquet peut ne pas être terminée (2 s au plus).
+        if (_settings.CheckForUpdates) _orchestrator?.WaitForPendingRead(UpdateOrchestrator.ExitReadWait);
         if (_settings.CheckForUpdates && _orchestrator?.Version is { } version)
             Log.Information(_backend.RestartAfterApply
                 ? "Installation de la version {Version} puis relance"

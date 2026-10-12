@@ -30,6 +30,8 @@ public sealed class EncounterTracker
     private readonly Dictionary<uint, List<RecapEntry>> _recap = new();
     private readonly List<DeathRecap> _deaths = new();
     private readonly Dictionary<uint, long> _lastDeathMs = new();
+    // Acteurs morts pendant le combat en cours : une fin par inactivité sur une cible principale morte vaut Kill.
+    private readonly HashSet<uint> _diedInEncounter = new();
     private bool _hasEncounter;
     private long _startMs;
     private int _startMapId;
@@ -282,6 +284,9 @@ public sealed class EncounterTracker
         if (_lastDeathMs.TryGetValue(d.ActorId, out var last) && d.TimeMs - last < DuplicateDeathWindowMs && d.TimeMs >= last) return;
         _lastDeathMs[d.ActorId] = d.TimeMs;
         if (IsActive && TrackedMember(d.ActorId)) RecordDeath(d);
+        if (IsActive) _diedInEncounter.Add(d.ActorId);
+        // Boss : fin immédiate. Hors boss (monstres d'un pack), le combat continue jusqu'à l'inactivité, puis sa
+        // fin Timeout devient Kill si la cible principale d'alors est morte (voir End).
         if (IsActive && !IsTraining && MainTarget() == d.ActorId && Entities.MaxHpOf(d.ActorId) >= _options.BossMinHp)
             End(EncounterOutcome.Kill, d.TimeMs);
     }
@@ -441,6 +446,7 @@ public sealed class EncounterTracker
         _damageToTarget.Clear();
         _recap.Clear();
         _deaths.Clear();
+        _diedInEncounter.Clear();
         _droppedHeals = 0;
     }
 
@@ -464,6 +470,9 @@ public sealed class EncounterTracker
 
     private void End(EncounterOutcome outcome, long endMs)
     {
+        // Cible principale morte, boss ou non : « Tué » plutôt que « Terminé ». Manual (réinitialisation) inchangé.
+        if (outcome == EncounterOutcome.Timeout && MainTarget() is { } main && _diedInEncounter.Contains(main))
+            outcome = EncounterOutcome.Kill;
         var duration = Math.Max(endMs, _lastActivityMs) - _startMs;
         var snap = Build(Math.Max(0, duration), false, outcome);
         IsActive = false;

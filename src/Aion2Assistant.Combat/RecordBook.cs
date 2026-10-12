@@ -19,7 +19,8 @@ public static class RecordBook
         if (s.Outcome != EncounterOutcome.Kill || !s.IsBoss || s.IsTraining || s.TargetNpcCode == 0 || s.BossDps is null)
             return null;
         var me = s.BossDps.Actors.FirstOrDefault(a => a.IsSelf);
-        if (me is null) return null;
+        // Soi sans vrai nom (déduit sans paquet d'identité : « #id ») : pas de record, il serait orphelin.
+        if (me is null || string.IsNullOrEmpty(me.Name) || me.Name == $"#{me.ActorId}") return null;
         var previous = file.Records.FirstOrDefault(r => r.Character == me.Name && r.NpcCode == s.TargetNpcCode);
         if (previous is not null && me.PerSecond <= previous.Dps) return null;
         return new RecordResult(new PersonalRecord(me.Name, s.TargetNpcCode, s.Title, me.PerSecond, s.StartMs, encounterId), previous);

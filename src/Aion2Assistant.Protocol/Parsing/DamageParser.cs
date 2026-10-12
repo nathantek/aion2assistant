@@ -65,7 +65,7 @@ public static class DamageParser
         var afterValues = 0;
         foreach (var length in BlockLengths(layout))
         {
-            if (TryValues(body, blockStart + length, layout == 6 && critical, out damage, out scalar, out afterValues))
+            if (TryValues(body, blockStart + length, layout == 6 && critical, sw, out damage, out scalar, out afterValues))
             {
                 found = true;
                 break;
@@ -103,7 +103,7 @@ public static class DamageParser
         _ => [11, 14],
     };
 
-    private static bool TryValues(ReadOnlySpan<byte> body, int at, bool critOnLayout6, out long damage, out int scalar, out int end)
+    private static bool TryValues(ReadOnlySpan<byte> body, int at, bool critOnLayout6, uint sw, out long damage, out int scalar, out int end)
     {
         damage = 0;
         scalar = 0;
@@ -115,16 +115,20 @@ public static class DamageParser
         var afterV1 = r.Position;
         if (!r.TryVarint(out var v2)) return false;
 
-        if (critOnLayout6 && v1 is >= 1000 and <= 5_000_000 && v2 <= MaxHitsField)
+        var scalarThenDamage = v2 is >= 1 and <= MaxDamage && (v1 == 0 || v1 is >= 1000 and <= 200_000);
+        // Critique sur disposition 6 : les dégâts peuvent venir en premier, sans scalaire. Quand les deux lectures
+        // sont plausibles (ex. « 90 4E 12 » = scalaire 10000 puis 18), la fin d'enregistrement tranche.
+        // Si les deux fins valident, « dégâts en premier » l'emporte (comportement historique) ; si aucune ne
+        // valide, la lecture scalaire puis dégâts l'emporte.
+        if (critOnLayout6 && v1 is >= 1000 and <= 5_000_000 && v2 <= MaxHitsField
+            && (!scalarThenDamage || TryTail(body, afterV1, withField: false, sw, v1, out _, out _)))
         {
-            // Critique sur disposition 6 : les dégâts viennent en premier, sans scalaire.
             damage = v1;
             end = afterV1;
             return true;
         }
 
-        if (v2 is < 1 or > MaxDamage) return false;
-        if (v1 != 0 && v1 is < 1000 or > 200_000) return false;
+        if (!scalarThenDamage) return false;
         damage = v2;
         scalar = (int)v1;
         end = r.Position;

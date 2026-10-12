@@ -28,10 +28,15 @@ public sealed class EntityRegistry
         switch (e)
         {
             case SelfIdentifiedEvent s:
+                if (s.Class != GameClass.Unknown || s.ActorId != SelfId) _selfClass = s.Class;
                 SelfId = s.ActorId;
                 SelfName = s.Name;
-                _selfClass = s.Class;
                 RegisterPlayer(s.ActorId, s.Name, s.Class);
+                break;
+            case SelfStatsSeenEvent st when SelfName is null:
+                // Repli sans paquet d'identité (capture commencée en jeu) : suit les dernières statistiques reçues ;
+                // le vrai SelfInfo (qui fixe le nom) l'emporte toujours.
+                SelfId = st.ActorId;
                 break;
             case PlayerSeenEvent p:
                 RegisterPlayer(p.ActorId, p.Name, p.Class);
@@ -90,7 +95,9 @@ public sealed class EntityRegistry
     {
         _npcs.Remove(id);
         _summons.Remove(id);
-        if (!_players.ContainsKey(id)) ForgetHp(id);
+        if (!_players.TryGetValue(id, out var known)) ForgetHp(id);
+        // Une classe inconnue (ex. crédit de kill) n'efface jamais une classe connue ; le nom est mis à jour.
+        else if (cls == GameClass.Unknown) cls = known.Class;
         _players[id] = (name, cls);
         _inferred.Remove(id);
     }

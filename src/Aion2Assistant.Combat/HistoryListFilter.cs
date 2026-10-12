@@ -18,7 +18,8 @@ public static class HistoryListFilter
         var training = row.Outcome == EncounterOutcome.Training;
         var chip = filter switch
         {
-            HistoryFilter.Boss => !training,
+            // Vrais boss seulement (PV max ≥ seuil) ; drapeau inconnu : repli sur l'issue.
+            HistoryFilter.Boss => !training && (row.IsBoss ?? EncounterSummary.GuessBoss(row.Outcome)),
             HistoryFilter.Records => isRecord,
             HistoryFilter.Training => training,
             _ => true,

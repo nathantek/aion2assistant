@@ -28,6 +28,9 @@ public sealed record HealEvent(long TimeMs, uint SourceId, uint TargetId, int Sk
 
 public sealed record SelfIdentifiedEvent(long TimeMs, uint ActorId, string Name, int ServerId, GameClass Class, int Level) : GameEvent(TimeMs);
 
+/// <summary>Statistiques du joueur local (0x008D sortes 1/3, reçues seulement par soi) : permet de déduire son id sans paquet d'identité.</summary>
+public sealed record SelfStatsSeenEvent(long TimeMs, uint ActorId) : GameEvent(TimeMs);
+
 public sealed record PlayerSeenEvent(long TimeMs, uint ActorId, string Name, int ServerId, GameClass Class) : GameEvent(TimeMs);
 
 /// <summary>Puissance de combat actuelle d'un joueur. <see cref="ActorId"/> = 0 quand la source ne donne que le nom (roster, inspection).</summary>

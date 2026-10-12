@@ -44,6 +44,9 @@ public sealed class UpdateOrchestrator : IDisposable
     // Chaque SetEnabled invalide les lectures du disque encore en cours.
     private int _readGeneration;
     private bool _pendingNoticed;
+    // Lecture différée en cours (suite d'adoption) ; versions téléchargées par cette session.
+    private Task? _pendingAdopt;
+    private readonly HashSet<AppVersion> _sessionDownloads = new();
 
     private readonly Func<Func<AppVersion?>, Task<AppVersion?>> _diskRead;
 
@@ -109,8 +112,25 @@ public sealed class UpdateOrchestrator : IDisposable
             return;
         }
         if (read.IsCompleted) AdoptLocal(read, generation);
-        else read.ContinueWith(t => AdoptLocal(t, generation), CancellationToken.None,
-            TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        else
+        {
+            var adopt = read.ContinueWith(t => AdoptLocal(t, generation), CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            lock (_gate) _pendingAdopt = adopt;
+        }
+    }
+
+    /// <summary>
+    /// Attend (au plus <paramref name="timeout"/>) la fin de la lecture du paquet téléchargé encore en cours, pour que
+    /// la décision d'installer à la fermeture tienne compte d'une version déjà sur le disque. Sans effet si rien n'est en cours.
+    /// </summary>
+    public bool WaitForPendingRead(TimeSpan timeout)
+    {
+        Task? pending;
+        lock (_gate) pending = _pendingAdopt;
+        if (pending is null || pending.IsCompleted) return true;
+        try { return pending.Wait(timeout); }
+        catch (AggregateException) { return true; }
     }
 
     // Une version déjà téléchargée redevient « prête », sauf si le réglage a changé entre-temps.
@@ -126,22 +146,28 @@ public sealed class UpdateOrchestrator : IDisposable
         lock (_gate)
         {
             if (_disposed || generation != _readGeneration || !_enabled) return;
-            if (_version is null && _state == UpdateState.Idle && !_exitApplied && !_stopped && local.CompareTo(_current) > 0)
+            var newer = local.CompareTo(_current) > 0;
+            // Paquet d'un lancement précédent : ni téléchargé par cette session, signalé une seule fois,
+            // quel que soit l'état (le cycle de 10 s peut avoir devancé la lecture).
+            if (newer && !_pendingNoticed && !_sessionDownloads.Contains(local))
+            {
+                notice = true;
+                _pendingNoticed = true;
+            }
+            // L'arrêt des cycles (fermeture) n'empêche pas d'adopter : l'installation à la fermeture en dépend.
+            if (newer && _version is null && _state == UpdateState.Idle && !_exitApplied)
             {
                 _version = local;
                 _state = UpdateState.Ready;
                 adopted = true;
-                notice = !_pendingNoticed;
-                _pendingNoticed = true;
             }
         }
-        if (!adopted) return;
         if (notice)
         {
             try { PendingPackageFound?.Invoke(local); }
             catch (Exception ex) { RaiseFailed(ex); }
         }
-        Raise();
+        if (adopted) Raise();
     }
 
     private AppVersion? ReadDownloadedVersion()
@@ -218,6 +244,7 @@ public sealed class UpdateOrchestrator : IDisposable
                 {
                     _state = UpdateState.Downloading;
                     _progress = 0;
+                    _sessionDownloads.Add(found!);
                     proceed = true;
                 }
                 else _state = previous;
@@ -321,8 +348,17 @@ public sealed class UpdateOrchestrator : IDisposable
     }
 
     /// <summary>À la fermeture : applique en silence une mise à jour déjà téléchargée, sans relancer. Une seule fois, si activé.</summary>
-    public void ApplyOnExit()
+    public void ApplyOnExit() => ApplyOnExit(ExitReadWait);
+
+    /// <summary>Durée maximale d'attente de la lecture du paquet sur disque à la fermeture.</summary>
+    public static readonly TimeSpan ExitReadWait = TimeSpan.FromSeconds(2);
+
+    /// <param name="readWait">Attente maximale de la lecture du paquet encore en cours (réglage activé seulement).</param>
+    public void ApplyOnExit(TimeSpan readWait)
     {
+        bool wait;
+        lock (_gate) wait = _enabled && !_disposed && !_exitApplied && _version is null;
+        if (wait) WaitForPendingRead(readWait);
         lock (_gate)
         {
             // Une version téléchargée suffit, même si un nouveau cycle est en cours depuis Deferred.

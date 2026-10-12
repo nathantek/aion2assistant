@@ -6,15 +6,48 @@ namespace Aion2Assistant.Protocol.Parsing;
 public static class SimpleParsers
 {
     private const ulong MaxHp = 10_000_000_000;
+    private const int MaxStatFields = 16;
 
-    /// <summary>0x008D : PV restants d'un PNJ (sorte 2 ; 1 = joueur, ignoré). Pas de PV max dans ce paquet.</summary>
+    /// <summary>
+    /// 0x008D : sorte 2 = PV restants (pas de PV max dans ce paquet). Sortes 1 et 3 = statistiques du joueur
+    /// (multi-champs, non décodées) : pas de PV, seulement l'id du joueur local.
+    /// </summary>
     public static bool RemainHp(ReadOnlySpan<byte> body, long timeMs, Action<GameEvent> emit)
     {
         var r = new SpanReader(body);
         if (!r.TryVarint(out var entity) || !EntityIds.IsValid(entity)) return false;
-        if (!r.TryVarint(out var kind) || !r.TryVarint(out _) || !r.TryVarint(out _)) return false;
+        if (!r.TryVarint(out var kind)) return false;
+        if (kind is 1 or 3)
+        {
+            if (!TrySelfStats(body, ref r, kind == 3)) return false;
+            emit(new SelfStatsSeenEvent(timeMs, entity));
+            return true;
+        }
+        if (!r.TryVarint(out _) || !r.TryVarint(out _)) return false;
         if (!r.TryU64(out var hp) || hp > MaxHp) return false;
         if (kind == 2) emit(new HpEvent(timeMs, entity, (long)hp, 0));
+        return true;
+    }
+
+    /// <summary>
+    /// Forme observée des statistiques : nombre puis (id varint, valeur u32) ; la sorte 3 ajoute un second bloc
+    /// nombre puis (id varint, valeur u64). L'enregistrement doit être consommé exactement.
+    /// </summary>
+    private static bool TrySelfStats(ReadOnlySpan<byte> body, ref SpanReader r, bool withWideBlock)
+    {
+        if (!TryStatBlock(ref r, wide: false)) return false;
+        if (withWideBlock && !TryStatBlock(ref r, wide: true)) return false;
+        return r.Position == body.Length;
+    }
+
+    private static bool TryStatBlock(ref SpanReader r, bool wide)
+    {
+        if (!r.TryVarint(out var count) || count is < 1 or > MaxStatFields) return false;
+        for (var i = 0; i < count; i++)
+        {
+            if (!r.TryVarint(out _)) return false;
+            if (wide ? !r.TryU64(out _) : !r.TryU32(out _)) return false;
+        }
         return true;
     }
 
