@@ -45,6 +45,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _includeAllPlayers;
     [ObservableProperty] private bool _glowEnabled;
     [ObservableProperty] private bool _checkForUpdates;
+    [ObservableProperty] private bool _betaUpdates;
 
     internal SettingsViewModel(AppSettings settings, MainViewModel main, Action requestSave, Action<SoundRef> playSound,
         HotkeyService hotkeys, IReadOnlyList<TimerDefinition> timers, Action<bool> setKeyboardCapture, Action resetPosition,
@@ -59,6 +60,7 @@ public partial class SettingsViewModel : ObservableObject
         _updates = updates;
         _showEula = showEula;
         _checkForUpdates = settings.CheckForUpdates;
+        _betaUpdates = settings.BetaUpdates;
         updates.Changed += RefreshUpdateStatus;
         _settings = settings;
         _main = main;
@@ -170,6 +172,13 @@ public partial class SettingsViewModel : ObservableObject
         _settings.CheckForUpdates = value;
         _updates.SetEnabled(value);
         RefreshUpdateStatus();
+        _requestSave();
+    }
+
+    /// <summary>Canal bêta / stable : pris en compte à la prochaine vérification, sans redémarrage.</summary>
+    partial void OnBetaUpdatesChanged(bool value)
+    {
+        _settings.BetaUpdates = value;
         _requestSave();
     }
 

@@ -6,28 +6,35 @@ using Velopack.Sources;
 namespace Aion2Assistant.App.Services;
 
 /// <summary>
-/// Adaptateur fin entre l'orchestrateur (Core) et Velopack : releases GitHub (pré-versions incluses).
-/// Aucun appel réseau tant que l'orchestrateur ne lance pas de cycle.
+/// Adaptateur fin entre l'orchestrateur (Core) et Velopack : releases GitHub, pré-versions incluses seulement sur le
+/// canal bêta. Aucun appel réseau tant que l'orchestrateur ne lance pas de cycle.
 /// </summary>
 internal sealed class VelopackUpdateBackend : IUpdateBackend
 {
     private const string RepoUrl = "https://github.com/nathantek/aion2assistant";
 
-    private readonly UpdateManager? _manager;
+    private readonly Func<bool> _betaChannel;
     private readonly object _gate = new();
-    // Dernière information trouvée (jamais effacée par une vérification vide ou en échec).
+    // Gestionnaire du canal courant (protégé par _gate) : recréé à la vérification suivante quand le canal change.
+    private UpdateManager? _manager;
+    private bool _managerBeta;
+    // Dernière information trouvée (jamais effacée par une vérification vide ou en échec), avec son gestionnaire.
     private UpdateInfo? _info;
+    private UpdateManager? _infoManager;
     // Dernière version entièrement téléchargée : c'est elle qu'on applique.
     private VelopackAsset? _downloaded;
     private volatile bool _upToDate;
     // Version déjà annoncée en Information : les cycles suivants ne la répètent qu'en Debug.
     private AppVersion? _announced;
 
-    public VelopackUpdateBackend()
+    /// <param name="betaChannel">Canal bêta (pré-versions comprises) ; relu avant chaque vérification.</param>
+    public VelopackUpdateBackend(Func<bool> betaChannel)
     {
+        _betaChannel = betaChannel;
         try
         {
-            _manager = new UpdateManager(new GithubSource(RepoUrl, null, true));
+            _managerBeta = betaChannel();
+            _manager = Create(_managerBeta);
             IsInstalled = _manager.IsInstalled;
         }
         catch (Exception ex)
@@ -48,8 +55,10 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
     {
         get
         {
-            if (_manager is null || !IsInstalled) return null;
-            var asset = PendingAsset(_manager);
+            UpdateManager? manager;
+            lock (_gate) manager = _manager;
+            if (manager is null || !IsInstalled) return null;
+            var asset = PendingAsset(manager);
             return asset is not null && AppVersion.TryParse(asset.Version.ToString(), out var v) ? v : null;
         }
     }
@@ -62,7 +71,7 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
 
     public async Task<AppVersion?> CheckAsync(CancellationToken ct)
     {
-        var manager = Manager();
+        var manager = ManagerForChannel();
         ct.ThrowIfCancellationRequested();
         // « À jour » seulement après une vérification réussie : un échec efface l'indication.
         _upToDate = false;
@@ -84,6 +93,7 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
         lock (_gate)
         {
             _info = info;
+            _infoManager = manager;
             first = !Equals(_announced, version);
             _announced = version;
         }
@@ -94,10 +104,12 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
 
     public async Task DownloadAsync(AppVersion version, Action<int>? progress, CancellationToken ct)
     {
-        var manager = Manager();
+        _ = Manager(); // installée seulement
         UpdateInfo? info;
-        lock (_gate) info = _info;
-        if (info is null) throw new InvalidOperationException("Aucune mise à jour à télécharger.");
+        UpdateManager? manager;
+        lock (_gate) { info = _info; manager = _infoManager; }
+        // Téléchargement avec le gestionnaire qui a trouvé la version (le canal a pu changer depuis).
+        if (info is null || manager is null) throw new InvalidOperationException("Aucune mise à jour à télécharger.");
         Log.Information("Téléchargement de la mise à jour {Version}", version);
         await manager.DownloadUpdatesAsync(info, progress, ct).ConfigureAwait(false);
         lock (_gate) _downloaded = info.TargetFullRelease;
@@ -136,6 +148,28 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
         lock (_gate) return _downloaded;
     }
 
+    private static UpdateManager Create(bool beta) => new(new GithubSource(RepoUrl, null, beta));
+
     private UpdateManager Manager()
-        => _manager is not null && IsInstalled ? _manager : throw new InvalidOperationException("Application non installée.");
+    {
+        lock (_gate)
+            return _manager is not null && IsInstalled ? _manager : throw new InvalidOperationException("Application non installée.");
+    }
+
+    // Canal changé dans les options : nouvelle source pour cette vérification. Le paquet déjà téléchargé
+    // (Ready / Deferred) reste sur le disque et s'installe quel que soit le gestionnaire.
+    private UpdateManager ManagerForChannel()
+    {
+        var beta = _betaChannel();
+        UpdateManager manager;
+        lock (_gate)
+        {
+            manager = Manager();
+            if (beta == _managerBeta) return manager;
+            manager = _manager = Create(beta);
+            _managerBeta = beta;
+        }
+        Log.Information("Mises à jour : canal {Channel}", beta ? "bêta" : "stable");
+        return manager;
+    }
 }

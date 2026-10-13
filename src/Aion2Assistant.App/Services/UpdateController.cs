@@ -33,7 +33,7 @@ internal sealed class UpdateController : IDisposable
         _notifications = notifications;
         _dispatcher = dispatcher;
         CurrentVersionText = UpdateService.ReadVersionText();
-        _backend = new VelopackUpdateBackend();
+        _backend = new VelopackUpdateBackend(() => _settings.BetaUpdates);
 
         if (_backend.IsInstalled && AppVersion.TryParse(CurrentVersionText, out var current))
         {
@@ -50,7 +50,7 @@ internal sealed class UpdateController : IDisposable
         else
         {
             if (_backend.IsInstalled) Log.Warning("Mises à jour : version courante {Version} illisible", CurrentVersionText);
-            _legacy = new UpdateService(() => _settings.CheckForUpdates);
+            _legacy = new UpdateService(() => _settings.CheckForUpdates, () => _settings.BetaUpdates);
             _legacy.Changed += () => Changed?.Invoke();
             _legacy.UpdateFound += (version, _) => _notifications.Show(
                 UiStrings.Format(nameof(UiStrings.UpdateAvailableTitle), version), UiStrings.UpdateAvailableMessage, AppHost.Resource("TimerBrush"), "");

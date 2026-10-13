@@ -104,8 +104,13 @@ jobs:
       # COMPLÈTE de version inférieure comme base et génère le -delta.nupkg contre elle (sans base : paquet
       # complet seul). Le releases.win.json téléchargé est réécrit par vpk pack.
       # Sécurité : jamais un brouillon comme base (un brouillon resté d'un run échoué n'a pas été vérifié) ;
-      # seules les releases publiées sont retenues, triées par date de publication (pas l'ordre de la liste :
-      # la 0.3.4-beta.1 publiée sur « untagged-… » y apparaît hors ordre et reste une base valable).
+      # seules les releases publiées sont retenues.
+      # Choix de la base : la release publiée de version la PLUS HAUTE STRICTEMENT INFÉRIEURE à celle du tag
+      # (précédence SemVer 2.0, pré-versions comprises), pas la plus récente par date : avec les canaux stable
+      # et bêta en parallèle, une v0.4.1 publiée après une v0.5.0-beta.1 prendrait sinon la bêta comme base
+      # (vpk pack refuse une base >= nouvelle version, et le flux stable listerait la bêta).
+      # Version d'une release : son `name` (vpk upload pose releaseName = tag), sinon son tag_name ; la
+      # 0.3.4-beta.1 publiée sur « untagged-… » est retrouvée par son nom. Version illisible : ignorée.
       - name: Download previous Velopack release
         id: base
         shell: pwsh
@@ -115,23 +120,84 @@ jobs:
           $repo = '${{ github.repository }}'
           New-Item -ItemType Directory -Force releases | Out-Null
 
-          $json = @(gh api "repos/$repo/releases?per_page=100" --paginate --jq '.[] | select(.draft | not) | {id, tag_name, created_at, published_at, assets: [.assets[] | {id, name, size}]} | tojson')
+          # --- SemVer 2.0 (https://semver.org/#spec-item-11), sans module externe.
+          # Renvoie $null si la chaîne (préfixe v/V toléré) n'est pas une SemVer valide.
+          function ConvertTo-SemVer([string] $text) {
+            if (-not $text) { return $null }
+            $s = $text.Trim()
+            if ($s -match '^[vV]') { $s = $s.Substring(1) }
+            $id = '(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)'
+            $re = "^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-($id(?:\.$id)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
+            if ($s -cnotmatch $re) { return $null }
+            $pre = [string[]]@()
+            if ($Matches[4]) { $pre = [string[]]$Matches[4].Split('.') }
+            return [pscustomobject]@{ Text = $s; Core = [string[]]@($Matches[1], $Matches[2], $Matches[3]); Pre = $pre }
+          }
+          # Entiers sans zéro de tête (garanti par la regex) : comparaison par longueur puis ordinale, sans débordement.
+          function Compare-NumericId([string] $a, [string] $b) {
+            if ($a.Length -ne $b.Length) { return [Math]::Sign($a.Length - $b.Length) }
+            return [Math]::Sign([string]::CompareOrdinal($a, $b))
+          }
+          # -1 si $a < $b, 0 si égales (métadonnées de build ignorées), 1 si $a > $b.
+          function Compare-SemVer($a, $b) {
+            for ($i = 0; $i -lt 3; $i++) {
+              $c = Compare-NumericId $a.Core[$i] $b.Core[$i]
+              if ($c -ne 0) { return $c }
+            }
+            $pa = @($a.Pre); $pb = @($b.Pre)
+            if ($pa.Count -eq 0 -and $pb.Count -eq 0) { return 0 }
+            if ($pa.Count -eq 0) { return 1 }   # 1.0.0 > 1.0.0-beta.1
+            if ($pb.Count -eq 0) { return -1 }
+            $n = [Math]::Min($pa.Count, $pb.Count)
+            for ($i = 0; $i -lt $n; $i++) {
+              $x = $pa[$i]; $y = $pb[$i]
+              $xNum = $x -match '^[0-9]+$'; $yNum = $y -match '^[0-9]+$'
+              if ($xNum -and $yNum) { $c = Compare-NumericId $x $y }
+              elseif ($xNum) { $c = -1 }          # identifiant numérique < alphanumérique
+              elseif ($yNum) { $c = 1 }
+              else { $c = [Math]::Sign([string]::CompareOrdinal($x, $y)) }
+              if ($c -ne 0) { return $c }
+            }
+            return [Math]::Sign($pa.Count - $pb.Count)
+          }
+
+          $current = ConvertTo-SemVer $env:TAG
+          if (-not $current) { throw "Le tag $env:TAG n'est pas une version SemVer valide" }
+
+          $json = @(gh api "repos/$repo/releases?per_page=100" --paginate --jq '.[] | select(.draft | not) | {id, name, tag_name, created_at, published_at, assets: [.assets[] | {id, name, size}]} | tojson')
           if ($LASTEXITCODE -ne 0) { throw "Lecture des releases GitHub impossible" }
           $published = @($json | Where-Object { $_ } | ForEach-Object { $_ | ConvertFrom-Json -NoEnumerate })
-          # ConvertFrom-Json convertit déjà les dates ISO en [datetime] ; [datetime] les normalise dans tous les cas.
-          $candidates = @($published |
-            Where-Object { @($_.assets.name) -contains 'releases.win.json' } |
-            Sort-Object -Descending -Property @{ Expression = { [datetime]$(if ($_.published_at) { $_.published_at } else { $_.created_at }) } })
 
-          # Les anciennes releases (zip 0.3.x) n'ont pas de releases.win.json : première release Velopack,
-          # le pack sera alors complet, sans delta.
-          if ($candidates.Count -eq 0) {
-            Write-Host "Aucune release Velopack publiee (pas de releases.win.json) : premiere release Velopack, pas de delta."
+          # Les anciennes releases (zip 0.3.x) n'ont pas de releases.win.json : elles ne sont jamais une base.
+          $base = $null; $baseVersion = $null
+          foreach ($r in $published) {
+            if (@($r.assets.name) -notcontains 'releases.win.json') { continue }
+            $fromName = ConvertTo-SemVer $r.name
+            $fromTag = ConvertTo-SemVer $r.tag_name
+            if ($fromName -and $fromTag -and (Compare-SemVer $fromName $fromTag) -ne 0) {
+              Write-Host "::warning::Release $($r.id) ignoree : nom '$($r.name)' et tag '$($r.tag_name)' de versions differentes"
+              continue
+            }
+            $v = if ($fromName) { $fromName } else { $fromTag }
+            if (-not $v) { Write-Host "Release $($r.id) ignoree : version illisible (nom '$($r.name)', tag '$($r.tag_name)')"; continue }
+            $cmp = Compare-SemVer $v $current
+            if ($cmp -eq 0) { throw "La release $env:TAG est deja publiee (release $($r.id)) : rien a empaqueter." }
+            if ($cmp -gt 0) { continue }   # version supérieure (autre canal) : jamais une base
+            if ($base) {
+              $c = Compare-SemVer $v $baseVersion
+              if ($c -eq 0) { throw "Deux releases publiees portent la version $($v.Text) (ids $($base.id) et $($r.id)) : base du delta ambigue" }
+              if ($c -lt 0) { continue }
+            }
+            $base = $r; $baseVersion = $v
+          }
+
+          # Aucune release Velopack de version inférieure : première release Velopack, pack complet sans delta.
+          if (-not $base) {
+            Write-Host "Aucune release Velopack publiee de version inferieure a $env:TAG : premiere release Velopack, pas de delta."
             exit 0
           }
-          $base = $candidates[0]
-          if ($base.tag_name -eq $env:TAG) { throw "La release $env:TAG est deja publiee : rien a empaqueter." }
-          Write-Host "Base du delta : release $($base.tag_name) (id $($base.id), publiee le $($base.published_at))"
+          if ((Compare-SemVer $baseVersion $current) -ge 0) { throw "Base $($baseVersion.Text) non inferieure a $env:TAG : refus" }
+          Write-Host "Base du delta : release $($baseVersion.Text) (tag $($base.tag_name), id $($base.id), publiee le $($base.published_at))"
 
           # Téléchargement d'un asset par son id (fonctionne aussi pour une release sur « untagged-… »,
           # que `gh release download <tag>` ne sait pas adresser). Le jeton n'est envoyé qu'à api.github.com :
@@ -152,10 +218,15 @@ jobs:
 
           $feedPath = Get-ReleaseAsset (Find-Asset 'releases.win.json')
           $feed = Get-Content $feedPath -Raw | ConvertFrom-Json
-          $full = @($feed.Assets | Where-Object { $_.Type -eq 'Full' -and $_.PackageId -eq 'Aion2Assistant' } |
-            Sort-Object -Descending -Property @{ Expression = { [System.Management.Automation.SemanticVersion]$_.Version } }) |
-            Select-Object -First 1
+          # Paquet complet de version la plus haute (comparaison SemVer ci-dessus : beta.10 > beta.2).
+          $full = $null; $fullVersion = $null
+          foreach ($a in @($feed.Assets | Where-Object { $_.Type -eq 'Full' -and $_.PackageId -eq 'Aion2Assistant' })) {
+            $av = ConvertTo-SemVer ([string]$a.Version)
+            if (-not $av) { throw "Version de paquet illisible dans releases.win.json de $($base.tag_name) : '$($a.Version)'" }
+            if (-not $full -or (Compare-SemVer $av $fullVersion) -gt 0) { $full = $a; $fullVersion = $av }
+          }
           if (-not $full) { throw "releases.win.json de $($base.tag_name) ne reference aucun paquet complet Aion2Assistant" }
+          if ((Compare-SemVer $fullVersion $current) -ge 0) { throw "Paquet complet de base $($fullVersion.Text) non inferieur a $env:TAG : refus" }
           # Nom de fichier issu d'un fichier téléchargé : on refuse tout ce qui n'est pas un simple nom de paquet.
           if ($full.FileName -notmatch '^[A-Za-z0-9._-]+-full\.nupkg$') { throw "Nom de paquet complet inattendu : '$($full.FileName)'" }
           $fullAsset = Find-Asset $full.FileName
@@ -229,8 +300,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Toutes nos releases sont des pré-versions ; le tag est déjà poussé. Pas de --publish : brouillon.
-          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" --pre --tag $env:TAG --releaseName $env:TAG --token $env:GH_TOKEN -o releases
+          # Tag avec suffixe (v0.4.1-beta.1) : pré-version ; sans suffixe (v0.4.0) : release stable.
+          # Le tag est déjà poussé. Pas de --publish : brouillon.
+          $preArgs = @(); if ($env:TAG -like '*-*') { $preArgs = @('--pre') }
+          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" @preArgs --tag $env:TAG --releaseName $env:TAG --token $env:GH_TOKEN -o releases
           if ($LASTEXITCODE -ne 0) { throw "vpk upload a echoue" }
 
       - name: Checksums, notes, verify and publish
@@ -314,11 +387,19 @@ jobs:
 
           # Publication EN DERNIER (la release devient immuable).
           # tag_name explicite : la 0.3.4-beta.1, publiée à la main, s'est retrouvée sur un tag « untagged-… ».
-          gh api --method PATCH "repos/$repo/releases/$id" -f "tag_name=$env:TAG" -F draft=false -F prerelease=true | Out-Null
+          # Stable (tag sans suffixe) : non pré-version et marquée « latest » ; sinon pré-version.
+          if ($env:TAG -like '*-*') {
+            gh api --method PATCH "repos/$repo/releases/$id" -f "tag_name=$env:TAG" -F draft=false -F prerelease=true | Out-Null
+          } else {
+            gh api --method PATCH "repos/$repo/releases/$id" -f "tag_name=$env:TAG" -F draft=false -F prerelease=false -f make_latest=true | Out-Null
+          }
           if ($LASTEXITCODE -ne 0) { throw "Publication de la release impossible" }
           $publishedTag = gh api "repos/$repo/releases/$id" --jq '.tag_name'
           $stillDraft = gh api "repos/$repo/releases/$id" --jq '.draft'
-          if ($publishedTag -ne $env:TAG -or $stillDraft -ne 'false') {
-            throw "Release publiee avec un etat inattendu : tag=$publishedTag draft=$stillDraft (attendu : $env:TAG, false)"
+          $isPrerelease = gh api "repos/$repo/releases/$id" --jq '.prerelease'
+          if ($LASTEXITCODE -ne 0) { throw "Lecture de la release publiee impossible" }
+          $expectedPrerelease = if ($env:TAG -like '*-*') { 'true' } else { 'false' }
+          if ($publishedTag -ne $env:TAG -or $stillDraft -ne 'false' -or $isPrerelease -ne $expectedPrerelease) {
+            throw "Release publiee avec un etat inattendu : tag=$publishedTag draft=$stillDraft prerelease=$isPrerelease (attendu : $env:TAG, false, $expectedPrerelease)"
           }
           Write-Host "Release publiee sur $publishedTag"

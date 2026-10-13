@@ -35,16 +35,21 @@ public static class UpdateCheck
     private static bool Bool(JsonElement e, string name)
         => e.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.True;
 
-    public static ReleaseInfo? Newer(IEnumerable<ReleaseInfo> releases, AppVersion current)
+    /// <summary>
+    /// Release la plus récente au-delà de <paramref name="current"/>. Canal stable
+    /// (<paramref name="includePrereleases"/> faux) : pré-versions ignorées, qu'elles soient marquées
+    /// comme telles sur GitHub ou qu'elles portent un suffixe. Jamais de version inférieure.
+    /// </summary>
+    public static ReleaseInfo? Newer(IEnumerable<ReleaseInfo> releases, AppVersion current, bool includePrereleases)
     {
         ReleaseInfo? best = null;
         AppVersion? bestVersion = null;
         foreach (var r in releases)
         {
             if (r.Draft) continue;
-            if (r.Prerelease && !current.IsPrerelease) continue;
+            if (r.Prerelease && !includePrereleases) continue;
             if (!AppVersion.TryParse(r.Tag, out var v)) continue;
-            if (v.IsPrerelease && !current.IsPrerelease) continue;
+            if (v.IsPrerelease && !includePrereleases) continue;
             if (v.CompareTo(current) <= 0) continue;
             if (bestVersion is null || v.CompareTo(bestVersion) > 0) { best = r; bestVersion = v; }
         }

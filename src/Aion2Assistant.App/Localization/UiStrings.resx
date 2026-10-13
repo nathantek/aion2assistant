@@ -594,6 +594,12 @@
   <data name="SettingsAutoUpdates" xml:space="preserve">
     <value>Automatic updates</value>
   </data>
+  <data name="SettingsBetaUpdates" xml:space="preserve">
+    <value>Receive beta versions</value>
+  </data>
+  <data name="SettingsBetaUpdatesHelp" xml:space="preserve">
+    <value>Betas bring new features earlier but may contain bugs. Unchecking does not go back to an older version: you will move to the next stable one. Nothing is downloaded while automatic updates are off.</value>
+  </data>
   <data name="UpdateDownload" xml:space="preserve">
     <value>Download</value>
   </data>

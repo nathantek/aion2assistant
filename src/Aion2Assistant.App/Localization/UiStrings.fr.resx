@@ -592,6 +592,12 @@
   <data name="SettingsAutoUpdates" xml:space="preserve">
     <value>Mises à jour automatiques</value>
   </data>
+  <data name="SettingsBetaUpdates" xml:space="preserve">
+    <value>Recevoir les versions bêta</value>
+  </data>
+  <data name="SettingsBetaUpdatesHelp" xml:space="preserve">
+    <value>Les bêtas apportent les nouveautés plus tôt mais peuvent contenir des bugs. Décocher ne revient pas à une version antérieure : vous passerez à la prochaine version stable. Rien n'est téléchargé tant que les mises à jour automatiques sont désactivées.</value>
+  </data>
   <data name="UpdateDownload" xml:space="preserve">
     <value>Télécharger</value>
   </data>

@@ -23,6 +23,8 @@ public sealed class SettingsStore(string filePath, Func<CultureInfo>? systemUiCu
         if (firstLaunch && result.Source == LoadSource.Defaults)
             result.Value.Language = AppLanguage.FromCulture((systemUiCulture ?? (() => CultureInfo.CurrentUICulture))());
         result.Value.Normalize();
+        // Nouvelle installation : canal stable (Normalize place les réglages antérieurs à la v7 en bêta).
+        if (firstLaunch && result.Source == LoadSource.Defaults) result.Value.BetaUpdates = false;
         return result;
     }
 

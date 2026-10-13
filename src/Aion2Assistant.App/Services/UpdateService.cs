@@ -18,11 +18,14 @@ internal sealed class UpdateService
 
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(10) };
     private readonly Func<bool> _isEnabled;
+    private readonly Func<bool> _betaChannel;
     private bool _started;
 
-    public UpdateService(Func<bool>? isEnabled = null)
+    /// <param name="betaChannel">Canal bêta : pré-versions comprises ; lu au moment de la vérification.</param>
+    public UpdateService(Func<bool>? isEnabled = null, Func<bool>? betaChannel = null)
     {
         _isEnabled = isEnabled ?? (() => true);
+        _betaChannel = betaChannel ?? (() => false);
         CurrentVersionText = ReadVersionText();
         _timer.Tick += (_, _) =>
         {
@@ -65,6 +68,7 @@ internal sealed class UpdateService
         try
         {
             if (!AppVersion.TryParse(CurrentVersionText, out var current)) return;
+            var beta = _betaChannel();
             var found = await Task.Run(async () =>
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, ReleasesUrl);
@@ -73,7 +77,7 @@ internal sealed class UpdateService
                 using var response = await Http.SendAsync(request).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return UpdateCheck.Newer(UpdateCheck.ParseReleases(json), current);
+                return UpdateCheck.Newer(UpdateCheck.ParseReleases(json), current, beta);
             });
             Checked = true;
             if (found is not null)

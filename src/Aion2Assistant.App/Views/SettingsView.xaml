@@ -198,6 +198,9 @@
                 <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr AboutReadEula}" Command="{Binding ReadEulaCommand}"/>
             </WrapPanel>
             <CheckBox Content="{loc:Tr SettingsAutoUpdates}" IsChecked="{Binding CheckForUpdates}" Margin="0,6,0,0"/>
+            <CheckBox Content="{loc:Tr SettingsBetaUpdates}" IsChecked="{Binding BetaUpdates}" Margin="0,4,0,0"/>
+            <TextBlock Text="{loc:Tr SettingsBetaUpdatesHelp}" Margin="20,2,0,0"
+                       Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
             <DockPanel Margin="0,4,0,0">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr UpdateDownload}"

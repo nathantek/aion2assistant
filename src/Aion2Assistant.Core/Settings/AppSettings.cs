@@ -42,7 +42,7 @@ public sealed class AppSettings
     public const double MinFontScale = 0.8, MaxFontScale = 1.5;
     public const double MinOpacity = 0.0, MaxOpacity = 1.0;
 
-    public const int CurrentVersion = 6;
+    public const int CurrentVersion = 7;
     public const string DefaultThemeId = "classique";
     /// <summary>Version du CLUF en vigueur ; l'utilisateur doit l'accepter à nouveau quand elle change.</summary>
     public const string EulaVersion = "2";
@@ -68,6 +68,11 @@ public sealed class AppSettings
     public WindowBounds? FreeBounds { get; set; }
     /// <summary>Vérifie au démarrage si une version plus récente est publiée sur GitHub.</summary>
     public bool CheckForUpdates { get; set; } = true;
+    /// <summary>
+    /// Canal bêta : reçoit aussi les pré-versions (-beta.N). Faux = canal stable.
+    /// Nouvelle installation : stable (SettingsStore) ; réglages antérieurs à la v7 : bêta (Normalize).
+    /// </summary>
+    public bool BetaUpdates { get; set; }
     /// <summary>Version du CLUF acceptée (null = jamais acceptée).</summary>
     public string? EulaAcceptedVersion { get; set; }
     /// <summary>Son d'alerte : identifiant intégré (voir <see cref="AlertSounds"/>) ou <see cref="AlertSounds.CustomId"/> pour le fichier perso.</summary>
@@ -128,6 +133,8 @@ public sealed class AppSettings
         // v6 : choix de la langue ; les utilisateurs existants (réglages antérieurs) restent en français.
         if (SettingsVersion < 6 && string.IsNullOrWhiteSpace(Language)) Language = AppLanguage.French;
         Language = AppLanguage.Normalize(Language);
+        // v7 : canaux stable / bêta ; les utilisateurs existants (bêta-testeurs) restent sur le canal bêta.
+        if (SettingsVersion < 7) BetaUpdates = true;
         SettingsVersion = CurrentVersion;
         foreach (var (action, gesture) in HotkeyDefaults.Create())
             Hotkeys.TryAdd(action, gesture);
