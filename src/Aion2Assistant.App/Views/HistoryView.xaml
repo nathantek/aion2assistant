@@ -1,6 +1,7 @@
 <UserControl x:Class="Aion2Assistant.App.Views.HistoryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Aion2Assistant.App.Localization"
              xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels"
              xmlns:views="clr-namespace:Aion2Assistant.App.Views"
              xmlns:combat="clr-namespace:Aion2Assistant.Combat;assembly=Aion2Assistant.Combat"
@@ -15,7 +16,7 @@
     <Grid>
         <!-- Liste -->
         <Grid Visibility="{Binding ShowList, Converter={StaticResource BoolToVisibility}}">
-            <TextBlock Text="Aucun combat enregistré." Foreground="{DynamicResource TextMutedBrush}"
+            <TextBlock Text="{loc:Tr HistoryEmpty}" Foreground="{DynamicResource TextMutedBrush}"
                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12"
                        Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}"/>
             <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"
@@ -26,16 +27,16 @@
                 <StackPanel DockPanel.Dock="Top" Margin="0,0,0,2"
                             Visibility="{Binding ShowFilters, Converter={StaticResource BoolToVisibility}}">
                     <WrapPanel>
-                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="Tous"
+                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="{loc:Tr HistoryFilterAll}"
                                      IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static combat:HistoryFilter.All}}"
                                      Command="{Binding SetFilterCommand}" CommandParameter="{x:Static combat:HistoryFilter.All}"/>
-                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="Boss"
+                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="{loc:Tr HistoryFilterBoss}"
                                      IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static combat:HistoryFilter.Boss}}"
                                      Command="{Binding SetFilterCommand}" CommandParameter="{x:Static combat:HistoryFilter.Boss}"/>
-                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="Records"
+                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="{loc:Tr HistoryFilterRecords}"
                                      IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static combat:HistoryFilter.Records}}"
                                      Command="{Binding SetFilterCommand}" CommandParameter="{x:Static combat:HistoryFilter.Records}"/>
-                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="Entraînement"
+                        <RadioButton Style="{StaticResource ChipButtonStyle}" Content="{loc:Tr Training}"
                                      IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static combat:HistoryFilter.Training}}"
                                      Command="{Binding SetFilterCommand}" CommandParameter="{x:Static combat:HistoryFilter.Training}"/>
                     </WrapPanel>
@@ -44,17 +45,17 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="SearchBox" Style="{StaticResource SearchBoxStyle}" Tag="Rechercher un boss"
+                        <TextBox x:Name="SearchBox" Style="{StaticResource SearchBoxStyle}" Tag="{loc:Tr HistorySearchHint}"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                  PreviewMouseLeftButtonDown="OnSearchMouseDown" PreviewKeyDown="OnSearchKeyDown"
                                  LostKeyboardFocus="OnSearchLostFocus"/>
-                        <Button Grid.Column="1" Style="{StaticResource TextButtonStyle}" Content="Comparer (2)"
+                        <Button Grid.Column="1" Style="{StaticResource TextButtonStyle}" Content="{loc:Tr HistoryCompareTwo}"
                                 Margin="6,0,0,0" Command="{Binding CompareCommand}"
                                 Visibility="{Binding CanCompare, Converter={StaticResource BoolToVisibility}}"/>
                     </Grid>
                 </StackPanel>
                 <Grid>
-                    <TextBlock Text="Aucun combat ne correspond." Foreground="{DynamicResource TextMutedBrush}"
+                    <TextBlock Text="{loc:Tr HistoryNoMatch}" Foreground="{DynamicResource TextMutedBrush}"
                                HorizontalAlignment="Center" VerticalAlignment="Top" Margin="12"
                                Visibility="{Binding HasNoMatch, Converter={StaticResource BoolToVisibility}}"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -91,7 +92,7 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="🏆" Margin="0,0,4,0" VerticalAlignment="Center" ToolTip="Record actuel"
+                                                <TextBlock Text="🏆" Margin="0,0,4,0" VerticalAlignment="Center" ToolTip="{loc:Tr HistoryRecordTip}"
                                                            Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibility}}"/>
                                                 <TextBlock Grid.Column="1" Text="{Binding Boss}" FontWeight="SemiBold"
                                                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
@@ -115,7 +116,7 @@
                                                           IsChecked="{Binding IsCompareChecked}"
                                                           Visibility="{Binding IsTraining, Converter={StaticResource BoolToVisibility}}">
                                                     <!-- TextBlock explicite : le style implicite imposerait la taille normale -->
-                                                    <TextBlock Text="Comparer" FontSize="{DynamicResource FontSizeSmall}"
+                                                    <TextBlock Text="{loc:Tr HistoryCompare}" FontSize="{DynamicResource FontSizeSmall}"
                                                                Foreground="{DynamicResource TextMutedBrush}"/>
                                                 </CheckBox>
                                             </Grid>
@@ -168,8 +169,8 @@
         <!-- Détail -->
         <DockPanel Visibility="{Binding IsDetail, Converter={StaticResource BoolToVisibility}}">
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                <Button Style="{StaticResource TextButtonStyle}" Content="‹ Retour" Command="{Binding BackCommand}"/>
-                <Button Content="DPS" Command="{Binding ShowMeterCommand}" CommandParameter="{Binding Dps}">
+                <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr Back}" Command="{Binding BackCommand}"/>
+                <Button Content="{loc:Tr TabDps}" Command="{Binding ShowMeterCommand}" CommandParameter="{Binding Dps}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MeterTabStyle}">
                             <Style.Triggers>
@@ -180,7 +181,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button Content="Soins" Command="{Binding ShowMeterCommand}" CommandParameter="{Binding Heal}">
+                <Button Content="{loc:Tr TabHeal}" Command="{Binding ShowMeterCommand}" CommandParameter="{Binding Heal}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MeterTabStyle}">
                             <Style.Triggers>
@@ -191,7 +192,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button Content="Reçus" Command="{Binding ShowMeterCommand}" CommandParameter="{Binding Taken}">
+                <Button Content="{loc:Tr HistoryTaken}" Command="{Binding ShowMeterCommand}" CommandParameter="{Binding Taken}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MeterTabStyle}">
                             <Style.Triggers>

@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Aion2Assistant.App.Localization"
                     xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels"
                     xmlns:combat="clr-namespace:Aion2Assistant.Combat;assembly=Aion2Assistant.Combat">
     <!-- Gabarits partagés par MeterView et ShareCardView (image du tableau) -->
@@ -16,7 +17,7 @@
     <!-- Légende d'une série (autonome : déplaçable telle quelle dans un ResourceDictionary partagé) -->
     <DataTemplate x:Key="ChartLegendItemTemplate" DataType="{x:Type vm:ChartSeries}">
         <!-- Vrai Button : un InputBinding ne résout pas son Command depuis un dictionnaire applicatif -->
-        <Button Margin="0,0,10,2" ToolTip="Afficher / masquer la courbe"
+        <Button Margin="0,0,10,2" ToolTip="{loc:Tr MeterChartLegendTip}"
                 Command="{Binding DataContext.ToggleSeriesCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                 CommandParameter="{Binding}">
             <Button.Style>
@@ -148,13 +149,13 @@
             <ColumnDefinition Width="44"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="Skill" Style="{StaticResource SmallMutedStyle}"/>
-        <TextBlock Grid.Column="1" Text="Total" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
+        <TextBlock Text="{loc:Tr ColumnSkill}" Style="{StaticResource SmallMutedStyle}"/>
+        <TextBlock Grid.Column="1" Text="{loc:Tr ColumnTotal}" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
         <TextBlock Grid.Column="2" Text="%" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
-        <TextBlock Grid.Column="3" Text="Coups" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
-        <TextBlock Grid.Column="4" Text="Crit %" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
-        <TextBlock Grid.Column="5" Text="Max" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
-        <TextBlock Grid.Column="6" Text="Surplus ~" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"
+        <TextBlock Grid.Column="3" Text="{loc:Tr ColumnHits}" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
+        <TextBlock Grid.Column="4" Text="{loc:Tr ColumnCrit}" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
+        <TextBlock Grid.Column="5" Text="{loc:Tr ColumnMax}" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"/>
+        <TextBlock Grid.Column="6" Text="{loc:Tr ColumnOverheal}" Style="{StaticResource SmallMutedStyle}" TextAlignment="Right"
                    Width="52" Visibility="{Binding ShowOverheal, Converter={StaticResource BoolToVisibility}}"/>
         </Grid>
     </DataTemplate>

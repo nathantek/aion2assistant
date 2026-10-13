@@ -2,6 +2,8 @@ Version 2
 
 CONTRAT DE LICENCE UTILISATEUR FINAL (CLUF) — Aion2Assistant
 
+Ce texte en français fait foi ; toute traduction n'est fournie qu'à titre d'information.
+
 En cliquant sur « J'accepte », tu reconnais avoir lu et accepté les conditions suivantes.
 
 1. Logiciel fourni « tel quel »

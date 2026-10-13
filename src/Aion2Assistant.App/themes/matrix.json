@@ -1,6 +1,7 @@
 {
   "id": "matrix",
   "name": "Matrix",
+  "nameEn": "Matrix",
   "colors": {
     "text": "#B8FFB8",
     "textMuted": "#6FC77A",

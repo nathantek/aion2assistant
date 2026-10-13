@@ -1,4 +1,4 @@
-using System.Globalization;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Core.Theming;
 
@@ -7,10 +7,8 @@ public static class ThemeReadability
 {
     public const double MainText = 7.0, Secondary = 4.5, MinStatDeltaE = 15.0;
 
-    private static readonly CultureInfo Fr = CultureInfo.GetCultureInfo("fr-FR");
-
-    private static string Num(double v) => v.ToString("0.00", Fr);
-    private static string Num1(double v) => v.ToString("0.0", Fr);
+    private static string Num(double v) => v.ToString("0.00", AppCulture.Current);
+    private static string Num1(double v) => v.ToString("0.0", AppCulture.Current);
 
     /// <summary>Liste des problèmes de lisibilité ; vide = thème lisible.</summary>
     public static IReadOnlyList<string> Check(ThemeDefinition theme, double opacity)

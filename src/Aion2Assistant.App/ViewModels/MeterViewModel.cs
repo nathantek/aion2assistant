@@ -3,9 +3,11 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.Services;
 using Aion2Assistant.Combat;
 using Aion2Assistant.Core.Events;
+using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
@@ -58,8 +60,8 @@ public partial class MeterViewModel : ObservableObject
     private static readonly string[] SeriesBrushKeys =
         ["TextBrush", "TextMutedBrush", "DpsBrush", "HealBrush", "TimerBrush", "AlertBrush", "TakenBrush", "CritBrush"];
 
-    private const string CopyTextIdle = "Copier texte";
-    private const string CopyImageIdle = "Copier image";
+    private static string CopyTextIdle => UiStrings.CopyText;
+    private static string CopyImageIdle => UiStrings.CopyImage;
     private DispatcherTimer? _copyReset;
 
     private readonly Dictionary<uint, MeterRowViewModel> _rowsById = new();
@@ -111,9 +113,10 @@ public partial class MeterViewModel : ObservableObject
     {
         TrainingText = state switch
         {
-            { Running: true, DurationMs: > 0 } => $"Entraînement : {MeterFormat.Duration(Math.Max(0, state.DurationMs - state.ElapsedMs))} restantes",
-            { Running: true } => $"Entraînement libre : {MeterFormat.Duration(state.ElapsedMs)}",
-            { Armed: true } => "Entraînement prêt : frappe pour démarrer.",
+            { Running: true, DurationMs: > 0 } => UiStrings.Format(nameof(UiStrings.TrainingRemaining),
+                MeterFormat.Duration(Math.Max(0, state.DurationMs - state.ElapsedMs))),
+            { Running: true } => UiStrings.Format(nameof(UiStrings.TrainingFreeElapsed), MeterFormat.Duration(state.ElapsedMs)),
+            { Armed: true } => UiStrings.TrainingArmed,
             _ => "",
         };
     }
@@ -227,7 +230,7 @@ public partial class MeterViewModel : ObservableObject
         var text = CombatShareFormatter.Format(_lastSnapshot, Kind, bossOnly: _bossFilter?.BossOnly == true);
         var data = new DataObject();
         data.SetText(text);
-        CopyTextLabel = TrySetClipboard(data) ? "✓ Copié" : "Échec de la copie";
+        CopyTextLabel = TrySetClipboard(data) ? UiStrings.CopyTextDone : UiStrings.CopyFailed;
         StartCopyReset();
     }
 
@@ -243,7 +246,7 @@ public partial class MeterViewModel : ObservableObject
             data.SetImage(image);
             ok = TrySetClipboard(data);
         }
-        CopyImageLabel = ok ? "✓ Image copiée" : "Échec de la copie";
+        CopyImageLabel = ok ? UiStrings.CopyImageDone : UiStrings.CopyFailed;
         StartCopyReset();
     }
 
@@ -334,10 +337,11 @@ public partial class MeterViewModel : ObservableObject
 
         var meter = MeterOf(snapshot);
         GroupText = ShowPerSecond
-            ? $"Groupe : {MeterFormat.PerSecond(meter.PerSecond, snapshot.DurationMs)} · {MeterFormat.Compact(meter.Total)}"
-            : $"Groupe : {MeterFormat.Compact(meter.Total)}";
+            ? UiStrings.Format(nameof(UiStrings.MeterGroupRate), MeterFormat.PerSecond(meter.PerSecond, snapshot.DurationMs),
+                MeterFormat.Compact(meter.Total))
+            : UiStrings.Format(nameof(UiStrings.MeterGroupTotal), MeterFormat.Compact(meter.Total));
         if (Kind == MeterKind.Dps && _bossFilter?.BossOnly == true && snapshot.BossDps is null)
-            GroupText += " · aucun boss, tout est compté";
+            GroupText += UiStrings.MeterNoBossSuffix;
         SyncRows(meter, snapshot.DurationMs);
         UpdateChart(snapshot);
 
@@ -430,7 +434,7 @@ public partial class MeterViewModel : ObservableObject
             s.Name,
             MeterFormat.Compact(s.Total),
             MeterFormat.Share(s.Share, actor.Total),
-            s.Hits.ToString("N0", MeterFormat.French),
+            s.Hits.ToString("N0", AppCulture.Current),
             MeterFormat.Percent(s.CritPct),
             MeterFormat.Compact(s.Max),
             s.Overheal is { } oh ? MeterFormat.Compact(oh) : MeterFormat.Missing)).ToList();
@@ -440,9 +444,10 @@ public partial class MeterViewModel : ObservableObject
         var recaps = new List<object>();
         foreach (var d in snapshot.Deaths.Where(d => d.ActorId == actor.ActorId))
         {
-            recaps.Add(new RecapHeaderViewModel("Mort à " + MeterFormat.Duration(Math.Max(0, d.AtMs - snapshot.StartMs))));
+            recaps.Add(new RecapHeaderViewModel(
+                UiStrings.Format(nameof(UiStrings.MeterDeathAt), MeterFormat.Duration(Math.Max(0, d.AtMs - snapshot.StartMs)))));
             recaps.AddRange(d.Lines.Select(l => new RecapLineViewModel(
-                "-" + (Math.Abs(l.AtMs - d.AtMs) / 1000.0).ToString("0.0", MeterFormat.French) + " s",
+                "-" + (Math.Abs(l.AtMs - d.AtMs) / 1000.0).ToString("0.0", AppCulture.Current) + " s",
                 l.Source, l.Skill, MeterFormat.Compact(l.Amount), l.IsHeal ? _healBrush : _textBrush)));
         }
         if (!recaps.SequenceEqual(DetailRecaps)) DetailRecaps = recaps;

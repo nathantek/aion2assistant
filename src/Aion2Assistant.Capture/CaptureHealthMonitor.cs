@@ -1,3 +1,5 @@
+using Aion2Assistant.Core.Localization;
+
 namespace Aion2Assistant.Capture;
 
 /// <summary>Couleur du voyant à partir de l'état et des compteurs récents (fenêtre glissante d'une minute).</summary>
@@ -14,31 +16,31 @@ public sealed class CaptureHealthMonitor
     {
         switch (state)
         {
-            case CaptureState.NpcapMissing: return (CaptureIndicator.Red, "Npcap n'est pas installé");
-            case CaptureState.NoAdapter: return (CaptureIndicator.Red, "Aucune carte réseau ne porte la connexion du jeu");
-            case CaptureState.Error: return (CaptureIndicator.Red, "Erreur de capture");
-            case CaptureState.GameNotRunning: _history.Clear(); return (CaptureIndicator.Grey, "Jeu non détecté");
-            case CaptureState.WaitingForConnection: _history.Clear(); return (CaptureIndicator.Grey, "En attente de la connexion du jeu");
+            case CaptureState.NpcapMissing: return (CaptureIndicator.Red, Strings.CaptureNpcapMissing);
+            case CaptureState.NoAdapter: return (CaptureIndicator.Red, Strings.CaptureNoAdapter);
+            case CaptureState.Error: return (CaptureIndicator.Red, Strings.CaptureError);
+            case CaptureState.GameNotRunning: _history.Clear(); return (CaptureIndicator.Grey, Strings.CaptureGameNotDetected);
+            case CaptureState.WaitingForConnection: _history.Clear(); return (CaptureIndicator.Grey, Strings.CaptureWaiting);
         }
 
         _history.Enqueue((nowMs, stats));
         while (_history.Count > 0 && nowMs - _history.Peek().TimeMs > WindowMs) _history.Dequeue();
 
-        if (stats.Segments == 0) return (CaptureIndicator.Amber, "Aucun paquet reçu pour l'instant");
+        if (stats.Segments == 0) return (CaptureIndicator.Amber, Strings.CaptureNoPacketsYet);
 
         if (SampleAtOrBefore(nowMs - NoPacketsMs) is { } old10 && old10.Stats.Segments == stats.Segments)
-            return (CaptureIndicator.Red, "Aucun paquet depuis 10 s");
+            return (CaptureIndicator.Red, Strings.CaptureNoPackets10s);
 
         var oldest = _history.Peek();
         var parsed = stats.Parsed - oldest.Stats.Parsed;
         var rejected = stats.Rejected - oldest.Stats.Rejected;
         if (parsed + rejected > 0 && (double)rejected / (parsed + rejected) > MaxRejectRate)
-            return (CaptureIndicator.Amber, "Beaucoup de paquets illisibles (protocole modifié ?)");
+            return (CaptureIndicator.Amber, Strings.CaptureManyRejected);
 
         if (SampleAtOrBefore(nowMs - NoEventsMs) is { } old30 && old30.Stats.Events == stats.Events)
-            return (CaptureIndicator.Amber, "Paquets reçus mais aucun événement décodé");
+            return (CaptureIndicator.Amber, Strings.CaptureNoEvents);
 
-        return (CaptureIndicator.Green, "Capture active");
+        return (CaptureIndicator.Green, Strings.CaptureActive);
     }
 
     /// <summary>Échantillon le plus récent pris au plus tard à <paramref name="atOrBeforeMs"/> (null s'il n'y en a pas).</summary>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FormatKilo" xml:space="preserve">
+    <value>{0} k</value>
+  </data>
+  <data name="FormatMega" xml:space="preserve">
+    <value>{0} M</value>
+  </data>
+  <data name="FormatPercent" xml:space="preserve">
+    <value>{0} %</value>
+  </data>
+  <data name="OutcomeKill" xml:space="preserve">
+    <value>Tué</value>
+  </data>
+  <data name="OutcomeWipe" xml:space="preserve">
+    <value>Wipe</value>
+  </data>
+  <data name="OutcomeWipeHp" xml:space="preserve">
+    <value>Wipe {0}</value>
+  </data>
+  <data name="OutcomeTraining" xml:space="preserve">
+    <value>Entraînement</value>
+  </data>
+  <data name="OutcomeReset" xml:space="preserve">
+    <value>Réinitialisé</value>
+  </data>
+  <data name="OutcomeEnded" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="StateLive" xml:space="preserve">
+    <value>en cours</value>
+  </data>
+  <data name="StateTraining" xml:space="preserve">
+    <value>entraînement</value>
+  </data>
+  <data name="ShareDps" xml:space="preserve">
+    <value>DPS</value>
+  </data>
+  <data name="ShareBossDps" xml:space="preserve">
+    <value>DPS boss</value>
+  </data>
+  <data name="ShareHeal" xml:space="preserve">
+    <value>Soins</value>
+  </data>
+  <data name="ShareTaken" xml:space="preserve">
+    <value>Reçus</value>
+  </data>
+  <data name="ShareDeath" xml:space="preserve">
+    <value>{0} mort</value>
+  </data>
+  <data name="ShareDeaths" xml:space="preserve">
+    <value>{0} morts</value>
+  </data>
+  <data name="EncounterFallbackTitle" xml:space="preserve">
+    <value>Combat</value>
+  </data>
+  <data name="NpcFallback" xml:space="preserve">
+    <value>PNJ {0}</value>
+  </data>
+  <data name="MapFallback" xml:space="preserve">
+    <value>Carte {0}</value>
+  </data>
+  <data name="ZoneUnknown" xml:space="preserve">
+    <value>Zone inconnue</value>
+  </data>
+  <data name="CountdownDays" xml:space="preserve">
+    <value>{0} j {1:00}:{2:00}</value>
+  </data>
+  <data name="CountdownUnderMinute" xml:space="preserve">
+    <value>moins d'une minute</value>
+  </data>
+  <data name="CountdownMinutes" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="CountdownHours" xml:space="preserve">
+    <value>{0} h {1:00}</value>
+  </data>
+  <data name="FieldBossAssumedSuffix" xml:space="preserve">
+    <value> (supposé)</value>
+  </data>
+  <data name="UpdateDisabled" xml:space="preserve">
+    <value>Mises à jour automatiques désactivées</value>
+  </data>
+  <data name="UpdateNotInstalled" xml:space="preserve">
+    <value>Installe Aion2Assistant via Setup.exe pour les mises à jour automatiques</value>
+  </data>
+  <data name="UpdateLegacyAvailable" xml:space="preserve">
+    <value>Version {0} disponible : installe-la via Setup.exe pour les mises à jour automatiques</value>
+  </data>
+  <data name="UpdateReady" xml:space="preserve">
+    <value>Mise à jour prête</value>
+  </data>
+  <data name="UpdateVersionReady" xml:space="preserve">
+    <value>Version {0} prête</value>
+  </data>
+  <data name="UpdateDeferred" xml:space="preserve">
+    <value>{0} : installée à la fermeture</value>
+  </data>
+  <data name="UpdateChecking" xml:space="preserve">
+    <value>Recherche d'une mise à jour…</value>
+  </data>
+  <data name="UpdateDownloading" xml:space="preserve">
+    <value>Téléchargement de la mise à jour…</value>
+  </data>
+  <data name="UpdateUpToDate" xml:space="preserve">
+    <value>À jour</value>
+  </data>
+  <data name="UpdateActive" xml:space="preserve">
+    <value>Mises à jour automatiques actives</value>
+  </data>
+  <data name="SoundChime" xml:space="preserve">
+    <value>Carillon</value>
+  </data>
+  <data name="SoundBell" xml:space="preserve">
+    <value>Cloche</value>
+  </data>
+  <data name="SoundDoubleBeep" xml:space="preserve">
+    <value>Double bip</value>
+  </data>
+  <data name="SoundGong" xml:space="preserve">
+    <value>Gong</value>
+  </data>
+  <data name="SoundHarp" xml:space="preserve">
+    <value>Harpe</value>
+  </data>
+  <data name="SoundAlarm" xml:space="preserve">
+    <value>Alarme</value>
+  </data>
+  <data name="SoundCustomFile" xml:space="preserve">
+    <value>Fichier perso…</value>
+  </data>
+  <data name="OpcodeHeartbeat" xml:space="preserve">
+    <value>Heartbeat</value>
+  </data>
+  <data name="OpcodeSelfInfo" xml:space="preserve">
+    <value>Personnage</value>
+  </data>
+  <data name="OpcodePlayerInfo" xml:space="preserve">
+    <value>Joueur</value>
+  </data>
+  <data name="OpcodePlayerInfoOld" xml:space="preserve">
+    <value>Joueur (ancien)</value>
+  </data>
+  <data name="OpcodeSpawn" xml:space="preserve">
+    <value>Apparition</value>
+  </data>
+  <data name="OpcodeDeath" xml:space="preserve">
+    <value>Mort</value>
+  </data>
+  <data name="OpcodeMapLoad" xml:space="preserve">
+    <value>Carte</value>
+  </data>
+  <data name="OpcodeTeleport" xml:space="preserve">
+    <value>Téléportation</value>
+  </data>
+  <data name="OpcodeCast" xml:space="preserve">
+    <value>Lancement</value>
+  </data>
+  <data name="OpcodeDamage" xml:space="preserve">
+    <value>Dégâts</value>
+  </data>
+  <data name="OpcodeDot" xml:space="preserve">
+    <value>DoT/HoT</value>
+  </data>
+  <data name="OpcodeRemainHp" xml:space="preserve">
+    <value>PV restants</value>
+  </data>
+  <data name="OpcodeKillCredit" xml:space="preserve">
+    <value>Mort + tueur</value>
+  </data>
+  <data name="OpcodeHpMp" xml:space="preserve">
+    <value>PV/PM</value>
+  </data>
+  <data name="OpcodePartyRoster" xml:space="preserve">
+    <value>Groupe</value>
+  </data>
+  <data name="OpcodeFieldBossList" xml:space="preserve">
+    <value>Boss de terrain</value>
+  </data>
+  <data name="OpcodeCombatPower" xml:space="preserve">
+    <value>Puissance</value>
+  </data>
+  <data name="OpcodeInspect" xml:space="preserve">
+    <value>Inspection</value>
+  </data>
+  <data name="CaptureNpcapMissing" xml:space="preserve">
+    <value>Npcap n'est pas installé</value>
+  </data>
+  <data name="CaptureNoAdapter" xml:space="preserve">
+    <value>Aucune carte réseau ne porte la connexion du jeu</value>
+  </data>
+  <data name="CaptureError" xml:space="preserve">
+    <value>Erreur de capture</value>
+  </data>
+  <data name="CaptureGameNotDetected" xml:space="preserve">
+    <value>Jeu non détecté</value>
+  </data>
+  <data name="CaptureWaiting" xml:space="preserve">
+    <value>En attente de la connexion du jeu</value>
+  </data>
+  <data name="CaptureNoPacketsYet" xml:space="preserve">
+    <value>Aucun paquet reçu pour l'instant</value>
+  </data>
+  <data name="CaptureNoPackets10s" xml:space="preserve">
+    <value>Aucun paquet depuis 10 s</value>
+  </data>
+  <data name="CaptureManyRejected" xml:space="preserve">
+    <value>Beaucoup de paquets illisibles (protocole modifié ?)</value>
+  </data>
+  <data name="CaptureNoEvents" xml:space="preserve">
+    <value>Paquets reçus mais aucun événement décodé</value>
+  </data>
+  <data name="CaptureActive" xml:space="preserve">
+    <value>Capture active</value>
+  </data>
+  <data name="CaptureStatusStarting" xml:space="preserve">
+    <value>Démarrage…</value>
+  </data>
+  <data name="CaptureStatusNpcapMissing" xml:space="preserve">
+    <value>Npcap n'est pas installé : https://npcap.com (cocher « WinPcap API-compatible Mode »).</value>
+  </data>
+  <data name="CaptureStatusGameNotRunning" xml:space="preserve">
+    <value>AION 2 n'est pas lancé.</value>
+  </data>
+  <data name="CaptureStatusWaiting" xml:space="preserve">
+    <value>En attente de la connexion du jeu.</value>
+  </data>
+  <data name="CaptureStatusNoAdapter" xml:space="preserve">
+    <value>Aucune carte Npcap ne porte la connexion du jeu (VPN ?).</value>
+  </data>
+  <data name="CaptureStatusActive" xml:space="preserve">
+    <value>Capture active.</value>
+  </data>
+  <data name="CaptureStatusAccessDenied" xml:space="preserve">
+    <value>Ouverture de la capture refusée : réinstalle Npcap sans l'option « réservé aux administrateurs ». {0}</value>
+  </data>
+  <data name="CaptureStatusError" xml:space="preserve">
+    <value>Erreur de capture : {0}</value>
+  </data>
+</root>

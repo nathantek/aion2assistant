@@ -1,6 +1,7 @@
 {
   "id": "pastel",
   "name": "Pastel",
+  "nameEn": "Pastel",
   "colors": {
     "text": "#2E1F33",
     "textMuted": "#53405A",

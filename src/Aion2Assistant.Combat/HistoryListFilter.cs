@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Combat;
 
@@ -47,18 +48,16 @@ public enum OutcomeTone { Kill, Wipe, Training, Neutral }
 /// <summary>Badge d'issue d'un combat : « Tué », « Wipe 23 % », « Entraînement », « Réinitialisé », « Terminé ».</summary>
 public sealed record OutcomeBadge(OutcomeTone Tone, string Text)
 {
-    private static readonly CultureInfo French = CultureInfo.GetCultureInfo("fr-FR");
-
     /// <param name="targetHpPct">PV restants du boss en %, affichés sur un wipe s'ils sont connus.</param>
     public static OutcomeBadge For(EncounterOutcome? outcome, double? targetHpPct) => outcome switch
     {
-        EncounterOutcome.Kill => new(OutcomeTone.Kill, "Tué"),
+        EncounterOutcome.Kill => new(OutcomeTone.Kill, Strings.OutcomeKill),
         // Arrondi au-dessus : un boss encore en vie ne s'affiche jamais à 0 %.
         EncounterOutcome.Wipe => new(OutcomeTone.Wipe, targetHpPct is { } hp
-            ? "Wipe " + Math.Clamp(Math.Ceiling(hp), 1, 100).ToString("0", French) + " %"
-            : "Wipe"),
-        EncounterOutcome.Training => new(OutcomeTone.Training, "Entraînement"),
-        EncounterOutcome.Manual => new(OutcomeTone.Neutral, "Réinitialisé"),
-        _ => new(OutcomeTone.Neutral, "Terminé"),
+            ? Strings.Format(nameof(Strings.OutcomeWipeHp), AppFormat.Percent(Math.Clamp(Math.Ceiling(hp), 1, 100)))
+            : Strings.OutcomeWipe),
+        EncounterOutcome.Training => new(OutcomeTone.Training, Strings.OutcomeTraining),
+        EncounterOutcome.Manual => new(OutcomeTone.Neutral, Strings.OutcomeReset),
+        _ => new(OutcomeTone.Neutral, Strings.OutcomeEnded),
     };
 }

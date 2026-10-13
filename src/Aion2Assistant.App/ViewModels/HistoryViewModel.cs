@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.Combat;
+using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -27,9 +29,9 @@ public partial class HistoryViewModel : ObservableObject
         MeterDisplayOptions display)
     {
         _load = load;
-        Dps = new MeterViewModel(MeterKind.Dps, "DPS", dps, bossFilter, display) { ShowOutcomeBadge = true };
-        Heal = new MeterViewModel(MeterKind.Heal, "Soins", heal, display: display) { ShowOutcomeBadge = true };
-        Taken = new MeterViewModel(MeterKind.Taken, "Dégâts reçus", taken, display: display) { ShowOutcomeBadge = true };
+        Dps = new MeterViewModel(MeterKind.Dps, UiStrings.TabDps, dps, bossFilter, display) { ShowOutcomeBadge = true };
+        Heal = new MeterViewModel(MeterKind.Heal, UiStrings.TabHeal, heal, display: display) { ShowOutcomeBadge = true };
+        Taken = new MeterViewModel(MeterKind.Taken, UiStrings.TabTaken, taken, display: display) { ShowOutcomeBadge = true };
         _selectedMeter = Dps;
         Items.CollectionChanged += (_, _) =>
         {
@@ -214,9 +216,9 @@ public partial class HistoryViewModel : ObservableObject
 
     public static string DayLabel(DateOnly day, DateOnly today)
     {
-        if (day == today) return "Aujourd'hui";
-        if (day == today.AddDays(-1)) return "Hier";
-        return day.ToString("dddd d MMMM", MeterFormat.French);
+        if (day == today) return UiStrings.HistoryToday;
+        if (day == today.AddDays(-1)) return UiStrings.HistoryYesterday;
+        return day.ToString(UiStrings.FormatDayHeader, AppCulture.Current);
     }
 
     [RelayCommand]
@@ -226,7 +228,7 @@ public partial class HistoryViewModel : ObservableObject
         var snapshot = _load(row.Id);
         if (snapshot is null)
         {
-            DetailMessage = "Combat illisible.";
+            DetailMessage = UiStrings.FightUnreadable;
         }
         else
         {

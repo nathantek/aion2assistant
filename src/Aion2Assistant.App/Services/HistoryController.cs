@@ -1,3 +1,4 @@
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.ViewModels;
 using Aion2Assistant.Combat;
 using Aion2Assistant.Core.Settings;
@@ -35,7 +36,7 @@ internal sealed class HistoryController : IDisposable
         catch (Exception ex)
         {
             Log.Error(ex, "Historique indisponible");
-            View.ErrorMessage = $"Historique indisponible : {ex.Message}";
+            View.ErrorMessage = UiStrings.Format(nameof(UiStrings.HistoryUnavailable), ex.Message);
             _store?.Dispose();
             _store = null;
         }

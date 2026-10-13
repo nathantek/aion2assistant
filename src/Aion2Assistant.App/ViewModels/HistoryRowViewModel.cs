@@ -1,4 +1,6 @@
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.Combat;
+using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Aion2Assistant.App.ViewModels;
@@ -29,7 +31,7 @@ public sealed class HistoryDayHeaderViewModel : ObservableObject
         }
     }
 
-    public string CountText => _count == 1 ? "1 combat" : $"{_count} combats";
+    public string CountText => _count == 1 ? UiStrings.HistoryFightCountOne : UiStrings.Format(nameof(UiStrings.HistoryFightCount), _count);
     public bool IsVisible => _count > 0;
 }
 
@@ -51,17 +53,21 @@ public sealed class HistoryRowViewModel : ObservableObject
         IsTraining = summary.Outcome == EncounterOutcome.Training;
         Boss = summary.Boss;
         Badge = OutcomeBadge.For(summary.Outcome, summary.TargetHpPct);
-        TimeDurationText = local.ToString("HH:mm", MeterFormat.French) + " · " + MeterFormat.Duration(summary.DurationMs);
-        GroupText = "Groupe " + MeterFormat.PerSecond(summary.GroupDps, summary.DurationMs);
+        TimeDurationText = local.ToString("HH:mm", AppCulture.Current) + " · " + MeterFormat.Duration(summary.DurationMs);
+        GroupText = UiStrings.Format(nameof(UiStrings.HistoryGroup), MeterFormat.PerSecond(summary.GroupDps, summary.DurationMs));
 
         HasSelf = summary.SelfDps is not null;
-        SelfText = summary.SelfDps is { } self ? "Toi " + MeterFormat.PerSecond(self, summary.DurationMs) : "";
+        SelfText = summary.SelfDps is { } self
+            ? UiStrings.Format(nameof(UiStrings.HistorySelf), MeterFormat.PerSecond(self, summary.DurationMs))
+            : "";
         ShareFraction = Math.Clamp(summary.SelfShare ?? 0, 0, 1);
         if (IsTraining)
         {
             // Entraînement : pas de rang, écart avec l'essai précédent de même durée cible.
             var sign = 0;
-            RightText = trainingDeltaPct is { } d ? TrainingDelta.Format(d, out sign) + " vs essai préc." : "";
+            RightText = trainingDeltaPct is { } d
+                ? UiStrings.Format(nameof(UiStrings.HistoryVsPrevious), TrainingDelta.Format(d, out sign))
+                : "";
             DeltaSign = sign;
         }
         else

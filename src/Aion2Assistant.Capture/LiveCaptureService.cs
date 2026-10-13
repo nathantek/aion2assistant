@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net;
+using Aion2Assistant.Core.Localization;
 using SharpPcap;
 using SharpPcap.LibPcap;
 
@@ -34,7 +35,7 @@ public sealed class LiveCaptureService(CapturePipeline pipeline) : IDisposable
 
     private bool Disposed => Volatile.Read(ref _disposedFlag) != 0;
 
-    public CaptureStatus Status { get; private set; } = new(CaptureState.GameNotRunning, "Démarrage…");
+    public CaptureStatus Status { get; private set; } = new(CaptureState.GameNotRunning, Strings.CaptureStatusStarting);
     public event Action<CaptureStatus>? StatusChanged;
     public event Action<string>? Diagnostic;
 
@@ -48,7 +49,7 @@ public sealed class LiveCaptureService(CapturePipeline pipeline) : IDisposable
         if (!NpcapProbe.IsInstalled())
         {
             SetStatus(new CaptureStatus(CaptureState.NpcapMissing,
-                "Npcap n'est pas installé : https://npcap.com (cocher « WinPcap API-compatible Mode »)."));
+                Strings.CaptureStatusNpcapMissing));
             return;
         }
         lock (_stateLock)
@@ -132,14 +133,14 @@ public sealed class LiveCaptureService(CapturePipeline pipeline) : IDisposable
             if (pids.Length == 0)
             {
                 CloseDevice();
-                SetStatus(new CaptureStatus(CaptureState.GameNotRunning, "AION 2 n'est pas lancé."));
+                SetStatus(new CaptureStatus(CaptureState.GameNotRunning, Strings.CaptureStatusGameNotRunning));
                 return;
             }
 
             var connections = GameConnectionLocator.FindConnections(pids);
             if (connections.Count == 0)
             {
-                SetStatus(new CaptureStatus(CaptureState.WaitingForConnection, "En attente de la connexion du jeu."));
+                SetStatus(new CaptureStatus(CaptureState.WaitingForConnection, Strings.CaptureStatusWaiting));
                 return;
             }
 
@@ -152,7 +153,7 @@ public sealed class LiveCaptureService(CapturePipeline pipeline) : IDisposable
             if (device is null)
             {
                 CloseDevice();
-                SetStatus(new CaptureStatus(CaptureState.NoAdapter, "Aucune carte Npcap ne porte la connexion du jeu (VPN ?)."));
+                SetStatus(new CaptureStatus(CaptureState.NoAdapter, Strings.CaptureStatusNoAdapter));
                 return;
             }
 
@@ -164,19 +165,19 @@ public sealed class LiveCaptureService(CapturePipeline pipeline) : IDisposable
             var filter = "tcp and (" + string.Join(" or ", hosts) + ")";
             if (!OpenDevice(device, filter)) return;
             var server = string.Join(", ", connections.Select(c => $"{c.RemoteIp}:{c.RemotePort}").Distinct());
-            SetStatus(new CaptureStatus(CaptureState.Capturing, "Capture active.", device.Description ?? device.Name, server));
+            SetStatus(new CaptureStatus(CaptureState.Capturing, Strings.CaptureStatusActive, device.Description ?? device.Name, server));
         }
         catch (OpenFailedException ex)
         {
             CloseDevice();
             SetStatus(new CaptureStatus(CaptureState.Error,
-                "Ouverture de la capture refusée : réinstalle Npcap sans l'option « réservé aux administrateurs ». " + ex.Message));
+                Strings.Format(nameof(Strings.CaptureStatusAccessDenied), ex.Message)));
         }
         catch (Exception ex)
         {
             CloseDevice();
             Raise("Erreur de capture : " + ex);
-            SetStatus(new CaptureStatus(CaptureState.Error, "Erreur de capture : " + ex.Message));
+            SetStatus(new CaptureStatus(CaptureState.Error, Strings.Format(nameof(Strings.CaptureStatusError), ex.Message)));
         }
         finally
         {

@@ -1,7 +1,8 @@
-using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.Services;
+using Aion2Assistant.Core.Localization;
 using Aion2Assistant.Core.Settings;
 using Aion2Assistant.Timers;
 using Aion2Assistant.Timers.FieldBosses;
@@ -12,7 +13,6 @@ namespace Aion2Assistant.App.ViewModels;
 
 public partial class TimerRowViewModel : ObservableObject
 {
-    private static readonly CultureInfo French = CultureInfo.GetCultureInfo("fr-FR");
     private readonly Action<string> _toggleSound;
 
     [ObservableProperty] private string _name = "";
@@ -46,7 +46,7 @@ public partial class TimerRowViewModel : ObservableObject
         RemainingText = IsOpen && state.OpenUntil is { } until
             ? CountdownFormatter.Format(until - now)
             : IsOpen && state.Category == FieldBossTracker.Category
-                ? (assumed ? "Vivant ?" : "Vivant")
+                ? (assumed ? UiStrings.FieldBossAliveAssumed : UiStrings.FieldBossAlive)
                 : CountdownFormatter.Format(state.Remaining);
         Progress = state.Progress;
         AccentBrush = Resource(IsSoon ? "AlertBrush" : "TimerBrush");
@@ -54,10 +54,10 @@ public partial class TimerRowViewModel : ObservableObject
 
         var local = state.NextAt.ToLocalTime();
         var when = state.Remaining >= TimeSpan.FromDays(1)
-            ? local.ToString("ddd HH:mm", French)
-            : local.ToString("HH:mm", French);
-        var status = IsOpen ? "Ouvert" : $"à {when}";
-        SubText = state.Verified ? status : $"{status} · horaire à vérifier";
+            ? local.ToString("ddd HH:mm", AppCulture.Current)
+            : local.ToString("HH:mm", AppCulture.Current);
+        var status = IsOpen ? UiStrings.TimerOpen : UiStrings.Format(nameof(UiStrings.TimerAt), when);
+        SubText = state.Verified ? status : UiStrings.Format(nameof(UiStrings.TimerUnverified), status);
     }
 
     [RelayCommand]

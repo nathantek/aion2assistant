@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.Services;
 using Aion2Assistant.Capture;
 using Aion2Assistant.Core.Events;
+using Aion2Assistant.Core.Localization;
 using Aion2Assistant.Protocol;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,13 +15,13 @@ namespace Aion2Assistant.App.ViewModels;
 public partial class CaptureViewModel(Action toggleRecording, Action openFolder) : ObservableObject
 {
     [ObservableProperty] private Brush _indicatorBrush = Brushes.Gray;
-    [ObservableProperty] private string _statusText = "Démarrage…";
+    [ObservableProperty] private string _statusText = Strings.CaptureStatusStarting;
     [ObservableProperty] private string _adapter = "—";
     [ObservableProperty] private string _server = "—";
-    [ObservableProperty] private string _selfText = "Personnage non détecté";
+    [ObservableProperty] private string _selfText = UiStrings.CaptureSelfUnknown;
     [ObservableProperty] private string _countersText = "";
     [ObservableProperty] private bool _isRecording;
-    [ObservableProperty] private string _recordButtonText = "Enregistrer une capture";
+    [ObservableProperty] private string _recordButtonText = UiStrings.CaptureRecordStart;
 
     public ObservableCollection<string> TopOpcodes { get; } = new();
 
@@ -62,13 +64,15 @@ public partial class CaptureViewModel(Action toggleRecording, Action openFolder)
 
     public void SetSelf(SelfIdentifiedEvent self)
     {
-        var name = self.Name.Length == 0 ? "(sans nom)" : self.Name;
-        var details = self.ServerId != 0 ? $" — serveur {self.ServerId} — {self.Class} niv. {self.Level}" : "";
+        var name = self.Name.Length == 0 ? UiStrings.CaptureNoName : self.Name;
+        var details = self.ServerId != 0
+            ? UiStrings.Format(nameof(UiStrings.CaptureSelfDetails), self.ServerId, self.Class, self.Level)
+            : "";
         _selfBase = name + details;
         ComposeSelfText();
     }
 
-    private string _selfBase = "Personnage non détecté";
+    private string _selfBase = UiStrings.CaptureSelfUnknown;
     private long? _selfCombatPower;
 
     /// <summary>Puissance de combat de soi (null = inconnue) ajoutée au texte du personnage.</summary>
@@ -80,18 +84,18 @@ public partial class CaptureViewModel(Action toggleRecording, Action openFolder)
 
     private void ComposeSelfText() =>
         SelfText = _selfCombatPower is { } power
-            ? _selfBase + " — puissance " + power.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))
+            ? _selfBase + UiStrings.Format(nameof(UiStrings.CaptureSelfPower), power.ToString("N0", AppCulture.Current))
             : _selfBase;
 
     public void SetStats(PipelineStats stats, long dropped)
     {
         var total = stats.Parsed + stats.Rejected;
         var failure = total == 0 ? 0 : 100.0 * stats.Rejected / total;
-        CountersText =
-            $"{stats.Segments:N0} segments · {stats.Frames:N0} trames · {stats.Events:N0} événements\n" +
-            $"{stats.Resyncs} resync. · {stats.Gaps} trous · {failure:0.#} % rejetés · {dropped} perdus";
+        CountersText = UiStrings.Format(nameof(UiStrings.CaptureCounters),
+            stats.Segments, stats.Frames, stats.Events, stats.Resyncs, stats.Gaps, failure, dropped);
         var top = stats.Opcodes.OrderByDescending(o => o.Received).Take(6)
-            .Select(o => $"{Opcodes.Name(o.Opcode)} : {o.Received:N0}" + (o.Rejected > 0 ? $" ({o.Rejected} rejetés)" : ""))
+            .Select(o => UiStrings.Format(nameof(UiStrings.CaptureOpcodeLine), Opcodes.Name(o.Opcode), o.Received)
+                + (o.Rejected > 0 ? UiStrings.Format(nameof(UiStrings.CaptureOpcodeRejected), o.Rejected) : ""))
             .ToList();
         if (!top.SequenceEqual(TopOpcodes))
         {
@@ -103,7 +107,7 @@ public partial class CaptureViewModel(Action toggleRecording, Action openFolder)
     public void SetRecording(bool recording)
     {
         IsRecording = recording;
-        RecordButtonText = recording ? "Arrêter l'enregistrement" : "Enregistrer une capture";
+        RecordButtonText = recording ? UiStrings.CaptureRecordStop : UiStrings.CaptureRecordStart;
     }
 
     private static Brush Resource(string key) => (Brush)Application.Current.Resources[key];

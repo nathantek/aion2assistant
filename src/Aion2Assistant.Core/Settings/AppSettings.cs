@@ -1,5 +1,6 @@
 using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Hotkeys;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Core.Settings;
 
@@ -41,7 +42,7 @@ public sealed class AppSettings
     public const double MinFontScale = 0.8, MaxFontScale = 1.5;
     public const double MinOpacity = 0.0, MaxOpacity = 1.0;
 
-    public const int CurrentVersion = 5;
+    public const int CurrentVersion = 6;
     public const string DefaultThemeId = "classique";
     /// <summary>Version du CLUF en vigueur ; l'utilisateur doit l'accepter à nouveau quand elle change.</summary>
     public const string EulaVersion = "2";
@@ -50,6 +51,11 @@ public sealed class AppSettings
 
     /// <summary>0 = fichier antérieur au versionnage ; Normalize() le fait passer à <see cref="CurrentVersion"/>.</summary>
     public int SettingsVersion { get; set; }
+    /// <summary>
+    /// Langue de l'app (« en » | « fr », voir <see cref="AppLanguage"/>), appliquée au démarrage.
+    /// null = pas encore déterminée : SettingsStore la déduit de Windows au premier lancement, Normalize la complète.
+    /// </summary>
+    public string? Language { get; set; }
     public string ThemeId { get; set; } = DefaultThemeId;
     public double UiScale { get; set; } = 1.0;
     public double FontScale { get; set; } = 1.0;
@@ -119,6 +125,9 @@ public sealed class AppSettings
         // v5 : choix du son d'alerte ; un fichier perso déjà configuré reste celui utilisé.
         if (SettingsVersion < 5 && !string.IsNullOrWhiteSpace(CustomSoundPath)) SoundId = AlertSounds.CustomId;
         if (SoundId != AlertSounds.CustomId && !AlertSounds.IsBuiltIn(SoundId)) SoundId = AlertSounds.DefaultId;
+        // v6 : choix de la langue ; les utilisateurs existants (réglages antérieurs) restent en français.
+        if (SettingsVersion < 6 && string.IsNullOrWhiteSpace(Language)) Language = AppLanguage.French;
+        Language = AppLanguage.Normalize(Language);
         SettingsVersion = CurrentVersion;
         foreach (var (action, gesture) in HotkeyDefaults.Create())
             Hotkeys.TryAdd(action, gesture);

@@ -1,21 +1,15 @@
-using System.Globalization;
 using System.Windows.Media;
 using Aion2Assistant.App.Services;
 using Aion2Assistant.Combat;
+using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Aion2Assistant.App.ViewModels;
 
+/// <summary>Mises en forme des meters, dans la culture de l'app (<see cref="AppFormat"/>).</summary>
 public static class MeterFormat
 {
-    public static readonly CultureInfo French = CultureInfo.GetCultureInfo("fr-FR");
-
-    public static string Compact(double v)
-    {
-        if (v >= 1_000_000) return (v / 1_000_000).ToString("0.00", French) + " M";
-        if (v >= 10_000) return (v / 1_000).ToString("0.0", French) + " k";
-        return v.ToString("N0", French);
-    }
+    public static string Compact(double v) => AppFormat.Compact(v);
 
     public const string Missing = "—";
 
@@ -24,10 +18,10 @@ public static class MeterFormat
         durationMs < 1000 ? Missing : Compact(value) + "/s";
 
     public static string Share(double share, long meterTotal) =>
-        meterTotal <= 0 ? Missing : share.ToString("P0", French);
+        meterTotal <= 0 ? Missing : share.ToString("P0", AppCulture.Current);
 
     public static string Percent(double? pct) =>
-        pct is { } p ? p.ToString("0", French) + " %" : Missing;
+        pct is { } p ? AppFormat.Percent(p) : Missing;
 
     public static string Duration(long ms)
     {

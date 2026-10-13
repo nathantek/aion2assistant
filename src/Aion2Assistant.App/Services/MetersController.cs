@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.ViewModels;
 using Aion2Assistant.Combat;
 using Aion2Assistant.Core.Events;
@@ -29,9 +30,9 @@ internal sealed class MetersController : IDisposable
         _main = main;
         _window = window;
         _settings = settings;
-        Dps = new MeterViewModel(MeterKind.Dps, "DPS", dps, bossFilter, display) { Training = new TrainingControls(StartTraining, StopTraining) };
-        Heal = new MeterViewModel(MeterKind.Heal, "Soins", heal, display: display);
-        Taken = new MeterViewModel(MeterKind.Taken, "Dégâts reçus", taken, display: display);
+        Dps = new MeterViewModel(MeterKind.Dps, UiStrings.TabDps, dps, bossFilter, display) { Training = new TrainingControls(StartTraining, StopTraining) };
+        Heal = new MeterViewModel(MeterKind.Heal, UiStrings.TabHeal, heal, display: display);
+        Taken = new MeterViewModel(MeterKind.Taken, UiStrings.TabTaken, taken, display: display);
         var data = GameData.Load(Path.Combine(AppContext.BaseDirectory, "data"));
         Log.Information("Données de jeu : {Skills} skills, {Npcs} PNJ", data.SkillCount, data.NpcCount);
         if (data.SkillCount == 0 && data.NpcCount == 0)

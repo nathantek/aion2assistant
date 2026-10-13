@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Threading;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.ViewModels;
+using Aion2Assistant.Core.Localization;
 using Aion2Assistant.Core.Settings;
 using Aion2Assistant.Core.Updates;
 using Serilog;
@@ -50,8 +52,8 @@ internal sealed class UpdateController : IDisposable
             if (_backend.IsInstalled) Log.Warning("Mises à jour : version courante {Version} illisible", CurrentVersionText);
             _legacy = new UpdateService(() => _settings.CheckForUpdates);
             _legacy.Changed += () => Changed?.Invoke();
-            _legacy.UpdateFound += (version, _) => _notifications.Show($"Version {version} disponible",
-                "Installe-la avec Setup.exe depuis la page du projet (Options › À propos).", AppHost.Resource("TimerBrush"), "");
+            _legacy.UpdateFound += (version, _) => _notifications.Show(
+                UiStrings.Format(nameof(UiStrings.UpdateAvailableTitle), version), UiStrings.UpdateAvailableMessage, AppHost.Resource("TimerBrush"), "");
         }
     }
 
@@ -94,6 +96,12 @@ internal sealed class UpdateController : IDisposable
         Application.Current.Shutdown();
     }
 
+    /// <summary>
+    /// Relance demandée pour une autre raison (langue) : une version téléchargée s'installe à la fermeture et
+    /// Velopack relance l'app ; sinon l'app se relance elle-même (voir <see cref="ApplyOnExit"/>).
+    /// </summary>
+    public void PrepareRelaunch() => _backend.RestartAfterApply = true;
+
     /// <summary>« Plus tard » : bandeau masqué, installation à la fermeture.</summary>
     public void Defer()
     {
@@ -111,14 +119,14 @@ internal sealed class UpdateController : IDisposable
             var version = _orchestrator.Version;
             // Réglage coupé : bandeau masqué (et rien ne sera installé).
             _main.UpdateBannerText = _settings.CheckForUpdates && state == UpdateState.Ready && version is not null
-                ? $"Version {version} prête" : null;
+                ? Strings.Format(nameof(Strings.UpdateVersionReady), version) : null;
             // Vérification réussie : une prochaine erreur sera de nouveau signalée.
             if (state == UpdateState.Idle && _backend.UpToDate) _failures.Reset();
             if (_settings.CheckForUpdates && state == UpdateState.Ready && version is not null && !Equals(version, _notifiedVersion))
             {
                 _notifiedVersion = version;
                 _failures.Reset();
-                _notifications.Show($"Mise à jour {version} prête", "Redémarre depuis l'overlay pour l'installer.",
+                _notifications.Show(UiStrings.Format(nameof(UiStrings.UpdateReadyTitle), version), UiStrings.UpdateReadyMessage,
                     AppHost.Resource("TimerBrush"), "");
             }
         }
@@ -144,12 +152,14 @@ internal sealed class UpdateController : IDisposable
     /// Toute dernière étape de la fermeture (après les logs et le mutex) : l'outil de Velopack attend la fin
     /// du processus 60 s au plus. Installe la version téléchargée, avec relance si « Redémarrer » a été cliqué.
     /// </summary>
-    public void ApplyOnExit()
+    /// <returns>Vrai si Velopack relancera l'app après l'installation.</returns>
+    public bool ApplyOnExit()
     {
-        if (_orchestrator is null) return;
+        if (_orchestrator is null) return false;
         // L'attente bornée de la lecture a déjà eu lieu dans LogPendingApply : pas de seconde attente.
         try { _orchestrator.ApplyOnExit(TimeSpan.Zero); }
         finally { _orchestrator.Dispose(); }
+        return _backend.ApplyStarted && _backend.RestartAfterApply;
     }
 
     /// <summary>À journaliser avant la fermeture des logs : l'installation elle-même a lieu après.</summary>

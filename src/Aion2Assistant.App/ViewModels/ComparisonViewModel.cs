@@ -1,4 +1,6 @@
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.Combat;
+using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Aion2Assistant.App.ViewModels;
@@ -15,7 +17,7 @@ public sealed partial class ComparisonViewModel
     public ComparisonViewModel(Action close)
     {
         _close = close;
-        Message = "Combat illisible.";
+        Message = UiStrings.FightUnreadable;
     }
 
     public ComparisonViewModel(Action close, HistoryRowViewModel rowA, HistoryRowViewModel rowB, EncounterSnapshot a, EncounterSnapshot b)
@@ -26,8 +28,8 @@ public sealed partial class ComparisonViewModel
         HeaderB = Header(rowB, c.DurationB);
         Lines =
         [
-            Line("DPS", c.DpsA, c.DpsB, c.DpsDeltaPct, v => MeterFormat.Compact(v) + "/s"),
-            Line("Dégâts totaux", c.TotalA, c.TotalB, c.TotalDeltaPct, MeterFormat.Compact),
+            Line(UiStrings.TabDps, c.DpsA, c.DpsB, c.DpsDeltaPct, v => MeterFormat.Compact(v) + "/s"),
+            Line(UiStrings.ComparisonTotalDamage, c.TotalA, c.TotalB, c.TotalDeltaPct, MeterFormat.Compact),
             CritLine(c.CritA, c.CritB),
         ];
         Skills = c.Skills.Select(s => Line(s.Name, s.TotalA, s.TotalB, s.DeltaPct, MeterFormat.Compact)).ToList();
@@ -44,31 +46,30 @@ public sealed partial class ComparisonViewModel
     private void Back() => _close();
 
     private static string Header(HistoryRowViewModel row, long durationMs) =>
-        row.StartedLocal.ToString("dd/MM/yyyy HH:mm", MeterFormat.French) + " · " + MeterFormat.Duration(durationMs);
+        row.StartedLocal.ToString(UiStrings.FormatDateTime, AppCulture.Current) + " · " + MeterFormat.Duration(durationMs);
 
     private static ComparisonLine Line(string label, double? a, double? b, double? delta, Func<double, string> format) =>
         new(label, a is { } x ? format(x) : MeterFormat.Missing, b is { } y ? format(y) : MeterFormat.Missing,
-            delta is { } d ? DeltaText(d, " %", out var sign) : MeterFormat.Missing,
+            delta is { } d ? AppFormat.PercentText(DeltaNumber(d)) : MeterFormat.Missing,
             delta is null ? 0 : Sign(delta.Value));
 
     /// <summary>Critique : le Δ est une différence en points (b - a), pas un pourcentage relatif.</summary>
     private static ComparisonLine CritLine(double? a, double? b)
     {
-        string Fmt(double v) => v.ToString("0.0", MeterFormat.French) + " %";
+        string Fmt(double v) => AppFormat.Percent(v, "0.0");
         var delta = a is { } x && b is { } y ? b.Value - x : (double?)null;
-        return new("Critique", a is { } p ? Fmt(p) : MeterFormat.Missing, b is { } q ? Fmt(q) : MeterFormat.Missing,
-            delta is { } d ? DeltaText(d, " pts", out _) : MeterFormat.Missing,
+        return new(UiStrings.ComparisonCrit, a is { } p ? Fmt(p) : MeterFormat.Missing, b is { } q ? Fmt(q) : MeterFormat.Missing,
+            delta is { } d ? UiStrings.Format(nameof(UiStrings.ComparisonPoints), DeltaNumber(d)) : MeterFormat.Missing,
             delta is null ? 0 : Sign(delta.Value));
     }
 
     private static int Sign(double d) => Math.Sign(Math.Round(d, 1));
 
     /// <summary>Arrondit d'abord, puis préfixe « + » : pas de « +0,0 % » ni de « -0,0 % ».</summary>
-    private static string DeltaText(double d, string unit, out int sign)
+    private static string DeltaNumber(double d)
     {
         var r = Math.Round(d, 1);
-        sign = Math.Sign(r);
-        return (r > 0 ? "+" : "") + r.ToString("0.0", MeterFormat.French) + unit;
+        return (r > 0 ? "+" : "") + r.ToString("0.0", AppCulture.Current);
     }
 
     private static ComparisonLine Line(string label, long? a, long? b, double? delta, Func<double, string> format) =>

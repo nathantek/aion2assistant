@@ -20,6 +20,7 @@ Téléchargements : [page des Releases](https://github.com/nathantek/aion2assist
 - **Historique** : consultation des combats passés.
 - **Records** : meilleurs résultats conservés.
 - **Entraînement** : mode pour s'exercer sur un mannequin.
+- **Langues** : anglais et français (Options › Affichage ; français automatique si Windows est en français).
 - **Thèmes** : Classique, Néon, Asgard, Matrix, Pastel (clair) et Contraste élevé.
 
 ## Raccourcis clavier

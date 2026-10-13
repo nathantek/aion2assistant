@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Aion2Assistant.App.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:Aion2Assistant.App.Localization"
              xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
@@ -11,28 +12,28 @@
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <WrapPanel Grid.Row="0" Margin="0,0,0,6">
-            <Button Style="{StaticResource TextButtonStyle}" Content="Affichage" Tag="{Binding ElementName=SecAffichage}" Click="OnSectionChip"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Son" Tag="{Binding ElementName=SecSon}" Click="OnSectionChip"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Timers" Tag="{Binding ElementName=SecTimers}" Click="OnSectionChip"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Combat" Tag="{Binding ElementName=SecCombat}" Click="OnSectionChip"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Capture" Tag="{Binding ElementName=SecCapture}" Click="OnSectionChip"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Raccourcis" Tag="{Binding ElementName=SecRaccourcis}" Click="OnSectionChip"/>
-            <Button Style="{StaticResource TextButtonStyle}" Content="À propos" Tag="{Binding ElementName=SecAPropos}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionDisplay}" Tag="{Binding ElementName=SecAffichage}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionSound}" Tag="{Binding ElementName=SecSon}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionTimers}" Tag="{Binding ElementName=SecTimers}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionCombat}" Tag="{Binding ElementName=SecCombat}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionCapture}" Tag="{Binding ElementName=SecCapture}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionHotkeys}" Tag="{Binding ElementName=SecRaccourcis}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionAbout}" Tag="{Binding ElementName=SecAPropos}" Click="OnSectionChip"/>
     </WrapPanel>
     <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <TextBlock x:Name="SecAffichage" Style="{StaticResource SectionHeaderStyle}" Text="AFFICHAGE"/>
-            <TextBlock Text="{Binding UiScale, StringFormat='Échelle de l’interface : {0:P0}'}"/>
+            <TextBlock x:Name="SecAffichage" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderDisplay}"/>
+            <TextBlock Text="{Binding UiScale, StringFormat={loc:Tr SettingsUiScaleFormat}}"/>
             <Slider Minimum="0.8" Maximum="2" TickFrequency="0.1" IsSnapToTickEnabled="True" Value="{Binding UiScale}"/>
-            <TextBlock Text="{Binding FontScale, StringFormat='Taille du texte : {0:P0}'}" Margin="0,6,0,0"/>
+            <TextBlock Text="{Binding FontScale, StringFormat={loc:Tr SettingsFontScaleFormat}}" Margin="0,6,0,0"/>
             <Slider Minimum="0.8" Maximum="1.5" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding FontScale}"/>
-            <TextBlock Text="{Binding Opacity, StringFormat='Opacité du fond : {0:P0}'}" Margin="0,6,0,0"/>
+            <TextBlock Text="{Binding Opacity, StringFormat={loc:Tr SettingsOpacityFormat}}" Margin="0,6,0,0"/>
             <Slider Minimum="0" Maximum="1" TickFrequency="0.01" SmallChange="0.01" LargeChange="0.1" IsSnapToTickEnabled="True" Value="{Binding Opacity}"/>
-            <TextBlock Text="Sous 90 % d'opacité, le texte est détouré pour rester lisible."
+            <TextBlock Text="{loc:Tr SettingsOutlineHint}"
                        Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}"
                        TextWrapping="Wrap" Margin="0,2,0,0"
                        Visibility="{Binding ShowOutlineHint, Converter={StaticResource BoolToVisibility}}"/>
-            <TextBlock Text="Thème" Margin="0,6,0,0"/>
+            <TextBlock Text="{loc:Tr SettingsTheme}" Margin="0,6,0,0"/>
             <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -41,31 +42,49 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <StackPanel Visibility="{Binding SelectedThemeHasGlow, Converter={StaticResource BoolToVisibility}}">
-                <CheckBox Content="Effets lumineux" IsChecked="{Binding GlowEnabled}" Margin="0,6,0,0"/>
-                <TextBlock Text="Lueur du texte pour les thèmes qui en ont une. Désactiver si l'app ralentit."
+                <CheckBox Content="{loc:Tr SettingsGlow}" IsChecked="{Binding GlowEnabled}" Margin="0,6,0,0"/>
+                <TextBlock Text="{loc:Tr SettingsGlowHint}"
                            Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}"
                            TextWrapping="Wrap" Margin="0,2,0,0"/>
             </StackPanel>
-            <Button Style="{StaticResource TextButtonStyle}" Content="Réinitialiser la position"
+            <TextBlock Text="{loc:Tr SettingsLanguage}" Margin="0,6,0,0"/>
+            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:LanguageOption}">
+                        <TextBlock Text="{Binding NativeName}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <!-- Langue changée : elle ne s'applique qu'au redémarrage (texte dans la langue choisie). -->
+            <Border Margin="0,6,0,0" Padding="8,6" CornerRadius="4" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource TimerBrush}" BorderThickness="2,0,0,0"
+                    Visibility="{Binding LanguageRestartPending, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding LanguageRestartText}" TextWrapping="Wrap" FontSize="{DynamicResource FontSizeSmall}"/>
+                    <Button Style="{StaticResource TextButtonStyle}" Content="{Binding LanguageRestartButtonText}"
+                            Command="{Binding RestartForLanguageCommand}" HorizontalAlignment="Left" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr ResetPosition}"
                     Command="{Binding ResetPositionCommand}" HorizontalAlignment="Left" Margin="0,8,0,0"/>
 
-            <TextBlock x:Name="SecSon" Style="{StaticResource SectionHeaderStyle}" Text="SON"/>
-            <TextBlock Text="{Binding Volume, StringFormat='Volume : {0:P0}'}"/>
+            <TextBlock x:Name="SecSon" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderSound}"/>
+            <TextBlock Text="{Binding Volume, StringFormat={loc:Tr SettingsVolumeFormat}}"/>
             <Slider Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding Volume}"/>
             <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource TextButtonStyle}" Content="Tester" Command="{Binding TestSoundCommand}"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SettingsTestSound}" Command="{Binding TestSoundCommand}"/>
             </StackPanel>
 
-            <TextBlock x:Name="SecTimers" Style="{StaticResource SectionHeaderStyle}" Text="TIMERS"/>
+            <TextBlock x:Name="SecTimers" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderTimers}"/>
             <ItemsControl ItemsSource="{Binding Timers}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:TimerSettingRowViewModel}">
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
                             <WrapPanel>
-                                <CheckBox Content="Afficher" IsChecked="{Binding Visible}" Margin="0,2,10,2"/>
-                                <CheckBox Content="Notifier" IsChecked="{Binding Notify}" Margin="0,2,10,2"/>
-                                <CheckBox Content="Son" IsChecked="{Binding Sound}" Margin="0,2,6,2"/>
+                                <CheckBox Content="{loc:Tr TimerShow}" IsChecked="{Binding Visible}" Margin="0,2,10,2"/>
+                                <CheckBox Content="{loc:Tr TimerNotify}" IsChecked="{Binding Notify}" Margin="0,2,10,2"/>
+                                <CheckBox Content="{loc:Tr TimerSound}" IsChecked="{Binding Sound}" Margin="0,2,6,2"/>
                                 <ComboBox ItemsSource="{x:Static vm:SoundChoiceViewModel.Choices}"
                                           SelectedItem="{Binding SoundChoice.SelectedChoice}" IsEnabled="{Binding Sound}"
                                           MinWidth="110" Margin="0,2,10,2" VerticalAlignment="Center">
@@ -77,18 +96,18 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
                                 <Button Style="{StaticResource IconButtonStyle}" Content="&#xE712;" Margin="0,0,10,0"
-                                        Command="{Binding SoundChoice.ChooseFileCommand}" ToolTip="Choisir un autre fichier"
+                                        Command="{Binding SoundChoice.ChooseFileCommand}" ToolTip="{loc:Tr TimerChooseFileTip}"
                                         IsEnabled="{Binding Sound}"
                                         Visibility="{Binding SoundChoice.IsCustom, Converter={StaticResource BoolToVisibility}}"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="Prévenir" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr TimerWarn}" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
                                     <Button Style="{StaticResource IconButtonStyle}" Content="&#xE738;"
-                                            Command="{Binding DecreaseThresholdCommand}" ToolTip="Moins tôt"/>
+                                            Command="{Binding DecreaseThresholdCommand}" ToolTip="{loc:Tr TimerWarnLaterTip}"/>
                                     <TextBlock Text="{Binding ThresholdText}" VerticalAlignment="Center"
                                                Typography.NumeralAlignment="Tabular"/>
                                     <Button Style="{StaticResource IconButtonStyle}" Content="&#xE710;"
-                                            Command="{Binding IncreaseThresholdCommand}" ToolTip="Plus tôt"/>
-                                    <TextBlock Text="avant" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                            Command="{Binding IncreaseThresholdCommand}" ToolTip="{loc:Tr TimerWarnEarlierTip}"/>
+                                    <TextBlock Text="{loc:Tr TimerWarnBefore}" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </WrapPanel>
                             <TextBlock Text="{Binding SoundChoice.Label}" Foreground="{DynamicResource TextMutedBrush}"
@@ -99,23 +118,26 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock x:Name="SecCombat" Style="{StaticResource SectionHeaderStyle}" Text="COMBAT"/>
-            <TextBlock Text="{Binding CombatIdleSeconds, StringFormat='Fin de combat après inactivité : {0:0} s'}"/>
+            <TextBlock x:Name="SecCombat" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderCombat}"/>
+            <TextBlock Text="{Binding CombatIdleSeconds, StringFormat={loc:Tr SettingsCombatIdleFormat}}"/>
             <Slider Minimum="3" Maximum="60" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding CombatIdleSeconds}"/>
-            <CheckBox Content="Inclure tous les joueurs (sinon : moi seulement)" IsChecked="{Binding IncludeAllPlayers}" Margin="0,6,0,0"/>
-            <CheckBox Content="Afficher la puissance de combat" IsChecked="{Binding ShowCombatPower}" Margin="0,6,0,0"
-                      ToolTip="À côté du nom, dans les meters et l'image copiée. Inconnue pour un joueur tant que le jeu ne l'a pas envoyée."/>
+            <CheckBox IsChecked="{Binding IncludeAllPlayers}" Margin="0,6,0,0">
+                <TextBlock Text="{loc:Tr SettingsIncludeAll}" TextWrapping="Wrap"/>
+            </CheckBox>
+            <CheckBox IsChecked="{Binding ShowCombatPower}" Margin="0,6,0,0" ToolTip="{loc:Tr SettingsShowCombatPowerTip}">
+                <TextBlock Text="{loc:Tr SettingsShowCombatPower}" TextWrapping="Wrap"/>
+            </CheckBox>
 
-            <TextBlock x:Name="SecCapture" Style="{StaticResource SectionHeaderStyle}" Text="CAPTURE"/>
+            <TextBlock x:Name="SecCapture" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderCapture}"/>
             <StackPanel DataContext="{Binding Capture}">
                 <DockPanel>
                     <Ellipse Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{Binding IndicatorBrush}"/>
                     <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap"/>
                 </DockPanel>
-                <TextBlock Text="{Binding SelfText, StringFormat='Personnage : {0}'}" Margin="0,4,0,0" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding Adapter, StringFormat='Carte : {0}'}" Foreground="{DynamicResource TextMutedBrush}"
+                <TextBlock Text="{Binding SelfText, StringFormat={loc:Tr CaptureCharacterFormat}}" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Adapter, StringFormat={loc:Tr CaptureAdapterFormat}}" Foreground="{DynamicResource TextMutedBrush}"
                            FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding Server, StringFormat='Serveur : {0}'}" Foreground="{DynamicResource TextMutedBrush}"
+                <TextBlock Text="{Binding Server, StringFormat={loc:Tr CaptureServerFormat}}" Foreground="{DynamicResource TextMutedBrush}"
                            FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding CountersText}" Foreground="{DynamicResource TextMutedBrush}"
                            FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap" Margin="0,4,0,0"/>
@@ -127,18 +149,18 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                <WrapPanel Margin="0,6,0,0">
                     <Button Style="{StaticResource TextButtonStyle}" Content="{Binding RecordButtonText}"
                             Command="{Binding ToggleRecordingCommand}"/>
-                    <Button Style="{StaticResource TextButtonStyle}" Content="Ouvrir le dossier"
+                    <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr CaptureOpenFolder}"
                             Command="{Binding OpenCapturesFolderCommand}"/>
-                </StackPanel>
-                <TextBlock Text="Les captures et les logs contiennent ton pseudo, ton serveur et le chat du jeu : ne les publie pas (issue GitHub, Discord public), envoie-les en privé."
+                </WrapPanel>
+                <TextBlock Text="{loc:Tr CapturePrivacy}"
                            Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}"
                            TextWrapping="Wrap" Margin="0,4,0,0"/>
             </StackPanel>
 
-            <TextBlock x:Name="SecRaccourcis" Style="{StaticResource SectionHeaderStyle}" Text="RACCOURCIS"/>
+            <TextBlock x:Name="SecRaccourcis" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderHotkeys}"/>
             <ItemsControl ItemsSource="{Binding Hotkeys}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:HotkeyRowViewModel}">
@@ -146,8 +168,8 @@
                             <DockPanel>
                                 <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0"
                                         Content="{Binding DisplayText}" Command="{Binding BeginCaptureCommand}"
-                                        ToolTip="Cliquer puis appuyer sur la nouvelle combinaison"/>
-                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                                        ToolTip="{loc:Tr HotkeyCaptureTip}"/>
+                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center" TextWrapping="Wrap"/>
                             </DockPanel>
                             <TextBlock Text="{Binding Error}" Foreground="{DynamicResource AlertBrush}"
                                        FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"
@@ -156,40 +178,40 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <TextBlock x:Name="SecAPropos" Style="{StaticResource SectionHeaderStyle}" Text="À PROPOS"/>
+            <TextBlock x:Name="SecAPropos" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderAbout}"/>
             <TextBlock Text="{Binding VersionText}"/>
             <DockPanel Margin="0,4,0,0">
-                <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="Voir"
+                <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr View}"
                         Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nathantek/aion2assistant/blob/main/LICENSE"/>
-                <TextBlock Text="Licence : GPL-3.0" VerticalAlignment="Center"/>
+                <TextBlock Text="{loc:Tr AboutLicense}" VerticalAlignment="Center"/>
             </DockPanel>
             <DockPanel Margin="0,4,0,0">
-                <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="Voir"
+                <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr View}"
                         Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nathantek/aion2assistant/blob/main/data/NOTICE.md"/>
-                <TextBlock Text="Données de jeu : © NCSOFT" VerticalAlignment="Center"/>
+                <TextBlock Text="{loc:Tr AboutGameData}" VerticalAlignment="Center"/>
             </DockPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                <Button Style="{StaticResource TextButtonStyle}" Content="Site"
+            <WrapPanel Margin="0,6,0,0">
+                <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr AboutWebsite}"
                         Command="{Binding OpenLinkCommand}" CommandParameter="https://nathantek.github.io/aion2assistant/"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="Dépôt"
+                <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr AboutRepository}"
                         Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nathantek/aion2assistant"/>
-                <Button Style="{StaticResource TextButtonStyle}" Content="Lire le CLUF" Command="{Binding ReadEulaCommand}"/>
-            </StackPanel>
-            <CheckBox Content="Mises à jour automatiques" IsChecked="{Binding CheckForUpdates}" Margin="0,6,0,0"/>
+                <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr AboutReadEula}" Command="{Binding ReadEulaCommand}"/>
+            </WrapPanel>
+            <CheckBox Content="{loc:Tr SettingsAutoUpdates}" IsChecked="{Binding CheckForUpdates}" Margin="0,6,0,0"/>
             <DockPanel Margin="0,4,0,0">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="Télécharger"
-                            ToolTip="Page de la nouvelle version : télécharge Setup.exe"
+                    <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr UpdateDownload}"
+                            ToolTip="{loc:Tr UpdateDownloadTip}"
                             Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}"
                             Command="{Binding OpenLinkCommand}" CommandParameter="{Binding UpdateUrl}"/>
-                    <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="Redémarrer"
-                            ToolTip="Installer la mise à jour et relancer"
+                    <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr UpdateRestart}"
+                            ToolTip="{loc:Tr UpdateRestartTip}"
                             Visibility="{Binding CanRestartForUpdate, Converter={StaticResource BoolToVisibility}}"
                             Command="{Binding RestartForUpdateCommand}"/>
                 </StackPanel>
                 <TextBlock Text="{Binding UpdateStatusText}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,6,0"/>
             </DockPanel>
-            <TextBlock Text="L'app contacte GitHub pour vérifier et télécharger les mises à jour ; désactivable ci-dessus. Aucune autre donnée n'est envoyée."
+            <TextBlock Text="{loc:Tr AboutUpdatesPrivacy}"
                        Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
         </StackPanel>
     </ScrollViewer>

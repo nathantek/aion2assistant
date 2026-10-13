@@ -1,4 +1,5 @@
 using System.Globalization;
+using Aion2Assistant.Core.Localization;
 using Aion2Assistant.Core.Storage;
 using Aion2Assistant.Timers.Scheduling;
 
@@ -36,6 +37,7 @@ public static class TimersConfigLoader
             zone = ServerTime.ResolveZone(DefaultTimers.ServerTimeZone);
         }
 
+        var english = AppCulture.Language == AppLanguage.English;
         var definitions = new List<TimerDefinition>();
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var timers = dto.Timers ?? [];
@@ -53,12 +55,12 @@ public static class TimersConfigLoader
                 if (!ids.Add(timer.Id)) throw new FormatException("identifiant en double");
                 definitions.Add(new TimerDefinition(
                     timer.Id,
-                    timer.Name ?? timer.Id,
+                    (english ? NonBlank(timer.NameEn) : null) ?? timer.Name ?? timer.Id,
                     timer.Category ?? "other",
                     BuildRule(timer),
                     timer.OpenFor is null ? null : ParseDuration(timer.OpenFor, "openFor"),
                     timer.Verified,
-                    string.IsNullOrWhiteSpace(timer.ShortName) ? null : timer.ShortName.Trim()));
+                    (english ? NonBlank(timer.ShortNameEn) : null) ?? NonBlank(timer.ShortName)));
             }
             catch (Exception ex) when (ex is FormatException or ArgumentException)
             {
@@ -69,6 +71,8 @@ public static class TimersConfigLoader
 
         return new TimersConfigLoadResult(new TimersConfig(new ServerTime(zone), definitions), errors);
     }
+
+    private static string? NonBlank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static IScheduleRule BuildRule(TimerDto timer) => timer.Kind switch
     {

@@ -1,4 +1,6 @@
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.Core.Audio;
+using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -10,9 +12,8 @@ namespace Aion2Assistant.App.ViewModels;
 /// </summary>
 public sealed partial class SoundChoiceViewModel : ObservableObject
 {
-    /// <summary>Sons intégrés puis « Fichier perso… ».</summary>
-    public static IReadOnlyList<AlertSound> Choices { get; } =
-        [.. AlertSounds.BuiltIn, new AlertSound(AlertSounds.CustomId, "Fichier perso…")];
+    /// <summary>Sons intégrés puis « Fichier perso… » (libellés dans la langue de l'app).</summary>
+    public static IReadOnlyList<AlertSound> Choices { get; } = [.. AlertSounds.BuiltIn, AlertSounds.Custom];
 
     private readonly Func<SoundRef> _get;
     private readonly Action<SoundRef> _set;
@@ -90,12 +91,12 @@ public sealed partial class SoundChoiceViewModel : ObservableObject
     private static string? LabelFor(SoundRef sound) =>
         sound.Id == AlertSounds.CustomId && sound.CustomPath is { } path
             ? File.Exists(path) ? Path.GetFileName(path)
-                : $"Fichier introuvable : {Path.GetFileName(path)} — Carillon joué à la place"
+                : UiStrings.Format(nameof(UiStrings.SoundFileMissing), Path.GetFileName(path), Strings.SoundChime)
             : null;
 
     private static string? PickFileDialog()
     {
-        var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "Sons (*.wav;*.mp3)|*.wav;*.mp3", Title = "Son de notification" };
+        var dialog = new Microsoft.Win32.OpenFileDialog { Filter = UiStrings.SoundFileFilter, Title = UiStrings.TimerSoundTip };
         return dialog.ShowDialog() == true ? dialog.FileName : null;
     }
 }

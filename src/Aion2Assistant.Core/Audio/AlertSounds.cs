@@ -1,3 +1,5 @@
+using Aion2Assistant.Core.Localization;
+
 namespace Aion2Assistant.Core.Audio;
 
 public sealed record AlertSound(string Id, string Label);
@@ -9,17 +11,23 @@ public static class AlertSounds
     /// <summary>Identifiant réservé au fichier choisi par l'utilisateur.</summary>
     public const string CustomId = "custom";
 
-    public static IReadOnlyList<AlertSound> BuiltIn { get; } =
+    private static readonly string[] BuiltInIds = [DefaultId, "bell", "double-beep", "gong", "harp", "alarm"];
+
+    /// <summary>Sons intégrés, libellés dans la langue de l'app.</summary>
+    public static IReadOnlyList<AlertSound> BuiltIn =>
     [
-        new(DefaultId, "Carillon"),
-        new("bell", "Cloche"),
-        new("double-beep", "Double bip"),
-        new("gong", "Gong"),
-        new("harp", "Harpe"),
-        new("alarm", "Alarme"),
+        new(DefaultId, Strings.SoundChime),
+        new("bell", Strings.SoundBell),
+        new("double-beep", Strings.SoundDoubleBeep),
+        new("gong", Strings.SoundGong),
+        new("harp", Strings.SoundHarp),
+        new("alarm", Strings.SoundAlarm),
     ];
 
-    public static bool IsBuiltIn(string? id) => id is not null && BuiltIn.Any(s => s.Id == id);
+    /// <summary>Entrée « Fichier perso… » des listes de sons.</summary>
+    public static AlertSound Custom => new(CustomId, Strings.SoundCustomFile);
+
+    public static bool IsBuiltIn(string? id) => id is not null && BuiltInIds.Contains(id);
 
     /// <summary>WAV du son intégré ; un identifiant inconnu donne le carillon.</summary>
     public static byte[] Create(string id) => id switch

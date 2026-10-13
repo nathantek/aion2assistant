@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.Core.Events;
 using Aion2Assistant.Core.Storage;
 using Aion2Assistant.Timers.FieldBosses;
@@ -48,7 +49,7 @@ internal sealed class FieldBossController : IDisposable
             Log.Warning(ex, "field_bosses.json illisible");
             table.Clear();
         }
-        return (map, slot) => table.TryGetValue(slot, out var name) ? name : $"Boss {slot - map * 100} — carte {map}";
+        return (map, slot) => table.TryGetValue(slot, out var name) ? name : UiStrings.Format(nameof(UiStrings.FieldBossFallback), slot - map * 100, map);
     }
 
     public void Attach(CaptureController capture)

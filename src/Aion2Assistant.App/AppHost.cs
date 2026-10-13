@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Aion2Assistant.App.Interop;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.Services;
 using Aion2Assistant.App.Windows;
 using Aion2Assistant.App.ViewModels;
@@ -11,6 +12,7 @@ using Aion2Assistant.Core;
 using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Hotkeys;
 using Aion2Assistant.Core.Settings;
+using Aion2Assistant.Core.Storage;
 using Aion2Assistant.Timers;
 using Aion2Assistant.Timers.Config;
 using Aion2Assistant.Timers.Notifications;
@@ -31,9 +33,7 @@ internal sealed class AppHost : IDisposable
     public DockingController Docking { get; }
     public HotkeyService Hotkeys { get; }
 
-    public const string ExclusiveFullscreenMessage =
-        "AION 2 est en plein écran exclusif : l'overlay ne peut pas s'afficher par-dessus. " +
-        "Passe en « fenêtré sans bordure » dans les options graphiques du jeu.";
+    public static string ExclusiveFullscreenMessage => UiStrings.ExclusiveFullscreenMessage;
 
     public TopmostKeeper Topmost { get; }
     public TrayIconService Tray { get; }
@@ -53,10 +53,9 @@ internal sealed class AppHost : IDisposable
     private SettingsViewModel _settingsPage = null!;
     private IntPtr _foregroundBeforeCapture;
 
-    public AppHost()
+    /// <param name="store">Magasin des réglages, déjà lus par <see cref="App.Main"/> (la langue fixe la culture avant toute UI).</param>
+    public AppHost(SettingsStore store, LoadResult<AppSettings> loaded)
     {
-        var store = new SettingsStore(AppPaths.SettingsFile);
-        var loaded = store.Load();
         if (loaded.Error is not null)
             Log.Warning("Réglages : {Error} (source utilisée : {Source})", loaded.Error, loaded.Source);
         Settings = loaded.Value;
@@ -79,10 +78,10 @@ internal sealed class AppHost : IDisposable
         var timersPage = new TimersViewModel(Settings, Saver.RequestSave);
         Main.Pages[OverlayTab.Timers] = timersPage;
         TimersCtl = new TimersController(clock, engine, notifier, timersPage, Settings, Saver);
-        Main.Pages[OverlayTab.Dps] = new PlaceholderViewModel("DPS", "Meter DPS — étape 4 (capture réseau requise).", "", "DpsBrush");
-        Main.Pages[OverlayTab.Taken] = new PlaceholderViewModel("Dégâts reçus", "Meter des dégâts reçus — étape 4.", "", "TakenBrush");
-        Main.Pages[OverlayTab.Heal] = new PlaceholderViewModel("Soins", "Meter de soins — étape 4.", "", "HealBrush");
-        Main.Pages[OverlayTab.History] = new PlaceholderViewModel("Historique", "Historique des combats — étape 5.", "", "TextBrush");
+        Main.Pages[OverlayTab.Dps] = new PlaceholderViewModel(UiStrings.TabDps, UiStrings.PlaceholderLoading, "", "DpsBrush");
+        Main.Pages[OverlayTab.Taken] = new PlaceholderViewModel(UiStrings.TabTaken, UiStrings.PlaceholderLoading, "", "TakenBrush");
+        Main.Pages[OverlayTab.Heal] = new PlaceholderViewModel(UiStrings.TabHeal, UiStrings.PlaceholderLoading, "", "HealBrush");
+        Main.Pages[OverlayTab.History] = new PlaceholderViewModel(UiStrings.TabHistory, UiStrings.PlaceholderLoading, "", "TextBrush");
 
         Window = new MainWindow { DataContext = Main };
         Docking = new DockingController(Window, Main, Settings, Saver);
@@ -102,7 +101,7 @@ internal sealed class AppHost : IDisposable
 
         _settingsPage = new SettingsViewModel(
             Settings, Main, Saver.RequestSave, sound => Sound.Play(sound, Settings.Volume), Hotkeys, TimerDefinitions, SetKeyboardCapture, Docking.ResetPosition,
-            Updates, () => new EulaWindow(readOnly: true) { Owner = Window }.ShowDialog(), MeterDisplay);
+            Updates, () => new EulaWindow(readOnly: true) { Owner = Window }.ShowDialog(), MeterDisplay, RequestRelaunch);
         Main.Pages[OverlayTab.Settings] = _settingsPage;
         Window.Deactivated += (_, _) => _settingsPage.CancelCapture();
         Window.IsVisibleChanged += (_, _) => { if (!Window.IsVisible) _settingsPage.CancelCapture(); };
@@ -114,11 +113,11 @@ internal sealed class AppHost : IDisposable
         var npcapInstalled = NpcapProbe.IsInstalled();
         if (!npcapInstalled)
         {
-            const string npcap = "Npcap n'est pas installé : télécharge-le sur npcap.com et coche « WinPcap API-compatible Mode ».";
-            Main.Pages[OverlayTab.Dps] = new PlaceholderViewModel("DPS", npcap, "", "DpsBrush");
-            Main.Pages[OverlayTab.Taken] = new PlaceholderViewModel("Dégâts reçus", npcap, "", "TakenBrush");
-            Main.Pages[OverlayTab.Heal] = new PlaceholderViewModel("Soins", npcap, "", "HealBrush");
-            Main.Pages[OverlayTab.History] = new PlaceholderViewModel("Historique", npcap, "", "TextBrush");
+            var npcap = UiStrings.NpcapMissing;
+            Main.Pages[OverlayTab.Dps] = new PlaceholderViewModel(UiStrings.TabDps, npcap, "", "DpsBrush");
+            Main.Pages[OverlayTab.Taken] = new PlaceholderViewModel(UiStrings.TabTaken, npcap, "", "TakenBrush");
+            Main.Pages[OverlayTab.Heal] = new PlaceholderViewModel(UiStrings.TabHeal, npcap, "", "HealBrush");
+            Main.Pages[OverlayTab.History] = new PlaceholderViewModel(UiStrings.TabHistory, npcap, "", "TextBrush");
         }
 
         Meters = new MetersController(Capture, Settings, Main, Window, "DpsBrush", "HealBrush", "TakenBrush", BossFilter, MeterDisplay);
@@ -165,6 +164,18 @@ internal sealed class AppHost : IDisposable
             resetPosition: Docking.ResetPosition,
             openSettings: () => ShowTab(OverlayTab.Settings),
             exit: () => Application.Current.Shutdown());
+    }
+
+    /// <summary>Relance demandée (changement de langue) : App.OnExit relance l'app après la fermeture.</summary>
+    public bool RelaunchRequested { get; private set; }
+
+    /// <summary>Fermeture normale de l'app puis relance ; une mise à jour prête s'installe au passage.</summary>
+    private void RequestRelaunch()
+    {
+        Log.Information("Redémarrage demandé (langue : {Language})", Settings.Language);
+        RelaunchRequested = true;
+        Updates.PrepareRelaunch();
+        Application.Current.Shutdown();
     }
 
     /// <summary>Montre le CLUF s'il n'a pas été accepté dans la version en vigueur ; false = l'utilisateur quitte.</summary>
@@ -247,12 +258,12 @@ internal sealed class AppHost : IDisposable
     {
         Log.Warning("Plein écran exclusif détecté");
         Main.WarningMessage = ExclusiveFullscreenMessage;
-        Tray.ShowWarning("Plein écran exclusif détecté", ExclusiveFullscreenMessage);
-        Notifications.Show("Plein écran exclusif", "Passe en fenêtré sans bordure.", Resource("AlertBrush"), "");
+        Tray.ShowWarning(UiStrings.ExclusiveFullscreenDetected, ExclusiveFullscreenMessage);
+        Notifications.Show(UiStrings.ExclusiveFullscreenTitle, UiStrings.ExclusiveFullscreenShort, Resource("AlertBrush"), "");
     }
 
     public void ShowUnexpectedError() =>
-        Notifications.Show("Erreur inattendue", "Les détails sont dans les logs.", Resource("AlertBrush"), "");
+        Notifications.Show(UiStrings.UnexpectedErrorTitle, UiStrings.UnexpectedErrorMessage, Resource("AlertBrush"), "");
 
     private void OnTimerAlert(TimerAlert alert)
     {
@@ -260,8 +271,8 @@ internal sealed class AppHost : IDisposable
         if (!timersOnScreen && !Topmost.ExclusiveFullscreenActive)
         {
             var message = alert.Kind == AlertKind.Soon
-                ? $"Dans {CountdownFormatter.FormatHuman(alert.DueAt - DateTimeOffset.UtcNow)}"
-                : "Maintenant";
+                ? UiStrings.Format(nameof(UiStrings.TimerAlertIn), CountdownFormatter.FormatHuman(alert.DueAt - DateTimeOffset.UtcNow))
+                : UiStrings.TimerAlertNow;
             var accent = Resource(alert.Kind == AlertKind.Soon ? "AlertBrush" : "TimerBrush");
             Notifications.Show(alert.Name, message, accent, CategoryGlyphs.For(alert.Category));
         }

@@ -26,7 +26,7 @@ internal sealed class CaptureController : IDisposable
     private readonly Stopwatch _clock = Stopwatch.StartNew();
     private readonly Dispatcher _dispatcher = Application.Current.Dispatcher;
     private string? _lastFlow;
-    private string? _lastSelf;
+    private (string Name, uint ActorId, int ServerId, GameClass Class, int Level)? _lastSelf;
     private SelfIdentifiedEvent? _self;
     private long? _selfPower;
     private long _lastSummaryMs;
@@ -78,11 +78,12 @@ internal sealed class CaptureController : IDisposable
                 if (_self is null || _self.ActorId != self.ActorId) _selfPower = null;
                 _self = self;
                 View.SetSelf(self);
-                var description = $"{(self.Name.Length == 0 ? "(sans nom)" : self.Name)} (id {self.ActorId}, serveur {self.ServerId}, {self.Class} niv. {self.Level})";
-                if (description != _lastSelf)
+                var identity = (self.Name, self.ActorId, self.ServerId, self.Class, self.Level);
+                if (_lastSelf != identity)
                 {
-                    _lastSelf = description;
-                    Log.Information("Personnage détecté : {Self}", description);
+                    _lastSelf = identity;
+                    Log.Information("Personnage détecté : {Name} (id {Id}, serveur {Server}, {Class} niv. {Level})",
+                        self.Name.Length == 0 ? "(sans nom)" : self.Name, self.ActorId, self.ServerId, self.Class, self.Level);
                 }
             }
             if (_self is not null)

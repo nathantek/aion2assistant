@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="EulaAccept" xml:space="preserve">
+    <value>J'accepte</value>
+  </data>
+  <data name="EulaClose" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="EulaQuit" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="EulaTitle" xml:space="preserve">
+    <value>Aion2Assistant — Contrat de licence</value>
+  </data>
+  <data name="FormatDateTime" xml:space="preserve">
+    <value>dd/MM/yyyy HH:mm</value>
+  </data>
+  <data name="FormatDayHeader" xml:space="preserve">
+    <value>dddd d MMMM</value>
+  </data>
+  <data name="StartupFailed" xml:space="preserve">
+    <value>Aion2Assistant n'a pas pu démarrer. Détails dans les logs.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>‹ Retour</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Voir</value>
+  </data>
+  <data name="Quit" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Réglages</value>
+  </data>
+  <data name="Training" xml:space="preserve">
+    <value>Entraînement</value>
+  </data>
+  <data name="TabDps" xml:space="preserve">
+    <value>DPS</value>
+  </data>
+  <data name="TabTaken" xml:space="preserve">
+    <value>Dégâts reçus</value>
+  </data>
+  <data name="TabHeal" xml:space="preserve">
+    <value>Soins</value>
+  </data>
+  <data name="TabHistory" xml:space="preserve">
+    <value>Historique</value>
+  </data>
+  <data name="TipTabDps" xml:space="preserve">
+    <value>DPS (Ctrl+Alt+Num1)</value>
+  </data>
+  <data name="TipTabTaken" xml:space="preserve">
+    <value>Dégâts reçus (Ctrl+Alt+Num2)</value>
+  </data>
+  <data name="TipTabHeal" xml:space="preserve">
+    <value>Soins (Ctrl+Alt+Num3)</value>
+  </data>
+  <data name="TipTabHistory" xml:space="preserve">
+    <value>Historique (Ctrl+Alt+Num4)</value>
+  </data>
+  <data name="TipTabTimers" xml:space="preserve">
+    <value>Timers (Ctrl+Alt+Num5)</value>
+  </data>
+  <data name="TipDock" xml:space="preserve">
+    <value>Ancrer / libérer (Ctrl+Alt+Num7)</value>
+  </data>
+  <data name="TipMinimize" xml:space="preserve">
+    <value>Réduire / agrandir (Ctrl+Alt+Num8)</value>
+  </data>
+  <data name="PlaceholderLoading" xml:space="preserve">
+    <value>Chargement…</value>
+  </data>
+  <data name="NpcapMissing" xml:space="preserve">
+    <value>Npcap n'est pas installé : télécharge-le sur npcap.com et coche « WinPcap API-compatible Mode ».</value>
+  </data>
+  <data name="UpdateRestart" xml:space="preserve">
+    <value>Redémarrer</value>
+  </data>
+  <data name="UpdateRestartTip" xml:space="preserve">
+    <value>Installer la mise à jour et relancer</value>
+  </data>
+  <data name="UpdateLater" xml:space="preserve">
+    <value>Plus tard</value>
+  </data>
+  <data name="UpdateLaterTip" xml:space="preserve">
+    <value>Installer à la fermeture de l'app</value>
+  </data>
+  <data name="UpdateAvailableTitle" xml:space="preserve">
+    <value>Version {0} disponible</value>
+  </data>
+  <data name="UpdateAvailableMessage" xml:space="preserve">
+    <value>Installe-la avec Setup.exe depuis la page du projet (Options › À propos).</value>
+  </data>
+  <data name="UpdateReadyTitle" xml:space="preserve">
+    <value>Mise à jour {0} prête</value>
+  </data>
+  <data name="UpdateReadyMessage" xml:space="preserve">
+    <value>Redémarre depuis l'overlay pour l'installer.</value>
+  </data>
+  <data name="ExclusiveFullscreenMessage" xml:space="preserve">
+    <value>AION 2 est en plein écran exclusif : l'overlay ne peut pas s'afficher par-dessus. Passe en « fenêtré sans bordure » dans les options graphiques du jeu.</value>
+  </data>
+  <data name="ExclusiveFullscreenDetected" xml:space="preserve">
+    <value>Plein écran exclusif détecté</value>
+  </data>
+  <data name="ExclusiveFullscreenTitle" xml:space="preserve">
+    <value>Plein écran exclusif</value>
+  </data>
+  <data name="ExclusiveFullscreenShort" xml:space="preserve">
+    <value>Passe en fenêtré sans bordure.</value>
+  </data>
+  <data name="UnexpectedErrorTitle" xml:space="preserve">
+    <value>Erreur inattendue</value>
+  </data>
+  <data name="UnexpectedErrorMessage" xml:space="preserve">
+    <value>Les détails sont dans les logs.</value>
+  </data>
+  <data name="TimerAlertIn" xml:space="preserve">
+    <value>Dans {0}</value>
+  </data>
+  <data name="TimerAlertNow" xml:space="preserve">
+    <value>Maintenant</value>
+  </data>
+  <data name="RecordNewTitle" xml:space="preserve">
+    <value>Nouveau record !</value>
+  </data>
+  <data name="RecordNewMessage" xml:space="preserve">
+    <value>{0} : {1}/s (ancien {2}/s, +{3} %)</value>
+  </data>
+  <data name="MiniSelfDps" xml:space="preserve">
+    <value>Ton DPS (combat en cours)</value>
+  </data>
+  <data name="MiniNextTimer" xml:space="preserve">
+    <value>Prochain timer</value>
+  </data>
+  <data name="TrayToggleVisible" xml:space="preserve">
+    <value>Afficher / masquer</value>
+  </data>
+  <data name="TrayToggleDock" xml:space="preserve">
+    <value>Ancrer / libérer</value>
+  </data>
+  <data name="ResetPosition" xml:space="preserve">
+    <value>Réinitialiser la position</value>
+  </data>
+  <data name="MeterNoFight" xml:space="preserve">
+    <value>Aucun combat en cours.</value>
+  </data>
+  <data name="MeterLastFight" xml:space="preserve">
+    <value>DERNIER COMBAT</value>
+  </data>
+  <data name="MeterOpenInHistory" xml:space="preserve">
+    <value>Voir dans l'historique</value>
+  </data>
+  <data name="MeterChartToggleTip" xml:space="preserve">
+    <value>Liste / courbe</value>
+  </data>
+  <data name="MeterBossOnly" xml:space="preserve">
+    <value>Boss</value>
+  </data>
+  <data name="MeterBossOnlyTip" xml:space="preserve">
+    <value>Dégâts sur le boss seulement</value>
+  </data>
+  <data name="MeterAll" xml:space="preserve">
+    <value>Tout</value>
+  </data>
+  <data name="MeterAllTip" xml:space="preserve">
+    <value>Tous les dégâts</value>
+  </data>
+  <data name="MeterNoChart" xml:space="preserve">
+    <value>Pas de courbe pour ce combat (enregistré avant cette version).</value>
+  </data>
+  <data name="MeterDeathRecap" xml:space="preserve">
+    <value>RÉCAP DE MORT</value>
+  </data>
+  <data name="MeterDeathAt" xml:space="preserve">
+    <value>Mort à {0}</value>
+  </data>
+  <data name="MeterGroupRate" xml:space="preserve">
+    <value>Groupe : {0} · {1}</value>
+  </data>
+  <data name="MeterGroupTotal" xml:space="preserve">
+    <value>Groupe : {0}</value>
+  </data>
+  <data name="MeterNoBossSuffix" xml:space="preserve">
+    <value> · aucun boss, tout est compté</value>
+  </data>
+  <data name="MeterChartLegendTip" xml:space="preserve">
+    <value>Afficher / masquer la courbe</value>
+  </data>
+  <data name="ColumnSkill" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="ColumnTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="ColumnHits" xml:space="preserve">
+    <value>Coups</value>
+  </data>
+  <data name="ColumnCrit" xml:space="preserve">
+    <value>Crit %</value>
+  </data>
+  <data name="ColumnMax" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="ColumnOverheal" xml:space="preserve">
+    <value>Surplus ~</value>
+  </data>
+  <data name="TrainingStop" xml:space="preserve">
+    <value>Arrêter</value>
+  </data>
+  <data name="TrainingFree" xml:space="preserve">
+    <value>Libre</value>
+  </data>
+  <data name="TrainingTip" xml:space="preserve">
+    <value>Entraînement chronométré</value>
+  </data>
+  <data name="TrainingRemaining" xml:space="preserve">
+    <value>Entraînement : {0} restantes</value>
+  </data>
+  <data name="TrainingFreeElapsed" xml:space="preserve">
+    <value>Entraînement libre : {0}</value>
+  </data>
+  <data name="TrainingArmed" xml:space="preserve">
+    <value>Entraînement prêt : frappe pour démarrer.</value>
+  </data>
+  <data name="CopyText" xml:space="preserve">
+    <value>Copier texte</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Copier image</value>
+  </data>
+  <data name="CopyTextDone" xml:space="preserve">
+    <value>✓ Copié</value>
+  </data>
+  <data name="CopyImageDone" xml:space="preserve">
+    <value>✓ Image copiée</value>
+  </data>
+  <data name="CopyFailed" xml:space="preserve">
+    <value>Échec de la copie</value>
+  </data>
+  <data name="CopyTextTip" xml:space="preserve">
+    <value>Copier le classement sur une ligne, à coller dans le chat du jeu</value>
+  </data>
+  <data name="CopyImageTip" xml:space="preserve">
+    <value>Copier une image du tableau (toutes les lignes)</value>
+  </data>
+  <data name="HistoryEmpty" xml:space="preserve">
+    <value>Aucun combat enregistré.</value>
+  </data>
+  <data name="HistoryNoMatch" xml:space="preserve">
+    <value>Aucun combat ne correspond.</value>
+  </data>
+  <data name="HistoryUnavailable" xml:space="preserve">
+    <value>Historique indisponible : {0}</value>
+  </data>
+  <data name="HistoryFilterAll" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="HistoryFilterBoss" xml:space="preserve">
+    <value>Boss</value>
+  </data>
+  <data name="HistoryFilterRecords" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="HistorySearchHint" xml:space="preserve">
+    <value>Rechercher un boss</value>
+  </data>
+  <data name="HistoryCompare" xml:space="preserve">
+    <value>Comparer</value>
+  </data>
+  <data name="HistoryCompareTwo" xml:space="preserve">
+    <value>Comparer (2)</value>
+  </data>
+  <data name="HistoryRecordTip" xml:space="preserve">
+    <value>Record actuel</value>
+  </data>
+  <data name="HistoryTaken" xml:space="preserve">
+    <value>Reçus</value>
+  </data>
+  <data name="HistoryFightCountOne" xml:space="preserve">
+    <value>1 combat</value>
+  </data>
+  <data name="HistoryFightCount" xml:space="preserve">
+    <value>{0} combats</value>
+  </data>
+  <data name="HistoryGroup" xml:space="preserve">
+    <value>Groupe {0}</value>
+  </data>
+  <data name="HistorySelf" xml:space="preserve">
+    <value>Toi {0}</value>
+  </data>
+  <data name="HistoryVsPrevious" xml:space="preserve">
+    <value>{0} vs essai préc.</value>
+  </data>
+  <data name="HistoryToday" xml:space="preserve">
+    <value>Aujourd'hui</value>
+  </data>
+  <data name="HistoryYesterday" xml:space="preserve">
+    <value>Hier</value>
+  </data>
+  <data name="FightUnreadable" xml:space="preserve">
+    <value>Combat illisible.</value>
+  </data>
+  <data name="ComparisonSkill" xml:space="preserve">
+    <value>Compétence</value>
+  </data>
+  <data name="ComparisonTotalDamage" xml:space="preserve">
+    <value>Dégâts totaux</value>
+  </data>
+  <data name="ComparisonCrit" xml:space="preserve">
+    <value>Critique</value>
+  </data>
+  <data name="ComparisonPoints" xml:space="preserve">
+    <value>{0} pts</value>
+  </data>
+  <data name="TimerSoundTip" xml:space="preserve">
+    <value>Son de notification</value>
+  </data>
+  <data name="TimerOpen" xml:space="preserve">
+    <value>Ouvert</value>
+  </data>
+  <data name="TimerAt" xml:space="preserve">
+    <value>à {0}</value>
+  </data>
+  <data name="TimerUnverified" xml:space="preserve">
+    <value>{0} · horaire à vérifier</value>
+  </data>
+  <data name="FieldBossAlive" xml:space="preserve">
+    <value>Vivant</value>
+  </data>
+  <data name="FieldBossAliveAssumed" xml:space="preserve">
+    <value>Vivant ?</value>
+  </data>
+  <data name="FieldBossFallback" xml:space="preserve">
+    <value>Boss {0} — carte {1}</value>
+  </data>
+  <data name="FieldBosses" xml:space="preserve">
+    <value>Boss de terrain</value>
+  </data>
+  <data name="SectionDisplay" xml:space="preserve">
+    <value>Affichage</value>
+  </data>
+  <data name="SectionSound" xml:space="preserve">
+    <value>Son</value>
+  </data>
+  <data name="SectionTimers" xml:space="preserve">
+    <value>Timers</value>
+  </data>
+  <data name="SectionCombat" xml:space="preserve">
+    <value>Combat</value>
+  </data>
+  <data name="SectionCapture" xml:space="preserve">
+    <value>Capture</value>
+  </data>
+  <data name="SectionHotkeys" xml:space="preserve">
+    <value>Raccourcis</value>
+  </data>
+  <data name="SectionAbout" xml:space="preserve">
+    <value>À propos</value>
+  </data>
+  <data name="HeaderDisplay" xml:space="preserve">
+    <value>AFFICHAGE</value>
+  </data>
+  <data name="HeaderSound" xml:space="preserve">
+    <value>SON</value>
+  </data>
+  <data name="HeaderTimers" xml:space="preserve">
+    <value>TIMERS</value>
+  </data>
+  <data name="HeaderCombat" xml:space="preserve">
+    <value>COMBAT</value>
+  </data>
+  <data name="HeaderCapture" xml:space="preserve">
+    <value>CAPTURE</value>
+  </data>
+  <data name="HeaderHotkeys" xml:space="preserve">
+    <value>RACCOURCIS</value>
+  </data>
+  <data name="HeaderAbout" xml:space="preserve">
+    <value>À PROPOS</value>
+  </data>
+  <data name="SettingsUiScaleFormat" xml:space="preserve">
+    <value>Échelle de l’interface : {0:P0}</value>
+  </data>
+  <data name="SettingsFontScaleFormat" xml:space="preserve">
+    <value>Taille du texte : {0:P0}</value>
+  </data>
+  <data name="SettingsOpacityFormat" xml:space="preserve">
+    <value>Opacité du fond : {0:P0}</value>
+  </data>
+  <data name="SettingsOutlineHint" xml:space="preserve">
+    <value>Sous 90 % d'opacité, le texte est détouré pour rester lisible.</value>
+  </data>
+  <data name="SettingsTheme" xml:space="preserve">
+    <value>Thème</value>
+  </data>
+  <data name="SettingsGlow" xml:space="preserve">
+    <value>Effets lumineux</value>
+  </data>
+  <data name="SettingsGlowHint" xml:space="preserve">
+    <value>Lueur du texte pour les thèmes qui en ont une. Désactiver si l'app ralentit.</value>
+  </data>
+  <data name="SettingsLanguage" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="LanguageRestartRequired" xml:space="preserve">
+    <value>Redémarrage nécessaire pour appliquer la langue.</value>
+  </data>
+  <data name="LanguageRestartNow" xml:space="preserve">
+    <value>Redémarrer maintenant</value>
+  </data>
+  <data name="SettingsVolumeFormat" xml:space="preserve">
+    <value>Volume : {0:P0}</value>
+  </data>
+  <data name="SettingsTestSound" xml:space="preserve">
+    <value>Tester</value>
+  </data>
+  <data name="TimerShow" xml:space="preserve">
+    <value>Afficher</value>
+  </data>
+  <data name="TimerNotify" xml:space="preserve">
+    <value>Notifier</value>
+  </data>
+  <data name="TimerSound" xml:space="preserve">
+    <value>Son</value>
+  </data>
+  <data name="TimerChooseFileTip" xml:space="preserve">
+    <value>Choisir un autre fichier</value>
+  </data>
+  <data name="TimerWarn" xml:space="preserve">
+    <value>Prévenir</value>
+  </data>
+  <data name="TimerWarnLaterTip" xml:space="preserve">
+    <value>Moins tôt</value>
+  </data>
+  <data name="TimerWarnEarlierTip" xml:space="preserve">
+    <value>Plus tôt</value>
+  </data>
+  <data name="TimerWarnBefore" xml:space="preserve">
+    <value>avant</value>
+  </data>
+  <data name="SettingsCombatIdleFormat" xml:space="preserve">
+    <value>Fin de combat après inactivité : {0:0} s</value>
+  </data>
+  <data name="SettingsIncludeAll" xml:space="preserve">
+    <value>Inclure tous les joueurs (sinon : moi seulement)</value>
+  </data>
+  <data name="SettingsShowCombatPower" xml:space="preserve">
+    <value>Afficher la puissance de combat</value>
+  </data>
+  <data name="SettingsShowCombatPowerTip" xml:space="preserve">
+    <value>À côté du nom, dans les meters et l'image copiée. Inconnue pour un joueur tant que le jeu ne l'a pas envoyée.</value>
+  </data>
+  <data name="CaptureCharacterFormat" xml:space="preserve">
+    <value>Personnage : {0}</value>
+  </data>
+  <data name="CaptureAdapterFormat" xml:space="preserve">
+    <value>Carte : {0}</value>
+  </data>
+  <data name="CaptureServerFormat" xml:space="preserve">
+    <value>Serveur : {0}</value>
+  </data>
+  <data name="CaptureOpenFolder" xml:space="preserve">
+    <value>Ouvrir le dossier</value>
+  </data>
+  <data name="CapturePrivacy" xml:space="preserve">
+    <value>Les captures et les logs contiennent ton pseudo, ton serveur et le chat du jeu : ne les publie pas (issue GitHub, Discord public), envoie-les en privé.</value>
+  </data>
+  <data name="CaptureRecordStart" xml:space="preserve">
+    <value>Enregistrer une capture</value>
+  </data>
+  <data name="CaptureRecordStop" xml:space="preserve">
+    <value>Arrêter l'enregistrement</value>
+  </data>
+  <data name="CaptureSelfUnknown" xml:space="preserve">
+    <value>Personnage non détecté</value>
+  </data>
+  <data name="CaptureNoName" xml:space="preserve">
+    <value>(sans nom)</value>
+  </data>
+  <data name="CaptureSelfDetails" xml:space="preserve">
+    <value> — serveur {0} — {1} niv. {2}</value>
+  </data>
+  <data name="CaptureSelfPower" xml:space="preserve">
+    <value> — puissance {0}</value>
+  </data>
+  <data name="CaptureCounters" xml:space="preserve">
+    <value>{0:N0} segments · {1:N0} trames · {2:N0} événements
+{3} resync. · {4} trous · {5:0.#} % rejetés · {6} perdus</value>
+  </data>
+  <data name="CaptureOpcodeLine" xml:space="preserve">
+    <value>{0} : {1:N0}</value>
+  </data>
+  <data name="CaptureOpcodeRejected" xml:space="preserve">
+    <value> ({0} rejetés)</value>
+  </data>
+  <data name="HotkeyCaptureTip" xml:space="preserve">
+    <value>Cliquer puis appuyer sur la nouvelle combinaison</value>
+  </data>
+  <data name="HotkeyPressCombination" xml:space="preserve">
+    <value>Appuie sur une combinaison… (Échap : annuler)</value>
+  </data>
+  <data name="HotkeyUnsupported" xml:space="preserve">
+    <value>Combinaison non prise en charge (il faut Ctrl, Alt, Shift ou Win + une touche)</value>
+  </data>
+  <data name="HotkeyAlreadyUsedBy" xml:space="preserve">
+    <value>Déjà utilisé par « {0} »</value>
+  </data>
+  <data name="HotkeyInvalid" xml:space="preserve">
+    <value>Raccourci invalide</value>
+  </data>
+  <data name="HotkeyTakenByOtherProgram" xml:space="preserve">
+    <value>Déjà utilisé par un autre programme</value>
+  </data>
+  <data name="HotkeyTabTimers" xml:space="preserve">
+    <value>Onglet Timers</value>
+  </data>
+  <data name="HotkeyTabDps" xml:space="preserve">
+    <value>Onglet DPS</value>
+  </data>
+  <data name="HotkeyTabTaken" xml:space="preserve">
+    <value>Onglet Dégâts reçus</value>
+  </data>
+  <data name="HotkeyTabHeal" xml:space="preserve">
+    <value>Onglet Soins</value>
+  </data>
+  <data name="HotkeyTabHistory" xml:space="preserve">
+    <value>Onglet Historique</value>
+  </data>
+  <data name="HotkeyPreviousTab" xml:space="preserve">
+    <value>Onglet précédent</value>
+  </data>
+  <data name="HotkeyNextTab" xml:space="preserve">
+    <value>Onglet suivant</value>
+  </data>
+  <data name="HotkeyToggleVisible" xml:space="preserve">
+    <value>Masquer / afficher</value>
+  </data>
+  <data name="HotkeyToggleDock" xml:space="preserve">
+    <value>Ancrer / libérer</value>
+  </data>
+  <data name="HotkeyToggleMinimize" xml:space="preserve">
+    <value>Réduire / agrandir</value>
+  </data>
+  <data name="HotkeyResetEncounter" xml:space="preserve">
+    <value>Réinitialiser le combat</value>
+  </data>
+  <data name="HotkeyScaleUp" xml:space="preserve">
+    <value>Agrandir l'interface</value>
+  </data>
+  <data name="HotkeyScaleDown" xml:space="preserve">
+    <value>Rétrécir l'interface</value>
+  </data>
+  <data name="AboutVersion" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="AboutLicense" xml:space="preserve">
+    <value>Licence : GPL-3.0</value>
+  </data>
+  <data name="AboutGameData" xml:space="preserve">
+    <value>Données de jeu : © NCSOFT</value>
+  </data>
+  <data name="AboutWebsite" xml:space="preserve">
+    <value>Site</value>
+  </data>
+  <data name="AboutRepository" xml:space="preserve">
+    <value>Dépôt</value>
+  </data>
+  <data name="AboutReadEula" xml:space="preserve">
+    <value>Lire le CLUF</value>
+  </data>
+  <data name="SettingsAutoUpdates" xml:space="preserve">
+    <value>Mises à jour automatiques</value>
+  </data>
+  <data name="UpdateDownload" xml:space="preserve">
+    <value>Télécharger</value>
+  </data>
+  <data name="UpdateDownloadTip" xml:space="preserve">
+    <value>Page de la nouvelle version : télécharge Setup.exe</value>
+  </data>
+  <data name="AboutUpdatesPrivacy" xml:space="preserve">
+    <value>L'app contacte GitHub pour vérifier et télécharger les mises à jour ; désactivable ci-dessus. Aucune autre donnée n'est envoyée.</value>
+  </data>
+  <data name="SoundFileMissing" xml:space="preserve">
+    <value>Fichier introuvable : {0} — {1} joué à la place</value>
+  </data>
+  <data name="SoundFileFilter" xml:space="preserve">
+    <value>Sons (*.wav;*.mp3)|*.wav;*.mp3</value>
+  </data>
+  <data name="EulaMissing" xml:space="preserve">
+    <value>CLUF introuvable : réinstalle l'application.</value>
+  </data>
+</root>

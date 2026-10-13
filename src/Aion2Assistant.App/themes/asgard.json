@@ -1,6 +1,7 @@
 {
   "id": "asgard",
   "name": "Asgard",
+  "nameEn": "Asgard",
   "colors": {
     "text": "#F6EEDA",
     "textMuted": "#C4B38A",

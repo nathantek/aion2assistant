@@ -1,6 +1,7 @@
 {
   "id": "neon",
   "name": "Néon",
+  "nameEn": "Neon",
   "colors": {
     "text": "#F2FCFF",
     "textMuted": "#B3A8FF",

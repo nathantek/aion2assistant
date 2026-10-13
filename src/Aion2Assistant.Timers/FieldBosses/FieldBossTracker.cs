@@ -1,5 +1,6 @@
 using System.Globalization;
 using Aion2Assistant.Core.Events;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Timers.FieldBosses;
 
@@ -7,7 +8,8 @@ namespace Aion2Assistant.Timers.FieldBosses;
 public sealed class FieldBossTracker : IFieldBossSource
 {
     public const string Category = "fieldboss";
-    public const string AssumedSuffix = " (supposé)";
+    /// <summary>Suffixe du nom d'un boss supposé apparu, dans la langue de l'app (« (supposé) »).</summary>
+    public static string AssumedSuffix => Strings.FieldBossAssumedSuffix;
     public static readonly TimeSpan AssumedAliveFor = TimeSpan.FromHours(2);
 
     private readonly Func<int, int, string> _bossName;

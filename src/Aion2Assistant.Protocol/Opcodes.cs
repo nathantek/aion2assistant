@@ -1,3 +1,5 @@
+using Aion2Assistant.Core.Localization;
+
 namespace Aion2Assistant.Protocol;
 
 /// <summary>Opcodes = les 2 octets dans l'ordre du câble (0xAABB = octets AA BB), client Global d'après juin 2026.</summary>
@@ -22,16 +24,21 @@ public static class Opcodes
     public const ushort CombatPowerUpdate = 0x1C56;
     public const ushort Inspect = 0x5036;
 
-    private static readonly Dictionary<ushort, string> Names = new()
+    // Clé de ressource du nom affiché (onglet Capture), traduit à la lecture.
+    private static readonly Dictionary<ushort, string> NameKeys = new()
     {
-        [Heartbeat] = "Heartbeat", [SelfInfo] = "Personnage", [PlayerInfo] = "Joueur", [PlayerInfoOld] = "Joueur (ancien)",
-        [Spawn] = "Apparition", [Death] = "Mort", [MapLoad] = "Carte", [Teleport] = "Téléportation", [Cast] = "Lancement",
-        [Damage] = "Dégâts", [Dot] = "DoT/HoT", [RemainHp] = "PV restants", [KillCredit] = "Mort + tueur", [HpMp] = "PV/PM",
-        [PartyRoster] = "Groupe", [FieldBossList] = "Boss de terrain",
-        [CombatPowerUpdate] = "Puissance", [Inspect] = "Inspection",
+        [Heartbeat] = nameof(Strings.OpcodeHeartbeat), [SelfInfo] = nameof(Strings.OpcodeSelfInfo),
+        [PlayerInfo] = nameof(Strings.OpcodePlayerInfo), [PlayerInfoOld] = nameof(Strings.OpcodePlayerInfoOld),
+        [Spawn] = nameof(Strings.OpcodeSpawn), [Death] = nameof(Strings.OpcodeDeath), [MapLoad] = nameof(Strings.OpcodeMapLoad),
+        [Teleport] = nameof(Strings.OpcodeTeleport), [Cast] = nameof(Strings.OpcodeCast), [Damage] = nameof(Strings.OpcodeDamage),
+        [Dot] = nameof(Strings.OpcodeDot), [RemainHp] = nameof(Strings.OpcodeRemainHp), [KillCredit] = nameof(Strings.OpcodeKillCredit),
+        [HpMp] = nameof(Strings.OpcodeHpMp), [PartyRoster] = nameof(Strings.OpcodePartyRoster),
+        [FieldBossList] = nameof(Strings.OpcodeFieldBossList), [CombatPowerUpdate] = nameof(Strings.OpcodeCombatPower),
+        [Inspect] = nameof(Strings.OpcodeInspect),
     };
 
-    public static bool IsKnown(ushort opcode) => Names.ContainsKey(opcode);
+    public static bool IsKnown(ushort opcode) => NameKeys.ContainsKey(opcode);
 
-    public static string Name(ushort opcode) => Names.TryGetValue(opcode, out var n) ? n : $"{opcode >> 8:x2} {opcode & 0xFF:x2}";
+    public static string Name(ushort opcode) =>
+        NameKeys.TryGetValue(opcode, out var key) ? Strings.Get(key) : $"{opcode >> 8:x2} {opcode & 0xFF:x2}";
 }

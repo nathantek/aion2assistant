@@ -1,3 +1,4 @@
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.ViewModels;
 using Aion2Assistant.Combat;
 using Aion2Assistant.Core.Storage;
@@ -72,8 +73,9 @@ internal sealed class RecordController : IDisposable
             if (result.Previous is { } old)
             {
                 var pct = old.Dps > 0 ? (int)Math.Round((result.Record.Dps / old.Dps - 1) * 100, MidpointRounding.AwayFromZero) : 0;
-                _notifications.Show("Nouveau record !",
-                    $"{result.Record.Boss} : {MeterFormat.Compact(result.Record.Dps)}/s (ancien {MeterFormat.Compact(old.Dps)}/s, +{pct} %)",
+                _notifications.Show(UiStrings.RecordNewTitle,
+                    UiStrings.Format(nameof(UiStrings.RecordNewMessage), result.Record.Boss, MeterFormat.Compact(result.Record.Dps),
+                        MeterFormat.Compact(old.Dps), pct),
                     AppHost.Resource("AlertBrush"), "");
             }
         }

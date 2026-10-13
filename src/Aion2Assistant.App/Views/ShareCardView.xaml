@@ -1,6 +1,7 @@
 <UserControl x:Class="Aion2Assistant.App.Views.ShareCardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Aion2Assistant.App.Localization"
              xmlns:ctl="clr-namespace:Aion2Assistant.App.Controls"
              Background="{DynamicResource SolidBackgroundBrush}"
              FontFamily="{DynamicResource UiFont}">
@@ -48,7 +49,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </StackPanel>
-        <TextBlock Text="Pas de courbe pour ce combat (enregistré avant cette version)."
+        <TextBlock Text="{loc:Tr MeterNoChart}"
                    Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" TextAlignment="Center"
                    HorizontalAlignment="Center" Margin="12">
             <TextBlock.Style>
@@ -73,7 +74,7 @@
             <ContentControl Content="{Binding}" ContentTemplate="{StaticResource SkillHeaderTemplate}"/>
             <ItemsControl ItemsSource="{Binding DetailSkills}" ItemTemplate="{StaticResource SkillLineTemplate}"/>
             <StackPanel Visibility="{Binding ShowRecaps, Converter={StaticResource BoolToVisibility}}">
-                <TextBlock Text="RÉCAP DE MORT" Style="{StaticResource SectionHeaderStyle}"/>
+                <TextBlock Text="{loc:Tr MeterDeathRecap}" Style="{StaticResource SectionHeaderStyle}"/>
                 <ItemsControl ItemsSource="{Binding DetailRecaps}"/>
             </StackPanel>
         </StackPanel>

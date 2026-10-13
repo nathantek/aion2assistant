@@ -1,4 +1,5 @@
 using Aion2Assistant.Core.Events;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Combat;
 
@@ -543,7 +544,7 @@ public sealed class EncounterTracker
             isBoss = max >= _options.BossMinHp;
             if (Entities.CurrentHpOf(t) is { } cur && max > 0) hpPct = cur * 100.0 / max;
         }
-        return new EncounterSnapshot(targetName ?? "Combat", _startMs, durationMs, active, outcome, targetName, hpPct,
+        return new EncounterSnapshot(targetName ?? Strings.EncounterFallbackTitle, _startMs, durationMs, active, outcome, targetName, hpPct,
             dps, heal, taken, Enumerable.Reverse(_deaths).ToList(), _startMapId, isBoss, bossDps, dpsTimeline, bossTimeline,
             MainTarget() is { } nt ? Entities.NpcCodeOf(nt) : 0, training, training ? _trainingDurationMs : 0);
     }

@@ -1,6 +1,7 @@
 <Window x:Class="Aion2Assistant.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Aion2Assistant.App.Localization"
         xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels"
         xmlns:views="clr-namespace:Aion2Assistant.App.Views"
         Title="Aion2Assistant"
@@ -46,7 +47,7 @@
                     <Rectangle Width="1" Height="16" Margin="4,0,6,0" Fill="{DynamicResource DividerBrush}"/>
                     <Ellipse Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center"
                              Fill="{Binding Capture.IndicatorBrush}" ToolTip="{Binding Capture.StatusText}"/>
-                    <Button Command="{Binding ToggleDockCommand}" ToolTip="Ancrer / libérer (Ctrl+Alt+Num7)">
+                    <Button Command="{Binding ToggleDockCommand}" ToolTip="{loc:Tr TipDock}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
                                 <Setter Property="Content" Value="&#xE77A;"/>
@@ -59,30 +60,30 @@
                         </Button.Style>
                     </Button>
                     <Button Style="{StaticResource IconButtonStyle}" Content="&#xE921;"
-                            Command="{Binding ToggleMinimizeCommand}" ToolTip="Réduire / agrandir (Ctrl+Alt+Num8)"/>
-                    <RadioButton Style="{StaticResource ClusterTabButtonStyle}" Content="&#xE713;" ToolTip="Réglages"
+                            Command="{Binding ToggleMinimizeCommand}" ToolTip="{loc:Tr TipMinimize}"/>
+                    <RadioButton Style="{StaticResource ClusterTabButtonStyle}" Content="&#xE713;" ToolTip="{loc:Tr Settings}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Settings}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Settings}"/>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                     <RadioButton Style="{StaticResource TabButtonStyle}" Content="{StaticResource Icon.Sword}" Tag="{DynamicResource DpsBrush}"
-                                 ToolTip="DPS (Ctrl+Alt+Num1)"
+                                 ToolTip="{loc:Tr TipTabDps}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Dps}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Dps}"/>
                     <RadioButton Style="{StaticResource TabButtonStyle}" Content="{StaticResource Icon.Shield}" Tag="{DynamicResource TakenBrush}"
-                                 ToolTip="Dégâts reçus (Ctrl+Alt+Num2)"
+                                 ToolTip="{loc:Tr TipTabTaken}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Taken}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Taken}"/>
                     <RadioButton Style="{StaticResource TabButtonStyle}" Content="{StaticResource Icon.Heart}" Tag="{DynamicResource HealBrush}"
-                                 ToolTip="Soins (Ctrl+Alt+Num3)"
+                                 ToolTip="{loc:Tr TipTabHeal}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Heal}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Heal}"/>
                     <RadioButton Style="{StaticResource TabButtonStyle}" Content="{StaticResource Icon.History}" Tag="{DynamicResource TextBrush}"
-                                 ToolTip="Historique (Ctrl+Alt+Num4)"
+                                 ToolTip="{loc:Tr TipTabHistory}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.History}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.History}"/>
                     <RadioButton Style="{StaticResource TabButtonStyle}" Content="{StaticResource Icon.Hourglass}" Tag="{DynamicResource TimerBrush}"
-                                 ToolTip="Timers (Ctrl+Alt+Num5)"
+                                 ToolTip="{loc:Tr TipTabTimers}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Timers}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Timers}"/>
                 </StackPanel>
@@ -97,7 +98,7 @@
                     Visibility="{Binding WarningMessage, Converter={StaticResource NullToCollapsed}}">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource IconButtonStyle}" Content="&#xE711;"
-                            Command="{Binding DismissWarningCommand}" ToolTip="Fermer"/>
+                            Command="{Binding DismissWarningCommand}" ToolTip="{loc:Tr Close}"/>
                     <TextBlock Text="{Binding WarningMessage}" TextWrapping="Wrap" FontSize="{DynamicResource FontSizeSmall}"/>
                 </DockPanel>
             </Border>
@@ -115,10 +116,10 @@
                                FontSize="{DynamicResource FontSizeSmall}" TextTrimming="CharacterEllipsis"
                                VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Style="{StaticResource TextButtonStyle}" Content="Redémarrer"
-                                Command="{Binding RestartForUpdateCommand}" ToolTip="Installer la mise à jour et relancer"/>
-                        <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="Plus tard"
-                                Command="{Binding DeferUpdateBannerCommand}" ToolTip="Installer à la fermeture de l'app"/>
+                        <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr UpdateRestart}"
+                                Command="{Binding RestartForUpdateCommand}" ToolTip="{loc:Tr UpdateRestartTip}"/>
+                        <Button Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr UpdateLater}"
+                                Command="{Binding DeferUpdateBannerCommand}" ToolTip="{loc:Tr UpdateLaterTip}"/>
                     </StackPanel>
                 </Grid>
             </Border>

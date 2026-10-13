@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.Services;
 using Aion2Assistant.Core.Audio;
 using Aion2Assistant.Core.Hotkeys;
+using Aion2Assistant.Core.Localization;
 using Aion2Assistant.Core.Settings;
 using Aion2Assistant.Core.Theming;
 using Aion2Assistant.Timers;
@@ -10,6 +12,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Aion2Assistant.App.ViewModels;
+
+/// <summary>Une langue de la liste des Options : code stocké dans les réglages et nom natif affiché.</summary>
+public sealed record LanguageOption(string Code, string NativeName);
 
 public partial class SettingsViewModel : ObservableObject
 {
@@ -22,6 +27,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly Action _resetPosition;
     private readonly UpdateController _updates;
     private readonly Action _showEula;
+    private readonly Action _restartApp;
     private readonly MeterDisplayOptions _display;
 
     /// <summary>Puissance de combat après le nom, dans les meters et l'image copiée.</summary>
@@ -42,8 +48,9 @@ public partial class SettingsViewModel : ObservableObject
 
     internal SettingsViewModel(AppSettings settings, MainViewModel main, Action requestSave, Action<SoundRef> playSound,
         HotkeyService hotkeys, IReadOnlyList<TimerDefinition> timers, Action<bool> setKeyboardCapture, Action resetPosition,
-        UpdateController updates, Action showEula, MeterDisplayOptions display)
+        UpdateController updates, Action showEula, MeterDisplayOptions display, Action restartApp)
     {
+        _restartApp = restartApp;
         _display = display;
         display.PropertyChanged += (_, e) =>
         {
@@ -68,6 +75,7 @@ public partial class SettingsViewModel : ObservableObject
         _combatIdleSeconds = settings.Combat.IdleTimeoutSeconds;
         _includeAllPlayers = settings.Combat.IncludeAllPlayers;
         _glowEnabled = settings.GlowEnabled;
+        _selectedLanguage = Languages.FirstOrDefault(l => l.Code == AppLanguage.Normalize(settings.Language)) ?? Languages[0];
 
         foreach (var action in Enum.GetValues<HotkeyAction>())
             Hotkeys.Add(new HotkeyRowViewModel(action, HotkeyLabels.For(action), BeginCapture));
@@ -75,7 +83,7 @@ public partial class SettingsViewModel : ObservableObject
 
         foreach (var timer in timers)
             Timers.Add(new TimerSettingRowViewModel(timer.Id, timer.Name, settings.GetTimer(timer.Id), requestSave, settings, playSound));
-        Timers.Add(new TimerSettingRowViewModel(AppSettings.FieldBossTimersKey, "Boss de terrain",
+        Timers.Add(new TimerSettingRowViewModel(AppSettings.FieldBossTimersKey, UiStrings.FieldBosses,
             settings.GetTimer(AppSettings.FieldBossTimersKey), requestSave, settings, playSound));
 
         main.PropertyChanged += OnMainChanged;
@@ -84,7 +92,7 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>La case « Effets lumineux » n'a de sens que pour un thème qui définit une lueur.</summary>
     public bool SelectedThemeHasGlow => SelectedTheme?.Glow is not null;
 
-    public string VersionText => $"Version {_updates.CurrentVersionText}";
+    public string VersionText => UiStrings.Format(nameof(UiStrings.AboutVersion), _updates.CurrentVersionText);
 
     /// <summary>État des mises à jour (désactivées, à jour, téléchargement, prête, installation via Setup.exe…).</summary>
     public string UpdateStatusText => _updates.StatusText;
@@ -182,6 +190,33 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void ReadEula() => _showEula();
 
+    /// <summary>Langues proposées, sous leur nom natif (jamais traduit).</summary>
+    public IReadOnlyList<LanguageOption> Languages { get; } =
+        AppLanguage.Supported.Select(l => new LanguageOption(l, AppLanguage.NativeName(l))).ToList();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LanguageRestartPending), nameof(LanguageRestartText), nameof(LanguageRestartButtonText))]
+    private LanguageOption? _selectedLanguage;
+
+    /// <summary>La langue choisie diffère de celle de l'interface : elle s'appliquera au redémarrage.</summary>
+    public bool LanguageRestartPending => SelectedLanguage is { } l && l.Code != AppCulture.Language;
+
+    // Message et bouton dans la langue choisie : c'est celle que l'utilisateur lit.
+    public string LanguageRestartText => UiStrings.GetIn(TargetLanguage, nameof(UiStrings.LanguageRestartRequired));
+    public string LanguageRestartButtonText => UiStrings.GetIn(TargetLanguage, nameof(UiStrings.LanguageRestartNow));
+    private string TargetLanguage => SelectedLanguage?.Code ?? AppCulture.Language;
+
+    partial void OnSelectedLanguageChanged(LanguageOption? value)
+    {
+        if (value is null) return;
+        _settings.Language = value.Code;
+        _requestSave();
+    }
+
+    /// <summary>« Redémarrer maintenant » : fermeture normale (réglages enregistrés) puis relance de l'app.</summary>
+    [RelayCommand]
+    private void RestartForLanguage() => _restartApp();
+
     partial void OnCombatIdleSecondsChanged(double value)
     {
         _settings.Combat.IdleTimeoutSeconds = (int)Math.Clamp(Math.Round(value), 3, 60);
@@ -215,14 +250,14 @@ public partial class SettingsViewModel : ObservableObject
         {
             if (!g.IsValid)
             {
-                row.Error = "Combinaison non prise en charge (il faut Ctrl, Alt, Shift ou Win + une touche)";
+                row.Error = UiStrings.HotkeyUnsupported;
                 return; // on reste en capture
             }
             var text = g.ToString();
             var taken = Hotkeys.FirstOrDefault(h => h != row && h.Gesture == text);
             if (taken is not null)
             {
-                row.Error = $"Déjà utilisé par « {taken.Label} »";
+                row.Error = UiStrings.Format(nameof(UiStrings.HotkeyAlreadyUsedBy), taken.Label);
                 return;
             }
             _settings.Hotkeys[row.Action.ToString()] = text;

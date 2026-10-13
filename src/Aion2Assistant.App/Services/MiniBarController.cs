@@ -1,5 +1,6 @@
 using System.Windows.Media;
 using System.Windows.Threading;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.ViewModels;
 using Aion2Assistant.Combat;
 
@@ -48,9 +49,9 @@ internal sealed class MiniBarController : IDisposable
     private void Update()
     {
         if (LiveSummary.SelfDps(_snapshot(), _bossFilter.BossOnly) is { } dps)
-            Set($"{MeterFormat.Compact(dps)}/s", AppHost.Resource("DpsBrush"), "Ton DPS (combat en cours)");
+            Set($"{MeterFormat.Compact(dps)}/s", AppHost.Resource("DpsBrush"), UiStrings.MiniSelfDps);
         else if (_timers.NextTimer is { } t)
-            Set($"{t.ShortName} {t.RemainingText}", AppHost.Resource(t.IsSoon ? "AlertBrush" : "TimerBrush"), "Prochain timer");
+            Set($"{t.ShortName} {t.RemainingText}", AppHost.Resource(t.IsSoon ? "AlertBrush" : "TimerBrush"), UiStrings.MiniNextTimer);
         else
             Set(null, null, null);
     }

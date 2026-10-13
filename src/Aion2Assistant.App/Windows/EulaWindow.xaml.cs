@@ -1,4 +1,6 @@
 using System.Windows;
+using Aion2Assistant.App.Localization;
+using Aion2Assistant.Core.Localization;
 using Serilog;
 
 namespace Aion2Assistant.App.Windows;
@@ -6,7 +8,7 @@ namespace Aion2Assistant.App.Windows;
 /// <summary>Fenêtre du CLUF : mode acceptation (J'accepte / Quitter) ou lecture seule (Fermer).</summary>
 public partial class EulaWindow : Window
 {
-    public const string MissingText = "CLUF introuvable : réinstalle l'application.";
+    public static string MissingText => UiStrings.EulaMissing;
 
     private readonly bool _readOnly;
 
@@ -20,7 +22,7 @@ public partial class EulaWindow : Window
         {
             Topmost = false;
             AcceptButton.Visibility = Visibility.Collapsed;
-            QuitButton.Content = "Fermer";
+            QuitButton.Content = UiStrings.EulaClose;
             return;
         }
         AcceptButton.IsEnabled = text is not null;
@@ -30,7 +32,9 @@ public partial class EulaWindow : Window
     {
         try
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "legal", "CLUF.txt");
+            // Texte dans la langue de l'app ; la version française fait foi.
+            var file = AppCulture.Language == AppLanguage.French ? "CLUF.txt" : "EULA.txt";
+            var path = Path.Combine(AppContext.BaseDirectory, "legal", file);
             return File.Exists(path) ? File.ReadAllText(path) : null;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

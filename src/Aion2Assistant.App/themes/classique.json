@@ -1,6 +1,7 @@
 {
   "id": "classique",
   "name": "Classique",
+  "nameEn": "Classic",
   "colors": {
     "text": "#E8EAED",
     "textMuted": "#9199A7",

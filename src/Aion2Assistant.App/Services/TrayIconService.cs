@@ -1,3 +1,4 @@
+using Aion2Assistant.App.Localization;
 using Drawing = System.Drawing;
 using Forms = System.Windows.Forms;
 
@@ -11,12 +12,12 @@ internal sealed class TrayIconService : IDisposable
     public TrayIconService(Action toggleVisible, Action toggleDock, Action resetPosition, Action openSettings, Action exit)
     {
         var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("Afficher / masquer", null, (_, _) => toggleVisible());
-        menu.Items.Add("Ancrer / libérer", null, (_, _) => toggleDock());
-        menu.Items.Add("Réinitialiser la position", null, (_, _) => resetPosition());
-        menu.Items.Add("Réglages", null, (_, _) => openSettings());
+        menu.Items.Add(UiStrings.TrayToggleVisible, null, (_, _) => toggleVisible());
+        menu.Items.Add(UiStrings.TrayToggleDock, null, (_, _) => toggleDock());
+        menu.Items.Add(UiStrings.ResetPosition, null, (_, _) => resetPosition());
+        menu.Items.Add(UiStrings.Settings, null, (_, _) => openSettings());
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("Quitter", null, (_, _) => exit());
+        menu.Items.Add(UiStrings.Quit, null, (_, _) => exit());
 
         _icon = new Forms.NotifyIcon
         {

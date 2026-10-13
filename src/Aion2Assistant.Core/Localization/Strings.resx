@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FormatKilo" xml:space="preserve">
+    <value>{0}k</value>
+    <comment>{0} = nombre déjà mis en forme</comment>
+  </data>
+  <data name="FormatMega" xml:space="preserve">
+    <value>{0}M</value>
+    <comment>{0} = nombre déjà mis en forme</comment>
+  </data>
+  <data name="FormatPercent" xml:space="preserve">
+    <value>{0}%</value>
+    <comment>{0} = nombre déjà mis en forme, signe compris</comment>
+  </data>
+  <data name="OutcomeKill" xml:space="preserve">
+    <value>Killed</value>
+    <comment>Issue d'un combat (badge, en-tête, copie chat)</comment>
+  </data>
+  <data name="OutcomeWipe" xml:space="preserve">
+    <value>Wipe</value>
+  </data>
+  <data name="OutcomeWipeHp" xml:space="preserve">
+    <value>Wipe {0}</value>
+    <comment>{0} = PV restants du boss, pourcentage déjà mis en forme</comment>
+  </data>
+  <data name="OutcomeTraining" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="OutcomeReset" xml:space="preserve">
+    <value>Reset</value>
+    <comment>Combat réinitialisé à la main</comment>
+  </data>
+  <data name="OutcomeEnded" xml:space="preserve">
+    <value>Ended</value>
+    <comment>Terminé sans cause connue</comment>
+  </data>
+  <data name="StateLive" xml:space="preserve">
+    <value>in progress</value>
+    <comment>État d'un combat actif (en-tête des meters, copie chat)</comment>
+  </data>
+  <data name="StateTraining" xml:space="preserve">
+    <value>training</value>
+    <comment>État d'un entraînement actif</comment>
+  </data>
+  <data name="ShareDps" xml:space="preserve">
+    <value>DPS</value>
+    <comment>Étiquette de la copie chat : [DPS]</comment>
+  </data>
+  <data name="ShareBossDps" xml:space="preserve">
+    <value>Boss DPS</value>
+    <comment>Étiquette de la copie chat (boss seulement)</comment>
+  </data>
+  <data name="ShareHeal" xml:space="preserve">
+    <value>Healing</value>
+    <comment>Étiquette de la copie chat</comment>
+  </data>
+  <data name="ShareTaken" xml:space="preserve">
+    <value>Taken</value>
+    <comment>Étiquette de la copie chat (dégâts reçus)</comment>
+  </data>
+  <data name="ShareDeath" xml:space="preserve">
+    <value>{0} death</value>
+    <comment>Copie chat : nombre de morts (singulier)</comment>
+  </data>
+  <data name="ShareDeaths" xml:space="preserve">
+    <value>{0} deaths</value>
+    <comment>Copie chat : nombre de morts (pluriel)</comment>
+  </data>
+  <data name="EncounterFallbackTitle" xml:space="preserve">
+    <value>Combat</value>
+    <comment>Titre d'un combat sans cible identifiée</comment>
+  </data>
+  <data name="NpcFallback" xml:space="preserve">
+    <value>NPC {0}</value>
+    <comment>{0} = code du PNJ absent de npcs.json</comment>
+  </data>
+  <data name="MapFallback" xml:space="preserve">
+    <value>Map {0}</value>
+    <comment>{0} = identifiant de carte absent de maps.json</comment>
+  </data>
+  <data name="ZoneUnknown" xml:space="preserve">
+    <value>Unknown zone</value>
+  </data>
+  <data name="CountdownDays" xml:space="preserve">
+    <value>{0}d {1:00}:{2:00}</value>
+    <comment>Compte à rebours ≥ 1 jour : {0} = jours, {1} = heures, {2} = minutes</comment>
+  </data>
+  <data name="CountdownUnderMinute" xml:space="preserve">
+    <value>less than a minute</value>
+    <comment>Pop-up « Dans … »</comment>
+  </data>
+  <data name="CountdownMinutes" xml:space="preserve">
+    <value>{0} min</value>
+    <comment>Pop-up « Dans … » : {0} = minutes</comment>
+  </data>
+  <data name="CountdownHours" xml:space="preserve">
+    <value>{0}h {1:00}</value>
+    <comment>Pop-up « Dans … » : {0} = heures, {1} = minutes</comment>
+  </data>
+  <data name="FieldBossAssumedSuffix" xml:space="preserve">
+    <value> (assumed)</value>
+    <comment>Suffixe d'un boss de terrain supposé apparu ; commence par une espace</comment>
+  </data>
+  <data name="UpdateDisabled" xml:space="preserve">
+    <value>Automatic updates off</value>
+    <comment>Options › À propos : état des mises à jour</comment>
+  </data>
+  <data name="UpdateNotInstalled" xml:space="preserve">
+    <value>Install Aion2Assistant with Setup.exe to get automatic updates</value>
+  </data>
+  <data name="UpdateLegacyAvailable" xml:space="preserve">
+    <value>Version {0} available: install it with Setup.exe to get automatic updates</value>
+    <comment>{0} = version</comment>
+  </data>
+  <data name="UpdateReady" xml:space="preserve">
+    <value>Update ready</value>
+  </data>
+  <data name="UpdateVersionReady" xml:space="preserve">
+    <value>Version {0} ready</value>
+    <comment>{0} = version</comment>
+  </data>
+  <data name="UpdateDeferred" xml:space="preserve">
+    <value>{0}: installs on exit</value>
+    <comment>{0} = « Mise à jour prête » ou « Version x prête »</comment>
+  </data>
+  <data name="UpdateChecking" xml:space="preserve">
+    <value>Checking for updates…</value>
+  </data>
+  <data name="UpdateDownloading" xml:space="preserve">
+    <value>Downloading update…</value>
+  </data>
+  <data name="UpdateUpToDate" xml:space="preserve">
+    <value>Up to date</value>
+  </data>
+  <data name="UpdateActive" xml:space="preserve">
+    <value>Automatic updates on</value>
+  </data>
+  <data name="SoundChime" xml:space="preserve">
+    <value>Chime</value>
+    <comment>Son d'alerte intégré</comment>
+  </data>
+  <data name="SoundBell" xml:space="preserve">
+    <value>Bell</value>
+    <comment>Son d'alerte intégré</comment>
+  </data>
+  <data name="SoundDoubleBeep" xml:space="preserve">
+    <value>Double beep</value>
+    <comment>Son d'alerte intégré</comment>
+  </data>
+  <data name="SoundGong" xml:space="preserve">
+    <value>Gong</value>
+    <comment>Son d'alerte intégré</comment>
+  </data>
+  <data name="SoundHarp" xml:space="preserve">
+    <value>Harp</value>
+    <comment>Son d'alerte intégré</comment>
+  </data>
+  <data name="SoundAlarm" xml:space="preserve">
+    <value>Alarm</value>
+    <comment>Son d'alerte intégré</comment>
+  </data>
+  <data name="SoundCustomFile" xml:space="preserve">
+    <value>Custom file…</value>
+    <comment>Choix d'un fichier son de l'utilisateur</comment>
+  </data>
+  <data name="OpcodeHeartbeat" xml:space="preserve">
+    <value>Heartbeat</value>
+    <comment>Nom d'opcode (onglet Capture, diagnostic)</comment>
+  </data>
+  <data name="OpcodeSelfInfo" xml:space="preserve">
+    <value>Character</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodePlayerInfo" xml:space="preserve">
+    <value>Player</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodePlayerInfoOld" xml:space="preserve">
+    <value>Player (old)</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeSpawn" xml:space="preserve">
+    <value>Spawn</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeDeath" xml:space="preserve">
+    <value>Death</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeMapLoad" xml:space="preserve">
+    <value>Map</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeTeleport" xml:space="preserve">
+    <value>Teleport</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeCast" xml:space="preserve">
+    <value>Cast</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeDamage" xml:space="preserve">
+    <value>Damage</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeDot" xml:space="preserve">
+    <value>DoT/HoT</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeRemainHp" xml:space="preserve">
+    <value>Remaining HP</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeKillCredit" xml:space="preserve">
+    <value>Death + killer</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeHpMp" xml:space="preserve">
+    <value>HP/MP</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodePartyRoster" xml:space="preserve">
+    <value>Party</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeFieldBossList" xml:space="preserve">
+    <value>Field bosses</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeCombatPower" xml:space="preserve">
+    <value>Combat power</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeInspect" xml:space="preserve">
+    <value>Inspect</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="CaptureNpcapMissing" xml:space="preserve">
+    <value>Npcap is not installed</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureNoAdapter" xml:space="preserve">
+    <value>No network adapter carries the game connection</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureError" xml:space="preserve">
+    <value>Capture error</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureGameNotDetected" xml:space="preserve">
+    <value>Game not detected</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureWaiting" xml:space="preserve">
+    <value>Waiting for the game connection</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureNoPacketsYet" xml:space="preserve">
+    <value>No packets received yet</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureNoPackets10s" xml:space="preserve">
+    <value>No packets for 10s</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureManyRejected" xml:space="preserve">
+    <value>Many unreadable packets (protocol changed?)</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureNoEvents" xml:space="preserve">
+    <value>Packets received but nothing decoded</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureActive" xml:space="preserve">
+    <value>Capture active</value>
+    <comment>Voyant de capture : raison</comment>
+  </data>
+  <data name="CaptureStatusStarting" xml:space="preserve">
+    <value>Starting…</value>
+    <comment>État de la capture</comment>
+  </data>
+  <data name="CaptureStatusNpcapMissing" xml:space="preserve">
+    <value>Npcap is not installed: https://npcap.com (tick “WinPcap API-compatible Mode”).</value>
+    <comment>État de la capture ; nom de l'option tel qu'affiché par l'installeur Npcap</comment>
+  </data>
+  <data name="CaptureStatusGameNotRunning" xml:space="preserve">
+    <value>AION 2 is not running.</value>
+    <comment>État de la capture</comment>
+  </data>
+  <data name="CaptureStatusWaiting" xml:space="preserve">
+    <value>Waiting for the game connection.</value>
+    <comment>État de la capture</comment>
+  </data>
+  <data name="CaptureStatusNoAdapter" xml:space="preserve">
+    <value>No Npcap adapter carries the game connection (VPN?).</value>
+    <comment>État de la capture</comment>
+  </data>
+  <data name="CaptureStatusActive" xml:space="preserve">
+    <value>Capture active.</value>
+    <comment>État de la capture</comment>
+  </data>
+  <data name="CaptureStatusAccessDenied" xml:space="preserve">
+    <value>Capture access denied: reinstall Npcap without the “Restrict Npcap driver's access to Administrators only” option. {0}</value>
+    <comment>État de la capture ; {0} = message de l'exception</comment>
+  </data>
+  <data name="CaptureStatusError" xml:space="preserve">
+    <value>Capture error: {0}</value>
+    <comment>État de la capture ; {0} = message de l'exception</comment>
+  </data>
+</root>

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Interop;
 using Aion2Assistant.App.Interop;
+using Aion2Assistant.App.Localization;
 using Aion2Assistant.Core.Hotkeys;
 using Serilog;
 
@@ -36,7 +37,7 @@ internal sealed class HotkeyService : IDisposable
         {
             if (!bindings.TryGetValue(action.ToString(), out var text) || !HotkeyGesture.TryParse(text, out var gesture))
             {
-                _failures[action] = "Raccourci invalide";
+                _failures[action] = UiStrings.HotkeyInvalid;
                 continue;
             }
 
@@ -47,7 +48,7 @@ internal sealed class HotkeyService : IDisposable
             }
             else
             {
-                _failures[action] = "Déjà utilisé par un autre programme";
+                _failures[action] = UiStrings.HotkeyTakenByOtherProgram;
                 Log.Warning("Raccourci {Gesture} ({Action}) déjà utilisé", gesture, action);
             }
             id++;

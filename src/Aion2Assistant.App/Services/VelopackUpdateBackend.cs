@@ -57,6 +57,9 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
     /// <summary>À la fermeture : relancer l'application après l'installation (choix « Redémarrer »).</summary>
     public bool RestartAfterApply { get; set; }
 
+    /// <summary>L'outil de mise à jour a été lancé : il installera la version à la fin du processus.</summary>
+    public bool ApplyStarted { get; private set; }
+
     public async Task<AppVersion?> CheckAsync(CancellationToken ct)
     {
         var manager = Manager();
@@ -116,6 +119,7 @@ internal sealed class VelopackUpdateBackend : IUpdateBackend
         var asset = PendingAsset(manager);
         if (asset is null) throw new InvalidOperationException("Aucune mise à jour téléchargée.");
         manager.WaitExitThenApplyUpdates(asset, silent: true, restart: restart);
+        ApplyStarted = true;
     }
 
     // Un cycle annulé en plein téléchargement ne doit pas faire perdre la version déjà prête.

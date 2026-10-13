@@ -1,6 +1,7 @@
 {
   "id": "contraste-eleve",
   "name": "Contraste élevé",
+  "nameEn": "High contrast",
   "colors": {
     "text": "#FFFFFF",
     "textMuted": "#EBEBEB",

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Core.Theming;
 
@@ -8,7 +9,10 @@ public static partial class ThemeLoader
     [GeneratedRegex("^[a-z0-9-]+$")]
     private static partial Regex IdPattern();
 
-    /// <summary>Lit un thème JSON (clés camelCase, toutes obligatoires).</summary>
+    /// <summary>
+    /// Lit un thème JSON (clés camelCase, toutes obligatoires sauf glow, highContrast et nameEn).
+    /// Name = nameEn en anglais s'il est renseigné, sinon name (thèmes d'avant la 0.4, thèmes perso).
+    /// </summary>
     public static ThemeDefinition Parse(string json)
     {
         try
@@ -21,6 +25,9 @@ public static partial class ThemeLoader
             if (!IdPattern().IsMatch(id))
                 throw new ThemeFormatException($"Identifiant de thème invalide : « {id} » (attendu : a-z, 0-9 et tirets).");
             var name = ReadString(root, "name");
+            // Lu dans toutes les langues : un nameEn mal formé est signalé même en français.
+            var nameEn = ReadOptionalString(root, "nameEn");
+            if (nameEn is not null && AppCulture.Language == AppLanguage.English) name = nameEn;
 
             if (!root.TryGetProperty("colors", out var c) || c.ValueKind != JsonValueKind.Object)
                 throw new ThemeFormatException("Clé manquante : « colors ».");
@@ -82,6 +89,14 @@ public static partial class ThemeLoader
         if (!obj.TryGetProperty(key, out var v) || v.ValueKind != JsonValueKind.String)
             throw new ThemeFormatException($"Clé manquante : « {key} ».");
         return v.GetString() ?? "";
+    }
+
+    /// <summary>Texte facultatif : absent ou vide = null ; présent, il doit être une chaîne.</summary>
+    private static string? ReadOptionalString(JsonElement obj, string key)
+    {
+        if (!obj.TryGetProperty(key, out var v)) return null;
+        if (v.ValueKind != JsonValueKind.String) throw new ThemeFormatException($"« {key} » doit être une chaîne.");
+        return string.IsNullOrWhiteSpace(v.GetString()) ? null : v.GetString()!.Trim();
     }
 
     private static Rgb Color(JsonElement colors, string key)

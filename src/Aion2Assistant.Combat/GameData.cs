@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Aion2Assistant.Core.Events;
+using Aion2Assistant.Core.Localization;
 
 namespace Aion2Assistant.Combat;
 
@@ -112,7 +113,7 @@ public sealed class GameData
     private SkillRow Rename(SkillRow r) =>
         r.Name == $"Skill {r.SkillCode}" || r.Name == FallbackName(r.SkillCode) ? r with { Name = SkillName(r.SkillCode) } : r;
 
-    public string NpcName(int npcCode) => _npcs.TryGetValue(npcCode, out var n) ? n : $"PNJ {npcCode}";
+    public string NpcName(int npcCode) => _npcs.TryGetValue(npcCode, out var n) ? n : Strings.Format(nameof(Strings.NpcFallback), npcCode);
 }
 
 /// <summary>Noms de cartes chargés depuis <c>maps.json</c> (facultatif).</summary>
@@ -121,6 +122,6 @@ public static class MapNames
     public static Func<int, string> Load(string directory)
     {
         var table = GameData.ReadTable(Path.Combine(directory, "maps.json"));
-        return id => id == 0 ? "Zone inconnue" : table.TryGetValue(id, out var n) ? n : $"Carte {id}";
+        return id => id == 0 ? Strings.ZoneUnknown : table.TryGetValue(id, out var n) ? n : Strings.Format(nameof(Strings.MapFallback), id);
     }
 }

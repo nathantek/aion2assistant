@@ -1,0 +1,34 @@
+Version 2
+
+END USER LICENSE AGREEMENT (EULA) — Aion2Assistant
+
+This is an English translation of the French agreement (CLUF). In case of any discrepancy, the French version prevails.
+
+By clicking "I accept", you acknowledge that you have read and accepted the following terms.
+
+1. Software provided "as is"
+Aion2Assistant is provided "as is", without warranty of any kind, express or implied (including as to the accuracy of the data displayed, fitness for a particular purpose or availability). The author cannot be held liable for any damage resulting from the use of the software.
+
+2. Code license
+The source code of Aion2Assistant is distributed under the GPL-3.0 license. The license text is available in the project repository: https://github.com/nathantek/aion2assistant
+
+3. Game content
+Names, texts and data from the game AION 2 are © NCSOFT and are not covered by the GPL license. They remain the property of their respective owners.
+
+4. No affiliation
+Aion2Assistant is an independent project. It is not affiliated with, endorsed by or supported by NCSOFT.
+
+5. How it works
+The application passively reads the game's network traffic to display information (combat, timers). It does not inject any code into the game, does not read its memory, does not send any packet to the game or its servers, and does not modify any game file.
+
+6. Use at your own risk
+You use Aion2Assistant at your own risk, including with regard to the game's terms of service and NCSOFT's rules. It is your responsibility to check that such use is permitted. The author is not responsible for any penalty applied to your account.
+
+7. No data collected
+Aion2Assistant does not collect, transmit or sell any personal or game data. Your settings, history, records, optional .pcap captures and logs stay on your computer, in %AppData%\Aion2Assistant. The application contacts GitHub to check for and download updates (GitHub then receives your IP address and the application's technical identifier, as with any download); it only installs them after you click "Restart" or when the application closes. You can turn off these automatic updates in Settings › About. No other data is sent.
+
+8. Installation and uninstallation
+With Setup.exe, the application is installed in %LocalAppData%\Aion2Assistant; with Portable.zip, it stays in the folder where you extracted it, also updates itself automatically and stores its downloaded update packages in its own folder. Your data stays in %AppData%\Aion2Assistant: it is kept when you uninstall, and you can delete this folder yourself to erase everything.
+
+9. Changes
+This EULA may change. If a new version is published, it will be shown to you again at startup.

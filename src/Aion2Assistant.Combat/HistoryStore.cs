@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Aion2Assistant.Core.Localization;
 using Microsoft.Data.Sqlite;
 
 namespace Aion2Assistant.Combat;
@@ -70,7 +71,7 @@ public static class TrainingDelta
     }
 
     /// <summary>
-    /// Écart arrondi à l'entier : « +4 % », « −4 % », ou « ±0 % » quand |écart| &lt; 0,5 (jamais « −0 % »).
+    /// Écart arrondi à l'entier : « +4 % », « −4 % », ou « ±0 % » (motif de pourcentage de la langue) quand |écart| &lt; 0,5 (jamais « −0 % »).
     /// <paramref name="sign"/> vaut 1, -1 ou 0 (neutre).
     /// </summary>
     public static string Format(double pct, out int sign)
@@ -79,10 +80,10 @@ public static class TrainingDelta
         if (rounded == 0)
         {
             sign = 0;
-            return "±0 %";
+            return AppFormat.PercentText("±0");
         }
         sign = pct > 0 ? 1 : -1;
-        return (sign > 0 ? "+" : "−") + rounded.ToString("0", System.Globalization.CultureInfo.InvariantCulture) + " %";
+        return AppFormat.PercentText((sign > 0 ? "+" : "−") + rounded.ToString("0", AppCulture.Current));
     }
 }
 
