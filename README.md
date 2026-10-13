@@ -2,7 +2,7 @@
 
 Overlay de jeu pour **AION 2** : timers de boss, meters de combat et historique, affichés par-dessus le jeu sans rien modifier dans celui-ci.
 
-> **Statut : version stable disponible.** Les nouveautés arrivent d'abord en **bêta** pour les testeurs : le canal (stable ou bêta) se choisit dans Options › À propos. Les retours sont les bienvenus.
+> **Statut : version stable disponible.** Les nouveautés arrivent d'abord en **bêta** pour les testeurs : le canal (stable ou bêta) se choisit dans Réglages › À propos. Les retours sont les bienvenus.
 
 Site du projet : <https://nathantek.github.io/aion2assistant/>
 Téléchargements : [dernière version stable](https://github.com/nathantek/aion2assistant/releases/latest) · [toutes les versions, bêtas comprises](https://github.com/nathantek/aion2assistant/releases)
@@ -20,7 +20,7 @@ Téléchargements : [dernière version stable](https://github.com/nathantek/aion
 - **Historique** : consultation des combats passés.
 - **Records** : meilleurs résultats conservés.
 - **Entraînement** : mode pour s'exercer sur un mannequin.
-- **Langues** : anglais et français (Options › Affichage ; français automatique si Windows est en français).
+- **Langues** : anglais et français (Réglages › Affichage ; français automatique si Windows est en français).
 - **Thèmes** : Classique, Néon, Asgard, Matrix, Pastel (clair) et Contraste élevé.
 
 ## Raccourcis clavier
@@ -49,7 +49,7 @@ Depuis la 0.3.1, les onglets suivent l'ordre DPS, Reçus, Soins, Historique, Tim
 
 1. Installe [Npcap](https://npcap.com) (nécessaire pour lire le trafic réseau du jeu) et **laisse décochée** l'option « Restrict Npcap driver's access to Administrators only ».
 2. Télécharge `Aion2Assistant-win-Setup.exe` depuis la [dernière version stable](https://github.com/nathantek/aion2assistant/releases/latest) et lance-le (sans droits administrateur). Windows SmartScreen peut afficher un avertissement la première fois : « Informations complémentaires › Exécuter quand même ».
-3. L'app se lance et se met ensuite à jour toute seule (désactivable dans Options › À propos).
+3. L'app se lance et se met ensuite à jour toute seule (désactivable dans Réglages › À propos).
 
 Sans installeur : `Aion2Assistant-win-Portable.zip`, à décompresser où tu veux ; il se met aussi à jour.
 Depuis un ancien zip 0.3.x : ferme l'ancienne version, installe avec `Setup.exe`, puis supprime l'ancien dossier. Tes réglages et ton historique (`%AppData%\Aion2Assistant`) sont conservés.
