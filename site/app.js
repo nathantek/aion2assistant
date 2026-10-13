@@ -56,17 +56,43 @@
     return found;
   }
 
-  function fillDownload(releases) {
-    var rel = releases[0];
-    // Installateur depuis la 0.3.4, ancien zip pour les versions précédentes.
+  // Lien de téléchargement d'une version : installateur depuis la 0.3.4, ancien zip avant, sinon la page de la version.
+  function downloadOf(rel) {
     var asset = findAsset(rel, /-win-Setup\.exe$/) || findAsset(rel, /-win-x64\.zip$/);
-    var href = asset && isHttps(asset.browser_download_url) ? asset.browser_download_url
-      : (isHttps(rel.html_url) ? rel.html_url : RELEASES);
+    if (asset && isHttps(asset.browser_download_url)) { return { href: asset.browser_download_url, direct: true }; }
+    return { href: isHttps(rel.html_url) ? rel.html_url : RELEASES, direct: false };
+  }
+
+  // Ligne « Dernière bêta » sous le bouton : visible seulement si une bêta est plus récente que la stable.
+  function fillBeta(beta) {
+    all('[data-beta]').forEach(function (line) {
+      line.hidden = !beta;
+      if (!beta) { return; }
+      var link = line.querySelector('[data-beta-link]');
+      if (link) {
+        link.href = downloadOf(beta).href;
+        link.textContent = 'Dernière bêta : ' + label(beta);
+      }
+    });
+  }
+
+  // releases : versions publiées, de la plus récente à la plus ancienne.
+  function fillDownload(releases) {
+    var stable = null;
+    var beta = null;
+    releases.forEach(function (r) {
+      if (!stable && !r.prerelease) { stable = r; }
+      if (!stable && !beta && r.prerelease) { beta = r; }
+    });
+    // Le gros bouton propose la dernière stable ; sans stable publiée, la dernière version tout court.
+    var rel = stable || releases[0];
+    var dl = downloadOf(rel);
     var tag = label(rel);
-    setDownloads(href, tag ? 'Télécharger ' + tag : 'Télécharger');
+    setDownloads(dl.href, tag ? 'Télécharger ' + tag : 'Télécharger');
     var d = frDate(rel.published_at || rel.created_at);
-    setMeta(tag + (d ? ' · publiée le ' + d : '') + (asset ? '' : ' · page de la version'));
+    setMeta(tag + (d ? ' · publiée le ' + d : '') + (dl.direct ? '' : ' · page de la version'));
     if (tag) { setVersion(tag); }
+    fillBeta(stable ? beta : null);
   }
 
   function releaseTitle(rel, parent) {

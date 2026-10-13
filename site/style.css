@@ -278,6 +278,7 @@ kbd { background: var(--surface-2); border: 1px solid var(--line); border-bottom
 .steps > li:last-child::after { display: none; }
 .steps h2, .steps h3 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; margin: 5px 0 8px; }
 .dl-policy { margin: 0 0 0 auto; font-size: .88rem; }
+.dl-beta { margin: 6px 0 0; font-size: .9rem; }
 .step-optional {
   margin-left: 8px; padding: 1px 8px; vertical-align: middle; border: 1px solid var(--line); border-radius: 999px;
   color: var(--muted); font: 400 .72rem/1.6 var(--font); letter-spacing: 0;
