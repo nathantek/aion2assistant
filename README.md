@@ -2,14 +2,14 @@
 
 Overlay de jeu pour **AION 2** : timers de boss, meters de combat et historique, affichés par-dessus le jeu sans rien modifier dans celui-ci.
 
-> **Statut : bêta publique `0.3.0-beta.1`.** L'app est fonctionnelle mais encore jeune. Des bugs sont possibles, les retours sont les bienvenus.
+> **Statut : version stable disponible.** Les nouveautés arrivent d'abord en **bêta** pour les testeurs : le canal (stable ou bêta) se choisit dans Options › À propos. Les retours sont les bienvenus.
 
 Site du projet : <https://nathantek.github.io/aion2assistant/>
-Téléchargements : [page des Releases](https://github.com/nathantek/aion2assistant/releases)
+Téléchargements : [dernière version stable](https://github.com/nathantek/aion2assistant/releases/latest) · [toutes les versions, bêtas comprises](https://github.com/nathantek/aion2assistant/releases)
 
 ## Fonctionnalités
 
-- **Mises à jour automatiques** : téléchargées en arrière-plan, installées seulement quand tu cliques sur « Redémarrer » ou à la fermeture.
+- **Mises à jour automatiques** : téléchargées en arrière-plan, installées seulement quand tu cliques sur « Redémarrer » ou à la fermeture ; canal stable par défaut, bêta au choix.
 - **Timers** : suivi des temps d'apparition, avec alertes et un son au choix par événement (6 sons intégrés ou ton propre .wav/.mp3).
 - **Boss de terrain** : suivi dédié des boss de terrain.
 - **Meters** : DPS, soins et dégâts reçus, par joueur.
@@ -48,7 +48,7 @@ Depuis la 0.3.1, les onglets suivent l'ordre DPS, Reçus, Soins, Historique, Tim
 ## Installation (courte)
 
 1. Installe [Npcap](https://npcap.com) (nécessaire pour lire le trafic réseau du jeu) et **laisse décochée** l'option « Restrict Npcap driver's access to Administrators only ».
-2. Télécharge `Aion2Assistant-win-Setup.exe` depuis la [page des Releases](https://github.com/nathantek/aion2assistant/releases) et lance-le (sans droits administrateur). Windows SmartScreen peut afficher un avertissement la première fois : « Informations complémentaires › Exécuter quand même ».
+2. Télécharge `Aion2Assistant-win-Setup.exe` depuis la [dernière version stable](https://github.com/nathantek/aion2assistant/releases/latest) et lance-le (sans droits administrateur). Windows SmartScreen peut afficher un avertissement la première fois : « Informations complémentaires › Exécuter quand même ».
 3. L'app se lance et se met ensuite à jour toute seule (désactivable dans Options › À propos).
 
 Sans installeur : `Aion2Assistant-win-Portable.zip`, à décompresser où tu veux ; il se met aussi à jour.
