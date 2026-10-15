@@ -43,6 +43,8 @@ internal sealed class MetersController : IDisposable
         _tracker.DebugMessage += message => Log.Debug("Combat : {Message}", message);
         _tracker.InfoMessage += message => Log.Information("{Message}", message);
         _tracker.EncounterEnded += snapshot => EncounterEnded?.Invoke(snapshot);
+        _tracker.ActorNamed += (id, name, cls) => ActorNamed?.Invoke(id, name, cls);
+        _tracker.IdsReset += () => IdsReset?.Invoke();
         _timer.Tick += (_, _) => Tick();
     }
 
@@ -79,6 +81,12 @@ internal sealed class MetersController : IDisposable
 
     /// <summary>Fin d'un combat (consommé par l'historique).</summary>
     public event Action<EncounterSnapshot>? EncounterEnded;
+
+    /// <summary>Premier vrai pseudo d'un id (relais du tracker ; consommé par l'historique).</summary>
+    public event Action<uint, string, GameClass>? ActorNamed;
+
+    /// <summary>Ids réattribués (relais du tracker ; consommé par l'historique).</summary>
+    public event Action? IdsReset;
 
     public void Start()
     {

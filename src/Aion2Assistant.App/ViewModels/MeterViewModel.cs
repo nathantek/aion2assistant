@@ -45,6 +45,8 @@ public partial class MeterViewModel : ObservableObject
     [ObservableProperty] private OutcomeBadge? _badge;
     [ObservableProperty] private double? _targetHpPct;
     [ObservableProperty] private string _groupText = "";
+    // Un joueur Dps ou Soins encore nommé « #id » : la vue live invite à changer de zone.
+    [ObservableProperty] private bool _namesMissing;
     [ObservableProperty] private bool _isDetail;
     [ObservableProperty] private string _detailName = "";
     [ObservableProperty] private IReadOnlyList<SkillLineViewModel> _detailSkills = [];
@@ -310,6 +312,7 @@ public partial class MeterViewModel : ObservableObject
     public void Update(EncounterSnapshot? snapshot)
     {
         _lastSnapshot = snapshot;
+        NamesMissing = SnapshotNames.HasUnnamedPlayers(snapshot);
         if (snapshot is null)
         {
             HasSnapshot = false;

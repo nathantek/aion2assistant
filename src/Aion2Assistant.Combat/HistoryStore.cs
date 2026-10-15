@@ -303,6 +303,19 @@ public sealed class HistoryStore : IDisposable
         return (long)cmd.ExecuteScalar()!;
     }
 
+    /// <summary>
+    /// Réécrit seulement le snapshot d'un combat (pseudos complétés après coup) : les colonnes viennent des chiffres,
+    /// pas des noms, et restent inchangées.
+    /// </summary>
+    public void UpdateSnapshot(long id, EncounterSnapshot snapshot)
+    {
+        using var cmd = _db.CreateCommand();
+        cmd.CommandText = "UPDATE encounters SET snapshot_json = $json WHERE id = $id;";
+        cmd.Parameters.AddWithValue("$json", JsonSerializer.Serialize(snapshot, Json));
+        cmd.Parameters.AddWithValue("$id", id);
+        cmd.ExecuteNonQuery();
+    }
+
     public IReadOnlyList<EncounterSummary> List(int limit = 1000)
     {
         using var cmd = _db.CreateCommand();

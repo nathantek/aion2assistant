@@ -15,6 +15,9 @@ public partial class HistoryViewModel : ObservableObject
 
     private readonly List<HistoryRowViewModel> _checked = new();
 
+    // Combat affiché dans le détail (null hors détail).
+    private long? _openId;
+
     [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowList))] private bool _isDetail;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowList))] private bool _isComparing;
     [ObservableProperty] private ComparisonViewModel? _comparison;
@@ -225,6 +228,7 @@ public partial class HistoryViewModel : ObservableObject
     private void Open(HistoryRowViewModel? row)
     {
         if (row is null) return;
+        _openId = row.Id;
         var snapshot = _load(row.Id);
         if (snapshot is null)
         {
@@ -246,6 +250,16 @@ public partial class HistoryViewModel : ObservableObject
     {
         IsDetail = false;
         DetailMessage = null;
+        _openId = null;
+    }
+
+    /// <summary>Recharge le détail s'il affiche ce combat (pseudos complétés après coup) ; l'onglet choisi est gardé.</summary>
+    public void ReloadIfOpen(long id)
+    {
+        if (!IsDetail || _openId != id || _load(id) is not { } snapshot) return;
+        Dps.Update(snapshot);
+        Heal.Update(snapshot);
+        Taken.Update(snapshot);
     }
 
     [RelayCommand]

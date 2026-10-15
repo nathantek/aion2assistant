@@ -1,6 +1,7 @@
 using Aion2Assistant.App.Localization;
 using Aion2Assistant.App.ViewModels;
 using Aion2Assistant.Combat;
+using Aion2Assistant.Core.Events;
 using Aion2Assistant.Core.Settings;
 using Serilog;
 
@@ -14,6 +15,9 @@ internal sealed class HistoryController : IDisposable
     private readonly Func<int, string> _mapName;
     private readonly HistoryStore? _store;
 
+    // Combats enregistrés depuis la dernière réattribution des ids, avec leurs acteurs encore « #id ».
+    private readonly Dictionary<long, HashSet<uint>> _unnamed = new();
+
     public HistoryController(MetersController meters, AppSettings settings, Func<int, string> mapName, BossFilter bossFilter,
         MeterDisplayOptions display)
     {
@@ -22,6 +26,8 @@ internal sealed class HistoryController : IDisposable
         _mapName = mapName;
         View = new HistoryViewModel(Load, "DpsBrush", "HealBrush", "TakenBrush", bossFilter, display);
         _meters.EncounterEnded += OnEncounterEnded;
+        _meters.ActorNamed += OnActorNamed;
+        _meters.IdsReset += OnIdsReset;
         try
         {
             _store = new HistoryStore(AppPaths.HistoryDatabase);
@@ -79,6 +85,8 @@ internal sealed class HistoryController : IDisposable
                 {
                     var zone = _mapName(snapshot.MapId);
                     id = _store.Save(snapshot, zone);
+                    var unnamed = SnapshotNames.UnnamedIds(snapshot);
+                    if (unnamed.Count > 0) _unnamed[id.Value] = unnamed;
                     View.Insert(EncounterSummary.From(id.Value, snapshot, zone), DateTime.Now);
                     Log.Information("Combat enregistré : {Title}", snapshot.Title);
                 }
@@ -98,9 +106,43 @@ internal sealed class HistoryController : IDisposable
         }
     }
 
+    /// <summary>
+    /// Pseudo arrivé après coup : complète les combats enregistrés depuis la dernière réattribution des ids. Le
+    /// snapshot brut est relu, renommé puis réécrit (les noms de skills restent ré-résolus à la lecture).
+    /// </summary>
+    private void OnActorNamed(uint actorId, string name, GameClass cls)
+    {
+        if (_store is null || _unnamed.Count == 0) return;
+        try
+        {
+            var count = 0;
+            foreach (var (id, ids) in _unnamed.Where(kv => kv.Value.Contains(actorId)).ToList())
+            {
+                ids.Remove(actorId);
+                if (ids.Count == 0) _unnamed.Remove(id);
+                if (_store.Load(id) is not { } raw) continue;
+                var renamed = SnapshotNames.Rename(raw, actorId, name, cls);
+                if (ReferenceEquals(renamed, raw)) continue;
+                _store.UpdateSnapshot(id, renamed);
+                View.ReloadIfOpen(id);
+                count++;
+            }
+            if (count > 0) Log.Information("Historique : pseudo complété dans {Count} combat(s)", count);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Historique : pseudo non complété");
+        }
+    }
+
+    // Ids réattribués : un pseudo annoncé désormais ne concerne plus les combats déjà enregistrés.
+    private void OnIdsReset() => _unnamed.Clear();
+
     public void Dispose()
     {
         _meters.EncounterEnded -= OnEncounterEnded;
+        _meters.ActorNamed -= OnActorNamed;
+        _meters.IdsReset -= OnIdsReset;
         _store?.Dispose();
     }
 }

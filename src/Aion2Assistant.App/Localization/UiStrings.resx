@@ -111,7 +111,7 @@
     <value>Version {0} available</value>
   </data>
   <data name="UpdateAvailableMessage" xml:space="preserve">
-    <value>Install it with Setup.exe from the project page (Options › About).</value>
+    <value>Install it with Setup.exe from the project page (Settings › About).</value>
   </data>
   <data name="UpdateReadyTitle" xml:space="preserve">
     <value>Update {0} ready</value>
@@ -202,6 +202,9 @@
   </data>
   <data name="MeterGroupTotal" xml:space="preserve">
     <value>Group: {0}</value>
+  </data>
+  <data name="MeterNamesMissing" xml:space="preserve">
+    <value>Names unknown: change zone to load them.</value>
   </data>
   <data name="MeterNoBossSuffix" xml:space="preserve">
     <value> · no boss, everything counts</value>

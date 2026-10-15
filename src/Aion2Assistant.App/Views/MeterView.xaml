@@ -92,10 +92,16 @@
             <Grid Grid.Row="1" Visibility="{Binding ShowList, Converter={StaticResource BoolToVisibility}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="{Binding GroupText}" Style="{StaticResource SmallValueStyle}" Margin="0,0,0,4"/>
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <!-- Pseudos encore « #id » : discret, vue live seulement (l'historique a sa propre vue) -->
+                <TextBlock Grid.Row="1" Text="{loc:Tr MeterNamesMissing}" Style="{StaticResource SmallMutedStyle}"
+                           FontStyle="Italic" TextTrimming="CharacterEllipsis" Margin="0,-2,0,4"
+                           ToolTip="{loc:Tr MeterNamesMissing}"
+                           Visibility="{Binding NamesMissing, Converter={StaticResource BoolToVisibility}}"/>
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <ItemsControl ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource MeterRowTemplate}"/>
                 </ScrollViewer>
             </Grid>

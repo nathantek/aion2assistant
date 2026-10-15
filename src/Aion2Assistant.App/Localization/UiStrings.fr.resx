@@ -109,7 +109,7 @@
     <value>Version {0} disponible</value>
   </data>
   <data name="UpdateAvailableMessage" xml:space="preserve">
-    <value>Installe-la avec Setup.exe depuis la page du projet (Options › À propos).</value>
+    <value>Installe-la avec Setup.exe depuis la page du projet (Réglages › À propos).</value>
   </data>
   <data name="UpdateReadyTitle" xml:space="preserve">
     <value>Mise à jour {0} prête</value>
@@ -200,6 +200,9 @@
   </data>
   <data name="MeterGroupTotal" xml:space="preserve">
     <value>Groupe : {0}</value>
+  </data>
+  <data name="MeterNamesMissing" xml:space="preserve">
+    <value>Pseudos inconnus : change de zone pour les récupérer.</value>
   </data>
   <data name="MeterNoBossSuffix" xml:space="preserve">
     <value> · aucun boss, tout est compté</value>

@@ -9,7 +9,29 @@ namespace Aion2Assistant.Combat;
 /// </summary>
 public sealed class EncounterTracker
 {
-    private const long DuplicateDeathWindowMs = 2_000;
+    /// <summary>
+    /// Une entité morte le reste jusqu'à preuve qu'elle vit (annonce du même id, PV &gt; 0 datés après la mort) : le jeu
+    /// annonce deux fois une mort, à ~4 s d'intervalle. Garde-fou : au-delà de ce délai, la mort est oubliée. Joueurs : voir PlayerDeathMemoryMs.
+    /// </summary>
+    private const long DeathMemoryMs = 60_000;
+
+    /// <summary>
+    /// Joueurs (soi compris) : une résurrection n'est pas toujours visible (pas de PV captés). Une nouvelle annonce
+    /// de mort n'est un doublon que dans ce délai (double annonce à ~4 s) ; au-delà, le joueur n'est plus tenu pour mort.
+    /// </summary>
+    private const long PlayerDeathMemoryMs = 10_000;
+
+    /// <summary>
+    /// Filet contre le combat fantôme : écart maximal avec la fin du combat précédent, borné par le délai d'inactivité
+    /// (après une fin par inactivité, le combat suivant ne peut démarrer qu'au-delà de ce délai : c'est un vrai combat).
+    /// </summary>
+    private const long GhostMaxGapMs = 10_000;
+
+    /// <summary>Filet contre le combat fantôme : durée maximale.</summary>
+    private const long GhostMaxDurationMs = 5_000;
+
+    /// <summary>Filet contre le combat fantôme : part maximale (en %) des dégâts du combat précédent.</summary>
+    private const long GhostMaxDamagePct = 5;
 
     /// <summary>Coups tardifs sur (ou d') un acteur mort : ils ne doivent pas ouvrir un nouveau combat (combat fantôme de 0 s).</summary>
     private const long PostDeathIgnoreMs = 10_000;
@@ -30,6 +52,7 @@ public sealed class EncounterTracker
     private readonly Dictionary<uint, long> _damageToTarget = new();
     private readonly Dictionary<uint, List<RecapEntry>> _recap = new();
     private readonly List<DeathRecap> _deaths = new();
+    // Acteurs morts et pas encore revus vivants : heure de la mort.
     private readonly Dictionary<uint, long> _lastDeathMs = new();
     // Acteurs morts pendant le combat en cours : une fin par inactivité sur une cible principale morte vaut Kill.
     private readonly HashSet<uint> _diedInEncounter = new();
@@ -41,6 +64,11 @@ public sealed class EncounterTracker
     private EncounterSnapshot? _lastGood;
     private long _trainingArmedDurationMs;
     private long _trainingDurationMs;
+    // Dernier combat levé (jamais un combat écarté) et sa fin : référence du filet contre le combat fantôme.
+    private EncounterSnapshot? _previous;
+    private long _previousEndMs;
+    // Ids réattribués depuis le gel de _frozen : un pseudo annoncé ensuite ne le concerne plus.
+    private bool _frozenIdsStale;
 
     public EncounterTracker(GameData data, CombatOptions options)
     {
@@ -65,6 +93,15 @@ public sealed class EncounterTracker
     /// <summary>Levé quand le traitement d'un événement (ou Tick/Reset/Snapshot) a échoué ; le suivi continue.</summary>
     public event Action<Exception>? Faulted;
 
+    /// <summary>
+    /// Un vrai pseudo arrive pour un id qui n'en avait pas (PlayerSeen ou SelfIdentified) : les combats déjà figés
+    /// ou enregistrés avec « #id » peuvent être complétés. L'instantané figé l'est déjà au moment de l'événement.
+    /// </summary>
+    public event Action<uint, string, GameClass>? ActorNamed;
+
+    /// <summary>Ids réattribués (StreamStarted, changement de carte hors téléport), après la fin forcée du combat.</summary>
+    public event Action? IdsReset;
+
     /// <summary>Message de diagnostic (niveau Debug) : soin écarté, etc.</summary>
     public event Action<string>? DebugMessage;
 
@@ -72,6 +109,8 @@ public sealed class EncounterTracker
     public event Action<string>? InfoMessage;
 
     private int _droppedHeals;
+    // Coups écartés pendant le combat : cible ou auteur mort avant son début.
+    private int _droppedDeadHits;
 
     private void Info(string message)
     {
@@ -138,14 +177,20 @@ public sealed class EncounterTracker
                 // Figer avant que le registre ne soit vidé, pour conserver les noms.
                 if (IsActive) End(EncounterOutcome.Timeout, _lastActivityMs);
                 _lastDeathMs.Clear();
+                // Ids réattribués : le combat précédent n'est plus une référence du filet contre le combat fantôme.
+                _previous = null;
                 Entities.Apply(e);
                 CurrentMapId = e is ZoneChangedEvent zc ? zc.MapId : 0;
+                _frozenIdsStale = true;
+                Raise(IdsReset);
                 break;
             case ZoneChangedEvent teleport:
                 Entities.Apply(e);
                 CurrentMapId = teleport.MapId;
                 break;
             case HpEvent h:
+                if (h.CurrentHp > 0 && _lastDeathMs.TryGetValue(h.ActorId, out var died) && h.TimeMs > died)
+                    _lastDeathMs.Remove(h.ActorId);
                 var previous = Entities.CurrentHpOf(h.ActorId);
                 Entities.Apply(e);
                 OnHp(h, previous);
@@ -162,6 +207,22 @@ public sealed class EncounterTracker
                 Entities.Apply(e);
                 OnDamage(dmg);
                 break;
+            // Annonce de l'entité : elle est (de nouveau) vivante.
+            case NpcSeenEvent npc:
+                _lastDeathMs.Remove(npc.ActorId);
+                Entities.Apply(e);
+                break;
+            case PlayerSeenEvent player:
+                _lastDeathMs.Remove(player.ActorId);
+                ApplyNamed(e, player.ActorId, player.Name, player.Class);
+                break;
+            case SelfIdentifiedEvent self:
+                ApplyNamed(e, self.ActorId, self.Name, self.Class);
+                break;
+            case SummonSeenEvent summon:
+                _lastDeathMs.Remove(summon.ActorId);
+                Entities.Apply(e);
+                break;
             case HealEvent heal:
                 Entities.Apply(e);
                 OnHeal(heal.TimeMs, heal.SourceId, heal.TargetId, heal.SkillCode, heal.Amount, heal.Flags, 1);
@@ -169,6 +230,38 @@ public sealed class EncounterTracker
             default:
                 Entities.Apply(e);
                 break;
+        }
+    }
+
+    /// <summary>Applique une annonce de joueur ; lève ActorNamed si elle donne le premier vrai nom de cet id.</summary>
+    private void ApplyNamed(GameEvent e, uint id, string name, GameClass cls)
+    {
+        var hadName = Entities.HasName(id);
+        Entities.Apply(e);
+        if (hadName || string.IsNullOrEmpty(name) || !Entities.HasName(id)) return;
+        // Le combat affiché (ou la référence du filet) a pu être figé avec « #id ».
+        cls = Entities.ClassOf(id);
+        if (_frozen is not null && !_frozenIdsStale) _frozen = SnapshotNames.Rename(_frozen, id, name, cls);
+        if (_previous is not null) _previous = SnapshotNames.Rename(_previous, id, name, cls);
+        try
+        {
+            ActorNamed?.Invoke(id, name, cls);
+        }
+        catch (Exception ex)
+        {
+            Fault(ex);
+        }
+    }
+
+    private void Raise(Action? handler)
+    {
+        try
+        {
+            handler?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            Fault(ex);
         }
     }
 
@@ -208,6 +301,14 @@ public sealed class EncounterTracker
                 return;
             }
             if (!IsActive && RecentlyDead(e.TargetId, e.TimeMs)) return;
+            if (IsActive && DeadBeforeEncounter(e.TargetId, e.TimeMs))
+            {
+                _droppedDeadHits++;
+                return;
+            }
+            // Coup accepté hors combat sur une cible morte depuis plus de 10 s : elle est combattue de nouveau.
+            // Un coup daté d'avant la mort ne le prouve pas.
+            if (!IsActive) ForgetDeathIfAfter(e.TargetId, e.TimeMs);
             Begin(e.TimeMs);
             _lastActivityMs = Math.Max(_lastActivityMs, e.TimeMs);
             if (!_dps.TryGetValue(src, out var meter)) _dps[src] = meter = new ActorMeter(src);
@@ -225,6 +326,12 @@ public sealed class EncounterTracker
         {
             if (!TrackedMember(e.TargetId)) return;
             if (!IsActive && RecentlyDead(src, e.TimeMs)) return;
+            if (IsActive && DeadBeforeEncounter(src, e.TimeMs))
+            {
+                _droppedDeadHits++;
+                return;
+            }
+            if (!IsActive) ForgetDeathIfAfter(src, e.TimeMs);
             Begin(e.TimeMs);
             _lastActivityMs = Math.Max(_lastActivityMs, e.TimeMs);
             var skill = SkillCodes.Normalize(e.SkillCode);
@@ -282,7 +389,8 @@ public sealed class EncounterTracker
 
     private void OnDeath(DeathEvent d)
     {
-        if (_lastDeathMs.TryGetValue(d.ActorId, out var last) && d.TimeMs - last < DuplicateDeathWindowMs && d.TimeMs >= last) return;
+        // Déjà mort (seconde annonce de la même mort) : ignoré.
+        if (IsDead(d.ActorId, d.TimeMs)) return;
         _lastDeathMs[d.ActorId] = d.TimeMs;
         if (IsActive && TrackedMember(d.ActorId)) RecordDeath(d);
         if (IsActive) _diedInEncounter.Add(d.ActorId);
@@ -308,8 +416,27 @@ public sealed class EncounterTracker
         _deaths.Add(new DeathRecap(d.ActorId, Entities.NameOf(d.ActorId), d.TimeMs, lines));
     }
 
+    private void ForgetDeathIfAfter(uint id, long timeMs)
+    {
+        if (_lastDeathMs.TryGetValue(id, out var death) && timeMs >= death) _lastDeathMs.Remove(id);
+    }
+
     private bool RecentlyDead(uint id, long timeMs) =>
         _lastDeathMs.TryGetValue(id, out var death) && timeMs >= death && timeMs - death <= PostDeathIgnoreMs;
+
+    private bool IsDead(uint id, long timeMs) =>
+        _lastDeathMs.TryGetValue(id, out var death) && timeMs >= death && timeMs - death < DeathMemoryOf(id);
+
+    private long DeathMemoryOf(uint id) =>
+        (Entities.SelfId != 0 && id == Entities.SelfId) || Entities.KindOf(id) == EntityKind.Player
+            ? PlayerDeathMemoryMs
+            : DeathMemoryMs;
+
+    /// <summary>
+    /// Mort avant le début du combat en cours et pas revu vivant : ses coups (reçus ou portés) n'appartiennent pas
+    /// à ce combat. Une mort pendant le combat garde les coups tardifs (DoT sur un pack).
+    /// </summary>
+    private bool DeadBeforeEncounter(uint id, long timeMs) => IsDead(id, timeMs) && !_diedInEncounter.Contains(id);
 
     private void Begin(long timeMs)
     {
@@ -427,6 +554,7 @@ public sealed class EncounterTracker
             _frozen = null;
             _hasEncounter = false;
             _lastGood = null;
+            _previous = null;
             _lastDeathMs.Clear();
             ClearData();
         }
@@ -436,7 +564,7 @@ public sealed class EncounterTracker
         }
     }
 
-    // _lastDeathMs survit au début d'un combat : il filtre les morts en double et les coups tardifs entre deux combats.
+    // _lastDeathMs survit au début d'un combat : il filtre les morts en double et les coups sur une entité déjà morte.
     private void ClearData()
     {
         _dps.Clear();
@@ -449,6 +577,7 @@ public sealed class EncounterTracker
         _deaths.Clear();
         _diedInEncounter.Clear();
         _droppedHeals = 0;
+        _droppedDeadHits = 0;
     }
 
     public EncounterSnapshot? Snapshot(long nowMs)
@@ -474,13 +603,34 @@ public sealed class EncounterTracker
         // Cible principale morte, boss ou non : « Tué » plutôt que « Terminé ». Manual (réinitialisation) inchangé.
         if (outcome == EncounterOutcome.Timeout && MainTarget() is { } main && _diedInEncounter.Contains(main))
             outcome = EncounterOutcome.Kill;
-        var duration = Math.Max(endMs, _lastActivityMs) - _startMs;
-        var snap = Build(Math.Max(0, duration), false, outcome);
+        var duration = Math.Max(0, Math.Max(endMs, _lastActivityMs) - _startMs);
+        var snap = Build(duration, false, outcome);
         IsActive = false;
         IsTraining = false;
-        _frozen = snap;
         if (_droppedHeals > 0) Info($"Combat terminé : {_droppedHeals} soin(s) écarté(s) (supérieurs aux PV max de la cible)");
         _droppedHeals = 0;
+        if (_droppedDeadHits > 0) Info($"Combat terminé : {_droppedDeadHits} coup(s) écarté(s) (acteur mort avant le combat)");
+        _droppedDeadHits = 0;
+        if (_previous is { } previous && IsGhost(snap, outcome, previous))
+        {
+            // L'affichage revient au combat précédent ; rien n'est levé (ni historique ni record).
+            _frozen = previous;
+            Info($"Combat fantôme écarté : {snap.Title}, {duration} ms, {snap.Dps.Total} dégâts, "
+                + $"{_startMs - _previousEndMs} ms après « {previous.Title} » ({previous.Dps.Total} dégâts)");
+            return;
+        }
+        // Seuls Kill, Wipe et Timeout servent de référence. Entraînement et Manual ne sont jamais écartés et effacent
+        // la référence : un court vrai combat juste après un essai ou une fin manuelle n'est jamais écarté. Reset,
+        // StreamStarted et un changement de carte hors téléport l'effacent aussi.
+        _frozen = snap;
+        _frozenIdsStale = false;
+        if (outcome is EncounterOutcome.Training or EncounterOutcome.Manual)
+            _previous = null;
+        else
+        {
+            _previous = snap;
+            _previousEndMs = _startMs + duration;
+        }
         try
         {
             EncounterEnded?.Invoke(snap);
@@ -490,6 +640,18 @@ public sealed class EncounterTracker
             Fault(ex);
         }
     }
+
+    /// <summary>
+    /// Combat fantôme : il démarre juste après le combat précédent, dure peu et ne pèse presque rien face à lui
+    /// (ex. coups tardifs et DoT entre les deux annonces de la mort d'un boss), sans mort d'un membre suivi.
+    /// </summary>
+    private bool IsGhost(EncounterSnapshot snap, EncounterOutcome outcome, EncounterSnapshot previous) =>
+        outcome is not (EncounterOutcome.Training or EncounterOutcome.Manual)
+        && _startMs - _previousEndMs < Math.Min(GhostMaxGapMs, _options.IdleTimeoutMs)
+        && snap.DurationMs < GhostMaxDurationMs
+        && snap.Dps.Total * 100 < previous.Dps.Total * GhostMaxDamagePct
+        // Un combat avec la mort d'un membre suivi garde son récap de mort.
+        && snap.Deaths.Count == 0;
 
     /// <summary>
     /// Écarte des meters de dégâts et de soins les entités sans nom réel (joueurs seulement déduits, ex. « #46884 »)
