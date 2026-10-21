@@ -6,7 +6,7 @@ namespace Aion2Assistant.Combat;
 /// <summary>
 /// Résumé d'un meter sur une seule ligne, à coller dans le chat du jeu : pas de retour à la ligne,
 /// pas d'émoji ni de séparateur exotique (le chat les afficherait en carrés).
-/// Forme condensée : « Lakshmi 1:18 Tué | Kosis 1,2M 34% Pseudo2 900k 25% +4 », tenue dans <see cref="ChatBudget"/>.
+/// Forme condensée : « Lakshmi 1:18 Tué | Pseudo1 1,2M 34% Pseudo2 900k 25% +4 », tenue dans <see cref="ChatBudget"/>.
 /// </summary>
 public static class CombatShareFormatter
 {
