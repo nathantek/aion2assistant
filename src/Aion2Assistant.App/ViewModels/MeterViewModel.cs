@@ -44,6 +44,8 @@ public partial class MeterViewModel : ObservableObject
     // Badge d'issue à droite du titre (historique seulement) ; null = état en texte dans le titre.
     [ObservableProperty] private OutcomeBadge? _badge;
     [ObservableProperty] private double? _targetHpPct;
+    // PV de la cible au-dessus de sa barre (chiffres ou pourcentage selon le réglage) ; null = rien à afficher.
+    [ObservableProperty] private string? _targetHpText;
     [ObservableProperty] private string _groupText = "";
     // Un joueur Dps ou Soins encore nommé « #id » : la vue live invite à changer de zone.
     [ObservableProperty] private bool _namesMissing;
@@ -75,7 +77,8 @@ public partial class MeterViewModel : ObservableObject
         _display = display;
         if (display is not null) display.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(MeterDisplayOptions.ShowCombatPower)) Update(_lastSnapshot);
+            if (e.PropertyName is nameof(MeterDisplayOptions.ShowCombatPower) or nameof(MeterDisplayOptions.BossHpAsPercent))
+                Update(_lastSnapshot);
         };
         if (bossFilter is not null) bossFilter.PropertyChanged += (_, _) =>
         {
@@ -165,9 +168,17 @@ public partial class MeterViewModel : ObservableObject
     public bool ShowList => !IsChart && !IsDetail;
     public bool ShowDetail => !IsChart && IsDetail;
     public bool HasTargetHp => TargetHpPct is not null;
+    /// <summary>Texte des PV visible seulement avec la barre.</summary>
+    public bool HasTargetHpText => HasTargetHp && TargetHpText is not null;
 
     partial void OnHasSnapshotChanged(bool value) => OnPropertyChanged(nameof(ShowActionBar));
-    partial void OnTargetHpPctChanged(double? value) => OnPropertyChanged(nameof(HasTargetHp));
+    partial void OnTargetHpPctChanged(double? value)
+    {
+        OnPropertyChanged(nameof(HasTargetHp));
+        OnPropertyChanged(nameof(HasTargetHpText));
+    }
+
+    partial void OnTargetHpTextChanged(string? value) => OnPropertyChanged(nameof(HasTargetHpText));
     partial void OnChartSeriesChanged(IReadOnlyList<ChartSeries> value) => OnPropertyChanged(nameof(HasChartData));
 
     partial void OnIsChartChanged(bool value)
@@ -337,6 +348,7 @@ public partial class MeterViewModel : ObservableObject
             ? $"{snapshot.Title} · {MeterFormat.Duration(snapshot.DurationMs)} · {CombatShareFormatter.StateLabel(snapshot)}"
             : $"{snapshot.Title} · {MeterFormat.Duration(snapshot.DurationMs)}";
         TargetHpPct = snapshot.TargetHpPct is { } pct ? Math.Clamp(pct, 0, 100) : null;
+        TargetHpText = BossHpFormat.Text(snapshot, _display?.BossHpAsPercent == true);
 
         var meter = MeterOf(snapshot);
         GroupText = ShowPerSecond

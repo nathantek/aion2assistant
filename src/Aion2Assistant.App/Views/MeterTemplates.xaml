@@ -2,9 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:Aion2Assistant.App.Localization"
                     xmlns:vm="clr-namespace:Aion2Assistant.App.ViewModels"
+                    xmlns:conv="clr-namespace:Aion2Assistant.App.Converters"
                     xmlns:combat="clr-namespace:Aion2Assistant.Combat;assembly=Aion2Assistant.Combat">
     <!-- Gabarits partagés par MeterView et ShareCardView (image du tableau) -->
     <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    <conv:ClassIconConverter x:Key="ClassIconConverter"/>
     <Style x:Key="SmallMutedStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
         <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}"/>
@@ -74,11 +76,20 @@
                 </Grid.ColumnDefinitions>
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Name, Mode=OneWay}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                    <!-- Icône de classe (pas de couleur propre : brosse du nom). Absente du texte copié pour le chat.
+                         Dessinée dans sa boîte 24×24 (Stretch None) puis réduite à 16 px par le Viewbox : toutes les icônes
+                         gardent la même échelle et leur position dans la boîte, même celles qui n'occupent qu'une partie. -->
+                    <Viewbox Width="16" Height="16" Margin="0,0,4,0" VerticalAlignment="Center">
+                        <Path Width="24" Height="24" Stretch="None"
+                              Data="{Binding Class, Converter={StaticResource ClassIconConverter}}"
+                              Fill="{Binding ClassBrush}" SnapsToDevicePixels="True"/>
+                    </Viewbox>
+                    <TextBlock Grid.Column="1" Text="{Binding Name, Mode=OneWay}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                 <Setter Property="Foreground" Value="{Binding ClassBrush}"/>
@@ -90,10 +101,10 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <TextBlock Grid.Column="1" Text="{Binding CombatPowerText, Mode=OneWay}"
+                    <TextBlock Grid.Column="2" Text="{Binding CombatPowerText, Mode=OneWay}"
                                Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}"
                                FontWeight="Normal" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Text="{Binding DeathsText}" Foreground="{DynamicResource AlertBrush}"
+                    <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource AlertBrush}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="6,0,0,0"
                                VerticalAlignment="Center"/>
                 </Grid>

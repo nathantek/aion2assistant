@@ -698,16 +698,22 @@ public sealed class EncounterTracker
         var training = active ? IsTraining : outcome == EncounterOutcome.Training;
         string? targetName = null;
         double? hpPct = null;
+        long? hp = null, maxHp = null;
         var isBoss = false;
         if (MainTarget() is { } t)
         {
             targetName = Entities.NameOf(t);
             var max = Entities.MaxHpOf(t);
             isBoss = max >= _options.BossMinHp;
-            if (Entities.CurrentHpOf(t) is { } cur && max > 0) hpPct = cur * 100.0 / max;
+            if (Entities.CurrentHpOf(t) is { } cur && max > 0)
+            {
+                hpPct = cur * 100.0 / max;
+                hp = cur;
+                maxHp = max;
+            }
         }
         return new EncounterSnapshot(targetName ?? Strings.EncounterFallbackTitle, _startMs, durationMs, active, outcome, targetName, hpPct,
             dps, heal, taken, Enumerable.Reverse(_deaths).ToList(), _startMapId, isBoss, bossDps, dpsTimeline, bossTimeline,
-            MainTarget() is { } nt ? Entities.NpcCodeOf(nt) : 0, training, training ? _trainingDurationMs : 0);
+            MainTarget() is { } nt ? Entities.NpcCodeOf(nt) : 0, training, training ? _trainingDurationMs : 0, hp, maxHp);
     }
 }

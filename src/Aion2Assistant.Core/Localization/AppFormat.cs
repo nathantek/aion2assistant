@@ -19,8 +19,8 @@ public static class AppFormat
     public static string Compact(double v)
     {
         var c = AppCulture.Current;
-        if (v >= 1_000_000) return string.Format(c, Strings.FormatMega, (v / 1_000_000).ToString("0.00", c));
-        if (v >= 10_000) return string.Format(c, Strings.FormatKilo, (v / 1_000).ToString("0.0", c));
+        if (v >= MegaThreshold) return string.Format(c, Strings.FormatMega, (v / 1_000_000).ToString("0.00", c));
+        if (v >= KiloThreshold) return string.Format(c, Strings.FormatKilo, (v / 1_000).ToString("0.0", c));
         return v.ToString("N0", c);
     }
 
@@ -28,10 +28,14 @@ public static class AppFormat
     public static string CompactTight(double v)
     {
         var c = AppCulture.Current;
-        if (v >= 1_000_000) return (v / 1_000_000).ToString("0.00", c) + "M";
-        if (v >= 10_000) return (v / 1_000).ToString("0.0", c) + "k";
+        if (v >= MegaThreshold) return (v / 1_000_000).ToString("0.00", c) + "M";
+        if (v >= KiloThreshold) return (v / 1_000).ToString("0.0", c) + "k";
         return v.ToString("0", c);
     }
+
+    // Seuils après arrondi de l'unité inférieure : 999 999 donnerait « 1000,0 k », 9 999,7 « 10 000 ».
+    private const double MegaThreshold = 999_950;
+    private const double KiloThreshold = 9_999.5;
 
     /// <summary>Pourcentage déjà multiplié par 100 : « 23 % » / « 23% ».</summary>
     public static string Percent(double value, string format = "0") =>

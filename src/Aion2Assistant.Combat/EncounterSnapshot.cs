@@ -16,12 +16,17 @@ public sealed record MeterSnapshot(MeterKind Kind, long Total, double PerSecond,
 public sealed record RecapLine(long AtMs, string Source, string Skill, long Amount, bool IsHeal);
 public sealed record DeathRecap(uint ActorId, string Name, long AtMs, IReadOnlyList<RecapLine> Lines);
 
+/// <summary>
+/// TargetHp / TargetMaxHp : PV restants et max de la cible principale ; null si inconnus (et dans les historiques
+/// enregistrés avant leur ajout).
+/// </summary>
 public sealed record EncounterSnapshot(string Title, long StartMs, long DurationMs, bool Active,
     EncounterOutcome? Outcome, string? TargetName, double? TargetHpPct,
     MeterSnapshot Dps, MeterSnapshot Heal, MeterSnapshot Taken, IReadOnlyList<DeathRecap> Deaths,
     int MapId = 0, bool IsBoss = false, MeterSnapshot? BossDps = null,
     IReadOnlyList<ActorSeries>? DpsTimeline = null, IReadOnlyList<ActorSeries>? BossDpsTimeline = null,
-    int TargetNpcCode = 0, bool IsTraining = false, long TrainingDurationMs = 0);
+    int TargetNpcCode = 0, bool IsTraining = false, long TrainingDurationMs = 0,
+    long? TargetHp = null, long? TargetMaxHp = null);
 
 public static class MeterBuilder
 {

@@ -12,6 +12,9 @@
                             VerticalAlignment="Center" Visibility="{Binding Badge, Converter={StaticResource NullToCollapsed}}"/>
             <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
         </DockPanel>
+        <TextBlock Text="{Binding TargetHpText}" Style="{StaticResource SmallValueStyle}" HorizontalAlignment="Right"
+                   Margin="0,2,0,0"
+                   Visibility="{Binding HasTargetHpText, Converter={StaticResource BoolToVisibility}}"/>
         <ProgressBar Style="{StaticResource ThinProgressStyle}" Height="3" Minimum="0" Maximum="100"
                      Value="{Binding TargetHpPct, Mode=OneWay, TargetNullValue=0}" Foreground="{Binding Accent}"
                      Margin="0,3,0,0"

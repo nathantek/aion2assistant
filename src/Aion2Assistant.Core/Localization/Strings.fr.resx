@@ -45,24 +45,6 @@
   <data name="StateTraining" xml:space="preserve">
     <value>entraînement</value>
   </data>
-  <data name="ShareDps" xml:space="preserve">
-    <value>DPS</value>
-  </data>
-  <data name="ShareBossDps" xml:space="preserve">
-    <value>DPS boss</value>
-  </data>
-  <data name="ShareHeal" xml:space="preserve">
-    <value>Soins</value>
-  </data>
-  <data name="ShareTaken" xml:space="preserve">
-    <value>Reçus</value>
-  </data>
-  <data name="ShareDeath" xml:space="preserve">
-    <value>{0} mort</value>
-  </data>
-  <data name="ShareDeaths" xml:space="preserve">
-    <value>{0} morts</value>
-  </data>
   <data name="EncounterFallbackTitle" xml:space="preserve">
     <value>Combat</value>
   </data>

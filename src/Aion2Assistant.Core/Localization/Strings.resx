@@ -54,30 +54,6 @@
     <value>training</value>
     <comment>État d'un entraînement actif</comment>
   </data>
-  <data name="ShareDps" xml:space="preserve">
-    <value>DPS</value>
-    <comment>Étiquette de la copie chat : [DPS]</comment>
-  </data>
-  <data name="ShareBossDps" xml:space="preserve">
-    <value>Boss DPS</value>
-    <comment>Étiquette de la copie chat (boss seulement)</comment>
-  </data>
-  <data name="ShareHeal" xml:space="preserve">
-    <value>Healing</value>
-    <comment>Étiquette de la copie chat</comment>
-  </data>
-  <data name="ShareTaken" xml:space="preserve">
-    <value>Taken</value>
-    <comment>Étiquette de la copie chat (dégâts reçus)</comment>
-  </data>
-  <data name="ShareDeath" xml:space="preserve">
-    <value>{0} death</value>
-    <comment>Copie chat : nombre de morts (singulier)</comment>
-  </data>
-  <data name="ShareDeaths" xml:space="preserve">
-    <value>{0} deaths</value>
-    <comment>Copie chat : nombre de morts (pluriel)</comment>
-  </data>
   <data name="EncounterFallbackTitle" xml:space="preserve">
     <value>Combat</value>
     <comment>Titre d'un combat sans cible identifiée</comment>

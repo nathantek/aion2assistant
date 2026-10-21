@@ -10,17 +10,25 @@ public partial class MeterDisplayOptions : ObservableObject
     private readonly Action _requestSave;
 
     [ObservableProperty] private bool _showCombatPower;
+    [ObservableProperty] private bool _bossHpAsPercent;
 
     public MeterDisplayOptions(CombatSettings settings, Action requestSave)
     {
         _settings = settings;
         _requestSave = requestSave;
         _showCombatPower = settings.ShowCombatPower;
+        _bossHpAsPercent = settings.BossHpAsPercent;
     }
 
     partial void OnShowCombatPowerChanged(bool value)
     {
         _settings.ShowCombatPower = value;
+        _requestSave();
+    }
+
+    partial void OnBossHpAsPercentChanged(bool value)
+    {
+        _settings.BossHpAsPercent = value;
         _requestSave();
     }
 }

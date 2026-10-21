@@ -476,6 +476,12 @@
   <data name="SettingsShowCombatPowerTip" xml:space="preserve">
     <value>Next to the name, in the meters and the copied image. Unknown for a player until the game has sent it.</value>
   </data>
+  <data name="SettingsBossHpAsPercent" xml:space="preserve">
+    <value>Show boss HP as a percentage</value>
+  </data>
+  <data name="SettingsBossHpAsPercentTip" xml:space="preserve">
+    <value>Above the boss health bar, in the meters and the copied image. Unchecked: remaining HP / max HP.</value>
+  </data>
   <data name="CaptureCharacterFormat" xml:space="preserve">
     <value>Character: {0}</value>
   </data>
@@ -583,7 +589,7 @@
     <value>License: GPL-3.0</value>
   </data>
   <data name="AboutGameData" xml:space="preserve">
-    <value>Game data: © NCSOFT</value>
+    <value>Game data and class icons: © NCSOFT</value>
   </data>
   <data name="AboutWebsite" xml:space="preserve">
     <value>Website</value>

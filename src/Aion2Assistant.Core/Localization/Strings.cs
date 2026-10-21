@@ -44,18 +44,6 @@ public static class Strings
     public static string StateLive => Get();
     /// <summary>« training » / « entraînement ».</summary>
     public static string StateTraining => Get();
-    /// <summary>« DPS » / « DPS ».</summary>
-    public static string ShareDps => Get();
-    /// <summary>« Boss DPS » / « DPS boss ».</summary>
-    public static string ShareBossDps => Get();
-    /// <summary>« Healing » / « Soins ».</summary>
-    public static string ShareHeal => Get();
-    /// <summary>« Taken » / « Reçus ».</summary>
-    public static string ShareTaken => Get();
-    /// <summary>« {0} death » / « {0} mort ».</summary>
-    public static string ShareDeath => Get();
-    /// <summary>« {0} deaths » / « {0} morts ».</summary>
-    public static string ShareDeaths => Get();
     /// <summary>« Combat » / « Combat ».</summary>
     public static string EncounterFallbackTitle => Get();
     /// <summary>« NPC {0} » / « PNJ {0} ».</summary>

@@ -1,6 +1,7 @@
 using System.Windows.Media;
 using Aion2Assistant.App.Services;
 using Aion2Assistant.Combat;
+using Aion2Assistant.Core.Events;
 using Aion2Assistant.Core.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -43,6 +44,8 @@ public partial class MeterRowViewModel : ObservableObject
     [ObservableProperty] private string _combatPowerText = "";
     // Brosse de la classe du joueur (nom et barre) ; relue à chaque Update car le thème remplace les brosses.
     [ObservableProperty] private Brush _classBrush = AppHost.Resource("TextBrush");
+    // Classe du joueur : choisit l'icône devant le nom (ClassIconConverter).
+    [ObservableProperty] private GameClass _class;
 
     public MeterRowViewModel(uint actorId)
     {
@@ -56,6 +59,7 @@ public partial class MeterRowViewModel : ObservableObject
     {
         Name = row.Name;
         ClassBrush = AppHost.Resource(ThemeManager.ClassBrushKey(row.Class));
+        Class = row.Class;
         IsSelf = row.IsSelf;
         PerSecondText = showPerSecond ? MeterFormat.PerSecond(row.PerSecond, durationMs) : "";
         TotalText = MeterFormat.Compact(row.Total);

@@ -37,6 +37,13 @@ public partial class SettingsViewModel : ObservableObject
         set => _display.ShowCombatPower = value;
     }
 
+    /// <summary>PV du boss au-dessus de sa barre : pourcentage plutôt que chiffres.</summary>
+    public bool BossHpAsPercent
+    {
+        get => _display.BossHpAsPercent;
+        set => _display.BossHpAsPercent = value;
+    }
+
     [ObservableProperty] private double _fontScale;
     [ObservableProperty] private double _opacity;
     [ObservableProperty] private ThemeDefinition? _selectedTheme;
@@ -56,6 +63,7 @@ public partial class SettingsViewModel : ObservableObject
         display.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(MeterDisplayOptions.ShowCombatPower)) OnPropertyChanged(nameof(ShowCombatPower));
+            if (e.PropertyName == nameof(MeterDisplayOptions.BossHpAsPercent)) OnPropertyChanged(nameof(BossHpAsPercent));
         };
         _updates = updates;
         _showEula = showEula;

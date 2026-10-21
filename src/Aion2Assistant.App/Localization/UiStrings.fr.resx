@@ -474,6 +474,12 @@
   <data name="SettingsShowCombatPowerTip" xml:space="preserve">
     <value>À côté du nom, dans les meters et l'image copiée. Inconnue pour un joueur tant que le jeu ne l'a pas envoyée.</value>
   </data>
+  <data name="SettingsBossHpAsPercent" xml:space="preserve">
+    <value>Afficher les points de vie du boss en pourcentage</value>
+  </data>
+  <data name="SettingsBossHpAsPercentTip" xml:space="preserve">
+    <value>Au-dessus de la barre de vie du boss, dans les meters et l'image copiée. Décochée : PV restants / PV max.</value>
+  </data>
   <data name="CaptureCharacterFormat" xml:space="preserve">
     <value>Personnage : {0}</value>
   </data>
@@ -581,7 +587,7 @@
     <value>Licence : GPL-3.0</value>
   </data>
   <data name="AboutGameData" xml:space="preserve">
-    <value>Données de jeu : © NCSOFT</value>
+    <value>Données de jeu et icônes de classe : © NCSOFT</value>
   </data>
   <data name="AboutWebsite" xml:space="preserve">
     <value>Site</value>

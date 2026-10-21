@@ -127,6 +127,9 @@
             <CheckBox IsChecked="{Binding ShowCombatPower}" Margin="0,6,0,0" ToolTip="{loc:Tr SettingsShowCombatPowerTip}">
                 <TextBlock Text="{loc:Tr SettingsShowCombatPower}" TextWrapping="Wrap"/>
             </CheckBox>
+            <CheckBox IsChecked="{Binding BossHpAsPercent}" Margin="0,6,0,0" ToolTip="{loc:Tr SettingsBossHpAsPercentTip}">
+                <TextBlock Text="{loc:Tr SettingsBossHpAsPercent}" TextWrapping="Wrap"/>
+            </CheckBox>
 
             <TextBlock x:Name="SecCapture" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderCapture}"/>
             <StackPanel DataContext="{Binding Capture}">
@@ -188,7 +191,7 @@
             <DockPanel Margin="0,4,0,0">
                 <Button DockPanel.Dock="Right" Style="{StaticResource TextButtonStyle}" Margin="0" Content="{loc:Tr View}"
                         Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nathantek/aion2assistant/blob/main/data/NOTICE.md"/>
-                <TextBlock Text="{loc:Tr AboutGameData}" VerticalAlignment="Center"/>
+                <TextBlock Text="{loc:Tr AboutGameData}" VerticalAlignment="Center" TextWrapping="Wrap"/>
             </DockPanel>
             <WrapPanel Margin="0,6,0,0">
                 <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr AboutWebsite}"

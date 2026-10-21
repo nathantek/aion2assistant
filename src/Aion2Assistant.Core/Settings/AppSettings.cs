@@ -25,6 +25,8 @@ public sealed class CombatSettings
     public bool BossOnly { get; set; }
     /// <summary>Affiche la puissance de combat après le nom des joueurs (meters, historique, image copiée).</summary>
     public bool ShowCombatPower { get; set; }
+    /// <summary>PV du boss au-dessus de sa barre en pourcentage ; false = en chiffres (restants / max).</summary>
+    public bool BossHpAsPercent { get; set; }
 }
 
 public sealed class HistorySettings
