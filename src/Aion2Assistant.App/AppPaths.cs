@@ -1,3 +1,4 @@
+using Aion2Assistant.Combat;
 using Aion2Assistant.Core.Settings;
 
 namespace Aion2Assistant.App;
@@ -12,5 +13,6 @@ internal static class AppPaths
     public static string HistoryDatabase => Path.Combine(DataDirectory, "history.db");
     public static string Bosses => Path.Combine(DataDirectory, "bosses.json");
     public static string Records => Path.Combine(DataDirectory, "records.json");
+    public static string Familiars => Path.Combine(DataDirectory, FamiliarStore.FileName);
     public static string TimersFile => Path.Combine(AppContext.BaseDirectory, "timers.json");
 }

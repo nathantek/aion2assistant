@@ -54,6 +54,9 @@
   <data name="MapFallback" xml:space="preserve">
     <value>Carte {0}</value>
   </data>
+  <data name="FamiliarFallback" xml:space="preserve">
+    <value>Familier #{0}</value>
+  </data>
   <data name="ZoneUnknown" xml:space="preserve">
     <value>Zone inconnue</value>
   </data>
@@ -176,6 +179,15 @@
   </data>
   <data name="OpcodeInspect" xml:space="preserve">
     <value>Inspection</value>
+  </data>
+  <data name="OpcodeFamiliarState" xml:space="preserve">
+    <value>Familiers (état)</value>
+  </data>
+  <data name="OpcodeFamiliarSoul" xml:space="preserve">
+    <value>Âme de familier</value>
+  </data>
+  <data name="OpcodeFamiliarTier" xml:space="preserve">
+    <value>Palier de familier</value>
   </data>
   <data name="CaptureNpcapMissing" xml:space="preserve">
     <value>Npcap n'est pas installé</value>

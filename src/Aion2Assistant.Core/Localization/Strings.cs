@@ -50,6 +50,8 @@ public static class Strings
     public static string NpcFallback => Get();
     /// <summary>« Map {0} » / « Carte {0} ».</summary>
     public static string MapFallback => Get();
+    /// <summary>« Familiar #{0} » / « Familier #{0} ».</summary>
+    public static string FamiliarFallback => Get();
     /// <summary>« Unknown zone » / « Zone inconnue ».</summary>
     public static string ZoneUnknown => Get();
 
@@ -135,6 +137,12 @@ public static class Strings
     public static string OpcodeCombatPower => Get();
     /// <summary>« Inspect » / « Inspection ».</summary>
     public static string OpcodeInspect => Get();
+    /// <summary>« Familiars (state) » / « Familiers (état) ».</summary>
+    public static string OpcodeFamiliarState => Get();
+    /// <summary>« Familiar soul » / « Âme de familier ».</summary>
+    public static string OpcodeFamiliarSoul => Get();
+    /// <summary>« Familiar tier » / « Palier de familier ».</summary>
+    public static string OpcodeFamiliarTier => Get();
     /// <summary>« Npcap is not installed » / « Npcap n'est pas installé ».</summary>
     public static string CaptureNpcapMissing => Get();
     /// <summary>« No network adapter carries the game connection » / « Aucune carte réseau ne porte la connexion du jeu ».</summary>

@@ -29,6 +29,25 @@ public sealed class CombatSettings
     public bool BossHpAsPercent { get; set; }
 }
 
+/// <summary>Pop-up et son d'un événement de familier (palier atteint, niveau MAX), réglables comme ceux des timers.</summary>
+public sealed class FamiliarAlertSettings
+{
+    public bool Notify { get; set; } = true;
+    public bool Sound { get; set; } = true;
+    /// <summary>Son intégré (voir <see cref="AlertSounds"/>) ou <see cref="AlertSounds.CustomId"/> ; inconnu = défaut de l'événement.</summary>
+    public string SoundId { get; set; } = AlertSounds.DefaultId;
+    public string? CustomSoundPath { get; set; }
+}
+
+public sealed class FamiliarSettings
+{
+    /// <summary>Sons par défaut : harpe pour un palier (distincte du carillon des timers), cloche pour le MAX.</summary>
+    public const string DefaultTierSoundId = "harp", DefaultMaxSoundId = "bell";
+
+    public FamiliarAlertSettings Tier { get; set; } = new() { SoundId = DefaultTierSoundId };
+    public FamiliarAlertSettings Max { get; set; } = new() { SoundId = DefaultMaxSoundId };
+}
+
 public sealed class HistorySettings
 {
     public const int MaxRetentionDays = 30, MaxEncountersCap = 100;
@@ -85,6 +104,9 @@ public sealed class AppSettings
     public List<string> EmittedAlerts { get; set; } = new();
     public CombatSettings Combat { get; set; } = new();
     public HistorySettings History { get; set; } = new();
+    /// <summary>Onglet « Familiers » et ses pop-ups (absent du fichier = désactivé : aucune migration).</summary>
+    public bool FamiliarsEnabled { get; set; }
+    public FamiliarSettings Familiars { get; set; } = new();
 
     /// <summary>Réglage commun à tous les boss de terrain (leurs timers naissent de la capture, pas de la config).</summary>
     public const string FieldBossTimersKey = "fieldboss";
@@ -122,6 +144,9 @@ public sealed class AppSettings
         History.MaxEncounters = Math.Clamp(History.MaxEncounters, 10, HistorySettings.MaxEncountersCap);
         History.MinDurationSeconds = Math.Clamp(History.MinDurationSeconds, 0, 600);
         if (string.IsNullOrWhiteSpace(ThemeId)) ThemeId = DefaultThemeId;
+        Familiars ??= new();
+        Familiars.Tier = NormalizeAlert(Familiars.Tier, FamiliarSettings.DefaultTierSoundId);
+        Familiars.Max = NormalizeAlert(Familiars.Max, FamiliarSettings.DefaultMaxSoundId);
         Hotkeys ??= new();
         // v2 : raccourcis par défaut déplacés sur le pavé numérique ; les anciens défauts (F1…) sont remplacés.
         if (SettingsVersion < 2) Hotkeys = HotkeyDefaults.Create();
@@ -146,6 +171,13 @@ public sealed class AppSettings
             // Son propre inconnu (fichier édité à la main) : retour à l'héritage du réglage global.
             if (timer.SoundId is { } id && id != AlertSounds.CustomId && !AlertSounds.IsBuiltIn(id)) timer.SoundId = null;
         }
+    }
+
+    private static FamiliarAlertSettings NormalizeAlert(FamiliarAlertSettings? alert, string defaultSoundId)
+    {
+        alert ??= new FamiliarAlertSettings { SoundId = defaultSoundId };
+        if (alert.SoundId != AlertSounds.CustomId && !AlertSounds.IsBuiltIn(alert.SoundId)) alert.SoundId = defaultSoundId;
+        return alert;
     }
 
     /// <summary>

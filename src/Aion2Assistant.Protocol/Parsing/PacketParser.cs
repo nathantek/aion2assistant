@@ -67,6 +67,9 @@ public sealed class PacketParser(Action<GameEvent> emit)
         Opcodes.CombatPowerUpdate => CombatPowerParsers.Update(body, TimeMs, emit),
         Opcodes.Inspect => CombatPowerParsers.Inspect(body, TimeMs, emit),
         Opcodes.PartyRoster => CombatPowerParsers.PartyRoster(body, TimeMs, emit),
+        Opcodes.FamiliarState => FamiliarParsers.State(body, TimeMs, emit),
+        Opcodes.FamiliarSoul => FamiliarParsers.Soul(body, TimeMs, emit),
+        Opcodes.FamiliarTier => FamiliarParsers.Tier(body, TimeMs, emit),
         _ => null,
     };
 }

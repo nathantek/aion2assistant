@@ -37,7 +37,7 @@ internal sealed class MetersController : IDisposable
         Heal = new MeterViewModel(MeterKind.Heal, UiStrings.TabHeal, heal, display: display);
         Taken = new MeterViewModel(MeterKind.Taken, UiStrings.TabTaken, taken, display: display);
         var data = GameData.Load(Path.Combine(AppContext.BaseDirectory, "data"));
-        Log.Information("Données de jeu : {Skills} skills, {Npcs} PNJ", data.SkillCount, data.NpcCount);
+        Log.Information("Données de jeu : {Skills} skills, {Npcs} PNJ, {Familiars} familiers", data.SkillCount, data.NpcCount, data.FamiliarCount);
         if (data.SkillCount == 0 && data.NpcCount == 0)
             Log.Warning("Aucun fichier de noms dans data/ : les codes s'afficheront");
         Data = data;

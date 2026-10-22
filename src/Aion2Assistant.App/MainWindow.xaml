@@ -23,6 +23,9 @@
         <DataTemplate DataType="{x:Type vm:TimersViewModel}">
             <views:TimersView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FamiliarsViewModel}">
+            <views:FamiliarsView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
             <views:SettingsView/>
         </DataTemplate>
@@ -86,6 +89,12 @@
                                  ToolTip="{loc:Tr TipTabTimers}"
                                  IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Timers}}"
                                  Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Timers}"/>
+                    <!-- Familiers : seulement si l'option est activée (Réglages), sans raccourci. -->
+                    <RadioButton Style="{StaticResource TabButtonStyle}" Content="{StaticResource Icon.Paw}" Tag="{DynamicResource CritBrush}"
+                                 ToolTip="{loc:Tr TipTabFamiliars}"
+                                 Visibility="{Binding FamiliarsEnabled, Converter={StaticResource BoolToVisibility}}"
+                                 IsChecked="{Binding CurrentTab, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:OverlayTab.Familiars}}"
+                                 Command="{Binding SelectTabCommand}" CommandParameter="{x:Static vm:OverlayTab.Familiars}"/>
                 </StackPanel>
                 <TextBlock Text="{Binding MiniValueText}" Foreground="{Binding MiniValueBrush}"
                            ToolTip="{Binding MiniValueTip}" FontSize="{DynamicResource FontSizeSmall}" FontWeight="SemiBold"

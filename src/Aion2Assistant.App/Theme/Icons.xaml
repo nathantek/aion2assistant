@@ -20,4 +20,7 @@
 
     <!-- Sablier : barres haut/bas, chambre haute creuse, sable plein en bas (EvenOdd). -->
     <StreamGeometry x:Key="Icon.Hourglass" po:Freeze="True">F0 M4.5,2 H19.5 V4.5 H18 V6.5 L13.6,12 L18,17.5 V19.5 H19.5 V22 H4.5 V19.5 H6 V17.5 L10.4,12 L6,6.5 V4.5 H4.5 Z M9,4.5 H15 V6.2 L12,9.6 L9,6.2 Z M12,14.4 L14.65,17.4 H9.35 Z</StreamGeometry>
+
+    <!-- Patte de familier : coussinet ovale et quatre doigts ronds. NonZero. -->
+    <StreamGeometry x:Key="Icon.Paw" po:Freeze="True">F1 M7,16.5 A5,4.2 0 1 1 17,16.5 A5,4.2 0 1 1 7,16.5 Z M2.7,10.5 A2.3,2.3 0 1 1 7.3,10.5 A2.3,2.3 0 1 1 2.7,10.5 Z M6.8,5.8 A2.4,2.4 0 1 1 11.6,5.8 A2.4,2.4 0 1 1 6.8,5.8 Z M12.4,5.8 A2.4,2.4 0 1 1 17.2,5.8 A2.4,2.4 0 1 1 12.4,5.8 Z M16.7,10.5 A2.3,2.3 0 1 1 21.3,10.5 A2.3,2.3 0 1 1 16.7,10.5 Z</StreamGeometry>
 </ResourceDictionary>

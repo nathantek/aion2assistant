@@ -67,3 +67,15 @@ public sealed record FieldBossSlot(int SlotId, bool Alive, long AtMs, float X, f
 
 /// <summary>Liste des boss de terrain d'une carte (carte en jeu). <see cref="FieldBossSlot.AtMs"/> = apparu depuis (vivant) ou retour à (mort), 0 = inconnu.</summary>
 public sealed record FieldBossListEvent(long TimeMs, int MapId, int Count, IReadOnlyList<FieldBossSlot> Slots) : GameEvent(TimeMs);
+
+/// <summary>Un familier : palier 0..3 (0 = pas encore débloqué, 3 = MAX) et âmes du palier en cours (remises à 0 à chaque palier).</summary>
+public sealed record FamiliarEntry(int Id, int Tier, int Souls);
+
+/// <summary>État complet des familiers (0x0090, à l'entrée en jeu). Absent de la liste des paliers = palier 0, absent de la liste des âmes = 0 âme.</summary>
+public sealed record FamiliarStateEvent(long TimeMs, IReadOnlyList<FamiliarEntry> Entries) : GameEvent(TimeMs);
+
+/// <summary>Âme obtenue (0x0D90) : incrément, pas un total. Le client ne reçoit que ses propres âmes, même en groupe.</summary>
+public sealed record FamiliarSoulEvent(long TimeMs, int Id, int Amount) : GameEvent(TimeMs);
+
+/// <summary>Montée de palier (0x1490) : nouveau palier 1..3 ; les âmes du familier repartent à 0.</summary>
+public sealed record FamiliarTierEvent(long TimeMs, int Id, int Tier) : GameEvent(TimeMs);

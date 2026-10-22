@@ -96,8 +96,24 @@ public partial class SettingsViewModel : ObservableObject
         Timers.Add(new TimerSettingRowViewModel(AppSettings.FieldBossTimersKey, UiStrings.FieldBosses,
             settings.GetTimer(AppSettings.FieldBossTimersKey), requestSave, settings, playSound));
 
+        FamiliarAlerts =
+        [
+            new FamiliarAlertRowViewModel(UiStrings.FamiliarsTierAlert, settings.Familiars.Tier, requestSave, playSound),
+            new FamiliarAlertRowViewModel(UiStrings.FamiliarsMaxAlert, settings.Familiars.Max, requestSave, playSound),
+        ];
+
         main.PropertyChanged += OnMainChanged;
     }
+
+    /// <summary>Option « Familiers » : onglet et pop-ups. Portée par MainViewModel (la barre d'onglets suit en direct).</summary>
+    public bool FamiliarsEnabled
+    {
+        get => _main.FamiliarsEnabled;
+        set => _main.FamiliarsEnabled = value;
+    }
+
+    /// <summary>Pop-up et son « palier atteint » puis « niveau MAX ».</summary>
+    public IReadOnlyList<FamiliarAlertRowViewModel> FamiliarAlerts { get; }
 
     /// <summary>La case « Effets lumineux » n'a de sens que pour un thème qui définit une lueur.</summary>
     public bool SelectedThemeHasGlow => SelectedTheme?.Glow is not null;
@@ -311,6 +327,7 @@ public partial class SettingsViewModel : ObservableObject
     private void OnMainChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainViewModel.UiScale)) OnPropertyChanged(nameof(UiScale));
+        if (e.PropertyName == nameof(MainViewModel.FamiliarsEnabled)) OnPropertyChanged(nameof(FamiliarsEnabled));
         if (e.PropertyName != nameof(MainViewModel.CurrentTab)) return;
 
         if (_main.CurrentTab == OverlayTab.Settings)

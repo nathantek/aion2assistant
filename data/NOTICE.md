@@ -1,7 +1,7 @@
 # Données de jeu
 
 
-Les fichiers `src/Aion2Assistant.App/data/skills.json` et `src/Aion2Assistant.App/data/npcs.json` contiennent des noms de compétences et de monstres issus du jeu AION 2.
+Les fichiers `src/Aion2Assistant.App/data/skills.json`, `src/Aion2Assistant.App/data/npcs.json` et `src/Aion2Assistant.App/data/pets.json` contiennent des noms de compétences, de monstres et de familiers issus du jeu AION 2.
 
 - Ces textes sont © NCSOFT, tous droits réservés.
 - Ils proviennent du site aion2.dvg.cn.

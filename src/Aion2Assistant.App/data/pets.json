@@ -1,0 +1,1186 @@
+{
+  "1001": {
+    "name": "Black Dragon",
+    "category": "Special"
+  },
+  "1002": {
+    "name": "Krall Laborer",
+    "category": "Intellect"
+  },
+  "1003": {
+    "name": "Forest Specter",
+    "category": "Nature"
+  },
+  "1004": {
+    "name": "Fossa",
+    "category": "Other"
+  },
+  "1005": {
+    "name": "Klaw",
+    "category": "Intellect"
+  },
+  "1006": {
+    "name": "Sparkie",
+    "category": "Other"
+  },
+  "1007": {
+    "name": "Potcrab",
+    "category": "Other"
+  },
+  "1008": {
+    "name": "Baby Odyle Spider",
+    "category": "Other"
+  },
+  "1009": {
+    "name": "Kernon",
+    "category": "Other"
+  },
+  "1010": {
+    "name": "Manduri Fighter",
+    "category": "Intellect"
+  },
+  "1011": {
+    "name": "Skyray",
+    "category": "Other"
+  },
+  "1012": {
+    "name": "Fungie",
+    "category": "Nature"
+  },
+  "1013": {
+    "name": "Swarm",
+    "category": "Other"
+  },
+  "1014": {
+    "name": "Drakan Guard Dog",
+    "category": "Other"
+  },
+  "1015": {
+    "name": "Kailin",
+    "category": "Other"
+  },
+  "1016": {
+    "name": "Slink",
+    "category": "Other"
+  },
+  "1017": {
+    "name": "Krall Warshaman",
+    "category": "Intellect"
+  },
+  "1018": {
+    "name": "Varg Berserker",
+    "category": "Intellect"
+  },
+  "1021": {
+    "name": "Aberrant Odyle Spider",
+    "category": "Other"
+  },
+  "1022": {
+    "name": "Crasaur",
+    "category": "Other"
+  },
+  "1025": {
+    "name": "Mutated Aberrant Odyle Spider",
+    "category": "Other"
+  },
+  "1026": {
+    "name": "Krall Warrior",
+    "category": "Intellect"
+  },
+  "1027": {
+    "name": "Withered Agrint",
+    "category": "Nature"
+  },
+  "1028": {
+    "name": "Krao Mutant",
+    "category": "Other"
+  },
+  "1029": {
+    "name": "Klaw Scout",
+    "category": "Intellect"
+  },
+  "1030": {
+    "name": "Nagarant Guardian Warrior",
+    "category": "Intellect"
+  },
+  "1031": {
+    "name": "Konutin Worker",
+    "category": "Nature"
+  },
+  "1032": {
+    "name": "Elite Keneire",
+    "category": "Other"
+  },
+  "1033": {
+    "name": "Elite Manduri Fighter",
+    "category": "Intellect"
+  },
+  "1034": {
+    "name": "Giant Sparkie",
+    "category": "Other"
+  },
+  "1035": {
+    "name": "Skama",
+    "category": "Other"
+  },
+  "1036": {
+    "name": "Lupyllini",
+    "category": "Other"
+  },
+  "1037": {
+    "name": "Male Crestlich",
+    "category": "Other"
+  },
+  "1038": {
+    "name": "Airon",
+    "category": "Other"
+  },
+  "1039": {
+    "name": "Crestlich",
+    "category": "Other"
+  },
+  "1040": {
+    "name": "Aullaeu Shaman",
+    "category": "Intellect"
+  },
+  "1041": {
+    "name": "Cave Bat",
+    "category": "Other"
+  },
+  "1042": {
+    "name": "Ursus",
+    "category": "Other"
+  },
+  "1043": {
+    "name": "Elite Ursus",
+    "category": "Other"
+  },
+  "1044": {
+    "name": "Aultross's Doppelganger",
+    "category": "Intellect"
+  },
+  "1045": {
+    "name": "Sylphen",
+    "category": "Other"
+  },
+  "1046": {
+    "name": "Armadon",
+    "category": "Other"
+  },
+  "1047": {
+    "name": "Aberrant Armadon",
+    "category": "Other"
+  },
+  "1048": {
+    "name": "Forest Spirit",
+    "category": "Nature"
+  },
+  "1049": {
+    "name": "Mutated Forest Spirit",
+    "category": "Nature"
+  },
+  "1050": {
+    "name": "Gravi",
+    "category": "Nature"
+  },
+  "1051": {
+    "name": "Magic Gravi",
+    "category": "Nature"
+  },
+  "1052": {
+    "name": "Large Leaf Gravi",
+    "category": "Nature"
+  },
+  "1053": {
+    "name": "Aberrant Potcrab",
+    "category": "Other"
+  },
+  "1054": {
+    "name": "Mumu Warrior",
+    "category": "Intellect"
+  },
+  "1055": {
+    "name": "Grave Rat",
+    "category": "Other"
+  },
+  "1056": {
+    "name": "Drakan Probe",
+    "category": "Other"
+  },
+  "1057": {
+    "name": "Coradon",
+    "category": "Other"
+  },
+  "1058": {
+    "name": "Black Smoke Murute",
+    "category": "Nature"
+  },
+  "1059": {
+    "name": "Giant Bee",
+    "category": "Other"
+  },
+  "1060": {
+    "name": "Starturtle",
+    "category": "Other"
+  },
+  "1061": {
+    "name": "Slime",
+    "category": "Other"
+  },
+  "1062": {
+    "name": "Contaminated Slime",
+    "category": "Other"
+  },
+  "1063": {
+    "name": "Vigilant Oculazen",
+    "category": "Other"
+  },
+  "1064": {
+    "name": "Oculazen",
+    "category": "Other"
+  },
+  "1065": {
+    "name": "Biruta",
+    "category": "Intellect"
+  },
+  "1066": {
+    "name": "Papis",
+    "category": "Other"
+  },
+  "1067": {
+    "name": "Scorpion",
+    "category": "Other"
+  },
+  "1068": {
+    "name": "Krao Test Subject",
+    "category": "Other"
+  },
+  "1069": {
+    "name": "Stone Spirit",
+    "category": "Nature"
+  },
+  "1071": {
+    "name": "Cadaver Insectoid",
+    "category": "Other"
+  },
+  "1072": {
+    "name": "Tog",
+    "category": "Other"
+  },
+  "1073": {
+    "name": "Nepenthes",
+    "category": "Nature"
+  },
+  "1074": {
+    "name": "Kuru Worker",
+    "category": "Intellect"
+  },
+  "1075": {
+    "name": "Kuru Tinkerer",
+    "category": "Intellect"
+  },
+  "1077": {
+    "name": "Harcon",
+    "category": "Other"
+  },
+  "1078": {
+    "name": "Urugugu Brawler",
+    "category": "Intellect"
+  },
+  "1079": {
+    "name": "Ultimate Wind Spirit",
+    "category": "Nature"
+  },
+  "1080": {
+    "name": "Sentinel K'nash",
+    "category": "Intellect"
+  },
+  "1081": {
+    "name": "Dionae",
+    "category": "Nature"
+  },
+  "1082": {
+    "name": "Ultimate Fire Spirit",
+    "category": "Nature"
+  },
+  "1083": {
+    "name": "Spider",
+    "category": "Other"
+  },
+  "1084": {
+    "name": "Kalgolem",
+    "category": "Other"
+  },
+  "1086": {
+    "name": "Fungen",
+    "category": "Nature"
+  },
+  "1087": {
+    "name": "Pino",
+    "category": "Other"
+  },
+  "1088": {
+    "name": "Pino Worker",
+    "category": "Other"
+  },
+  "1089": {
+    "name": "Aberrant Skama",
+    "category": "Other"
+  },
+  "1090": {
+    "name": "Ultimate Water Spirit",
+    "category": "Nature"
+  },
+  "1091": {
+    "name": "Red Spark Ignus",
+    "category": "Nature"
+  },
+  "1092": {
+    "name": "Lesser Wind Spirit",
+    "category": "Nature"
+  },
+  "1093": {
+    "name": "Phantasmal Lakshmi",
+    "category": "Intellect"
+  },
+  "1094": {
+    "name": "Intermediate Wind Spirit",
+    "category": "Nature"
+  },
+  "1095": {
+    "name": "Superior Wind Spirit",
+    "category": "Nature"
+  },
+  "1096": {
+    "name": "Superior Fire Spirit",
+    "category": "Nature"
+  },
+  "1097": {
+    "name": "Karnif",
+    "category": "Other"
+  },
+  "1098": {
+    "name": "Modified Karnif",
+    "category": "Other"
+  },
+  "1099": {
+    "name": "Elite Karnif",
+    "category": "Other"
+  },
+  "1100": {
+    "name": "Ultimate Earth Spirit",
+    "category": "Nature"
+  },
+  "1101": {
+    "name": "Forest Guardian",
+    "category": "Nature"
+  },
+  "1102": {
+    "name": "Dried Up Forest Guardian",
+    "category": "Nature"
+  },
+  "1103": {
+    "name": "Pretor Veil Administrator",
+    "category": "Intellect"
+  },
+  "1104": {
+    "name": "Manduri Trebuchet Worker",
+    "category": "Intellect"
+  },
+  "1105": {
+    "name": "Biruta Herbalist",
+    "category": "Intellect"
+  },
+  "1106": {
+    "name": "Tayga",
+    "category": "Other"
+  },
+  "1107": {
+    "name": "Krao Seal Guardian",
+    "category": "Other"
+  },
+  "1108": {
+    "name": "Enhanced Krall Combatant",
+    "category": "Intellect"
+  },
+  "1109": {
+    "name": "Enhanced Krall Sentry",
+    "category": "Intellect"
+  },
+  "1110": {
+    "name": "Blue Kalgolem",
+    "category": "Other"
+  },
+  "1111": {
+    "name": "Swift Lugi",
+    "category": "Special"
+  },
+  "1112": {
+    "name": "Wandering Merchant Lugi",
+    "category": "Special"
+  },
+  "1113": {
+    "name": "White Dragon",
+    "category": "Special"
+  },
+  "1114": {
+    "name": "Ashen Spider",
+    "category": "Other"
+  },
+  "1115": {
+    "name": "Kuru Overseer",
+    "category": "Intellect"
+  },
+  "1116": {
+    "name": "Withered Branch Spider",
+    "category": "Other"
+  },
+  "1117": {
+    "name": "Unstable Spider",
+    "category": "Other"
+  },
+  "1118": {
+    "name": "Aberrant Bee",
+    "category": "Other"
+  },
+  "1119": {
+    "name": "Aberrant Coradon",
+    "category": "Other"
+  },
+  "1120": {
+    "name": "Young Kailin",
+    "category": "Other"
+  },
+  "1121": {
+    "name": "Young Slink",
+    "category": "Other"
+  },
+  "1122": {
+    "name": "Young Tog",
+    "category": "Other"
+  },
+  "1123": {
+    "name": "Young Ursus",
+    "category": "Other"
+  },
+  "1124": {
+    "name": "Zaif",
+    "category": "Other"
+  },
+  "1125": {
+    "name": "Aberrant Zaif",
+    "category": "Other"
+  },
+  "1126": {
+    "name": "Aberrant Tog",
+    "category": "Other"
+  },
+  "1127": {
+    "name": "Odyle Stone Spirit",
+    "category": "Nature"
+  },
+  "1128": {
+    "name": "Drana Slime",
+    "category": "Other"
+  },
+  "1129": {
+    "name": "Drana Swarm",
+    "category": "Other"
+  },
+  "1130": {
+    "name": "Mutated Cadaver Insectoid",
+    "category": "Other"
+  },
+  "1131": {
+    "name": "Drana Spore",
+    "category": "Nature"
+  },
+  "1132": {
+    "name": "Ashen Lupyllini",
+    "category": "Other"
+  },
+  "1133": {
+    "name": "Forest Dionae",
+    "category": "Nature"
+  },
+  "1134": {
+    "name": "Eternal Coradon",
+    "category": "Other"
+  },
+  "1135": {
+    "name": "Ashen Dionae",
+    "category": "Nature"
+  },
+  "1136": {
+    "name": "Rafflesia",
+    "category": "Nature"
+  },
+  "1137": {
+    "name": "Mumu Worker",
+    "category": "Intellect"
+  },
+  "1138": {
+    "name": "Mumu Overseer",
+    "category": "Intellect"
+  },
+  "1139": {
+    "name": "Swamp Monster",
+    "category": "Other"
+  },
+  "1140": {
+    "name": "Forest Monster",
+    "category": "Other"
+  },
+  "1141": {
+    "name": "Marsh Targon",
+    "category": "Other"
+  },
+  "1142": {
+    "name": "Distorted Mutant",
+    "category": "Other"
+  },
+  "1143": {
+    "name": "Mutated Ursus",
+    "category": "Other"
+  },
+  "1144": {
+    "name": "Mutated Forest Guardian",
+    "category": "Nature"
+  },
+  "1145": {
+    "name": "Mutated Insectoid Valka",
+    "category": "Other"
+  },
+  "1146": {
+    "name": "Gatekeeper Pinopi",
+    "category": "Other"
+  },
+  "1147": {
+    "name": "Dratona",
+    "category": "Intellect"
+  },
+  "1148": {
+    "name": "Drakana Kalgolem",
+    "category": "Other"
+  },
+  "1149": {
+    "name": "Baikron",
+    "category": "Special"
+  },
+  "1150": {
+    "name": "Azure Baikron",
+    "category": "Special"
+  },
+  "1151": {
+    "name": "Silver Baikron",
+    "category": "Special"
+  },
+  "1152": {
+    "name": "Golden Baikron",
+    "category": "Special"
+  },
+  "1153": {
+    "name": "Drana Mutant Brute",
+    "category": "Other"
+  },
+  "1154": {
+    "name": "Faded Mutant Brute",
+    "category": "Other"
+  },
+  "1155": {
+    "name": "Superior Water Spirit",
+    "category": "Nature"
+  },
+  "1156": {
+    "name": "Elite Klaw",
+    "category": "Intellect"
+  },
+  "1157": {
+    "name": "Cadaver Cleaner",
+    "category": "Other"
+  },
+  "1158": {
+    "name": "Venomous Insect Sram",
+    "category": "Other"
+  },
+  "1159": {
+    "name": "Parasite Swarm",
+    "category": "Other"
+  },
+  "1160": {
+    "name": "Drana Contaminant",
+    "category": "Other"
+  },
+  "1161": {
+    "name": "Faded Floater",
+    "category": "Other"
+  },
+  "1162": {
+    "name": "Kerubar",
+    "category": "Intellect"
+  },
+  "1163": {
+    "name": "Basilisk",
+    "category": "Other"
+  },
+  "1164": {
+    "name": "Lesser Earth Spirit",
+    "category": "Nature"
+  },
+  "1165": {
+    "name": "Intermediate Earth Spirit",
+    "category": "Nature"
+  },
+  "1166": {
+    "name": "Superior Earth Spirit",
+    "category": "Nature"
+  },
+  "1167": {
+    "name": "Flame Stone Guardian Statue",
+    "category": "Other"
+  },
+  "1168": {
+    "name": "Lesser Water Spirit",
+    "category": "Nature"
+  },
+  "1169": {
+    "name": "Intermediate Water Spirit",
+    "category": "Nature"
+  },
+  "1170": {
+    "name": "Kerubian",
+    "category": "Intellect"
+  },
+  "1171": {
+    "name": "Kerubiel",
+    "category": "Intellect"
+  },
+  "1172": {
+    "name": "Duduka Worker",
+    "category": "Other"
+  },
+  "1173": {
+    "name": "Duduka Trebuchet Worker",
+    "category": "Other"
+  },
+  "1174": {
+    "name": "Drana Predator",
+    "category": "Other"
+  },
+  "1175": {
+    "name": "Faded Predator",
+    "category": "Other"
+  },
+  "1176": {
+    "name": "Mudthorn",
+    "category": "Other"
+  },
+  "1177": {
+    "name": "Ancient Spirit",
+    "category": "Nature"
+  },
+  "1178": {
+    "name": "Spirit King's Bodyguard Warrior",
+    "category": "Nature"
+  },
+  "1179": {
+    "name": "Drana Mutant",
+    "category": "Other"
+  },
+  "1180": {
+    "name": "Faded Mutant",
+    "category": "Other"
+  },
+  "1181": {
+    "name": "Brax",
+    "category": "Other"
+  },
+  "1182": {
+    "name": "Elite Soulless Corpse Gnat",
+    "category": "Other"
+  },
+  "1183": {
+    "name": "Soulless Corpse Gnat",
+    "category": "Other"
+  },
+  "1184": {
+    "name": "Drakan Watcher",
+    "category": "Intellect"
+  },
+  "1185": {
+    "name": "Dratona Tinkerer",
+    "category": "Intellect"
+  },
+  "1186": {
+    "name": "Poison Blood",
+    "category": "Other"
+  },
+  "1187": {
+    "name": "Intermediate Fire Spirit",
+    "category": "Nature"
+  },
+  "1188": {
+    "name": "Vivel",
+    "category": "Other"
+  },
+  "1189": {
+    "name": "Tamed Zaif",
+    "category": "Other"
+  },
+  "1190": {
+    "name": "Elite Poisonous Spore Fungen",
+    "category": "Nature"
+  },
+  "1191": {
+    "name": "Furious Feruk",
+    "category": "Intellect"
+  },
+  "1192": {
+    "name": "Silver Blade Rotan",
+    "category": "Other"
+  },
+  "1193": {
+    "name": "Addicted Shulak Cart Worker",
+    "category": "Intellect"
+  },
+  "1194": {
+    "name": "Guardite",
+    "category": "Other"
+  },
+  "1195": {
+    "name": "Dracuni Herbalist",
+    "category": "Intellect"
+  },
+  "1196": {
+    "name": "Elite Dratona",
+    "category": "Intellect"
+  },
+  "1197": {
+    "name": "Watcher Guardite",
+    "category": "Other"
+  },
+  "1198": {
+    "name": "Ashen Basilisk",
+    "category": "Other"
+  },
+  "1199": {
+    "name": "Flame Barghest",
+    "category": "Other"
+  },
+  "1200": {
+    "name": "Naga Elite Priest",
+    "category": "Intellect"
+  },
+  "1201": {
+    "name": "Modified Lupyllini",
+    "category": "Intellect"
+  },
+  "1202": {
+    "name": "Decomposed Lupyllini",
+    "category": "Intellect"
+  },
+  "1203": {
+    "name": "Tamed Karnif",
+    "category": "Other"
+  },
+  "1204": {
+    "name": "Pagati",
+    "category": "Special"
+  },
+  "1205": {
+    "name": "Reindeer",
+    "category": "Special"
+  },
+  "1206": {
+    "name": "Elite Guardite",
+    "category": "Other"
+  },
+  "1207": {
+    "name": "Agrint",
+    "category": "Nature"
+  },
+  "1208": {
+    "name": "Ashen Agrint",
+    "category": "Nature"
+  },
+  "1209": {
+    "name": "Thin Agrint",
+    "category": "Nature"
+  },
+  "1210": {
+    "name": "Dry Leaf Agrint",
+    "category": "Nature"
+  },
+  "1211": {
+    "name": "Sky Whale",
+    "category": "Special"
+  },
+  "1212": {
+    "name": "Void",
+    "category": "Special"
+  },
+  "1213": {
+    "name": "Lesser Fire Spirit",
+    "category": "Nature"
+  },
+  "1214": {
+    "name": "Black Spirit",
+    "category": "Nature"
+  },
+  "1215": {
+    "name": "Predator Saraswati",
+    "category": "Intellect"
+  },
+  "1216": {
+    "name": "Dark Spirit",
+    "category": "Other"
+  },
+  "1217": {
+    "name": "Congealed Drana",
+    "category": "Other"
+  },
+  "1218": {
+    "name": "Faded Drana",
+    "category": "Other"
+  },
+  "1219": {
+    "name": "Zelophi",
+    "category": "Nature"
+  },
+  "1220": {
+    "name": "Ashpile Forester",
+    "category": "Nature"
+  },
+  "1221": {
+    "name": "Ashen Forester",
+    "category": "Nature"
+  },
+  "1222": {
+    "name": "Varg Shaman",
+    "category": "Intellect"
+  },
+  "1223": {
+    "name": "Infernal Steed",
+    "category": "Special"
+  },
+  "1224": {
+    "name": "Red Horse Doll",
+    "category": "Special"
+  },
+  "1225": {
+    "name": "Frosty Snowman",
+    "category": "Special"
+  },
+  "1226": {
+    "name": "Pom-Pom Hat Snowman",
+    "category": "Special"
+  },
+  "1230": {
+    "name": "Test Subject Hoka",
+    "category": "Other"
+  },
+  "1236": {
+    "name": "Luminous Golden Unicorn",
+    "category": "Special"
+  },
+  "1238": {
+    "name": "Sweet Unicorn",
+    "category": "Special"
+  },
+  "1240": {
+    "name": "White Bunny",
+    "category": "Special"
+  },
+  "1241": {
+    "name": "Star",
+    "category": "Special"
+  },
+  "1242": {
+    "name": "Moon",
+    "category": "Special"
+  },
+  "1243": {
+    "name": "Babymeow",
+    "category": "Special"
+  },
+  "1244": {
+    "name": "Aristomeow",
+    "category": "Special"
+  },
+  "1245": {
+    "name": "Azure Flame Kumiho",
+    "category": "Special"
+  },
+  "1246": {
+    "name": "Pearlescent Butterfly Kite",
+    "category": "Special"
+  },
+  "1247": {
+    "name": "Fluffball Haechi",
+    "category": "Special"
+  },
+  "1248": {
+    "name": "Teddy Plushie",
+    "category": "Special"
+  },
+  "1249": {
+    "name": "Unicorn Plush",
+    "category": "Special"
+  },
+  "1250": {
+    "name": "Glossy Pink Puppy",
+    "category": "Special"
+  },
+  "1251": {
+    "name": "Chickpea",
+    "category": "Special"
+  },
+  "1252": {
+    "name": "Harp Seal",
+    "category": "Special"
+  },
+  "1253": {
+    "name": "Umbral Shadow Unicorn",
+    "category": "Special"
+  },
+  "1259": {
+    "name": "Kurpak Krall Supporter",
+    "category": "Intellect"
+  },
+  "1260": {
+    "name": "Lava Stone Spirit",
+    "category": "Nature"
+  },
+  "1261": {
+    "name": "Gravarax",
+    "category": "Nature"
+  },
+  "1262": {
+    "name": "Poofy Lamb",
+    "category": "Special"
+  },
+  "1263": {
+    "name": "Driznak",
+    "category": "Other"
+  },
+  "1264": {
+    "name": "Snowfield Frugon",
+    "category": "Intellect"
+  },
+  "1265": {
+    "name": "Tuka",
+    "category": "Nature"
+  },
+  "1266": {
+    "name": "Icecap Pachyron",
+    "category": "Other"
+  },
+  "1267": {
+    "name": "Snowfield Debry",
+    "category": "Other"
+  },
+  "1268": {
+    "name": "Desert Lamphu",
+    "category": "Other"
+  },
+  "1269": {
+    "name": "Lagur",
+    "category": "Other"
+  },
+  "1270": {
+    "name": "Floofy",
+    "category": "Other"
+  },
+  "1271": {
+    "name": "Ghula",
+    "category": "Other"
+  },
+  "1272": {
+    "name": "Pokus",
+    "category": "Other"
+  },
+  "1273": {
+    "name": "Draconute Shaman",
+    "category": "Intellect"
+  },
+  "1275": {
+    "name": "Snowfield Tuka",
+    "category": "Nature"
+  },
+  "1276": {
+    "name": "Debry",
+    "category": "Other"
+  },
+  "1277": {
+    "name": "Snowfield Stone Spirit",
+    "category": "Nature"
+  },
+  "1278": {
+    "name": "Chonky Hamster",
+    "category": "Special"
+  },
+  "1279": {
+    "name": "Lava Gravarax",
+    "category": "Nature"
+  },
+  "1280": {
+    "name": "Snowfield Floofy",
+    "category": "Other"
+  },
+  "1281": {
+    "name": "Pachyron",
+    "category": "Other"
+  },
+  "1282": {
+    "name": "Lava Pokus",
+    "category": "Other"
+  },
+  "1283": {
+    "name": "Snowfield Trogas",
+    "category": "Intellect"
+  },
+  "1284": {
+    "name": "Snowfield Torba",
+    "category": "Other"
+  },
+  "1285": {
+    "name": "Trogas",
+    "category": "Intellect"
+  },
+  "1286": {
+    "name": "Desert Small Latoha",
+    "category": "Intellect"
+  },
+  "1287": {
+    "name": "Desert Swift Latoha",
+    "category": "Intellect"
+  },
+  "1289": {
+    "name": "Red Dragon",
+    "category": "Special"
+  },
+  "1290": {
+    "name": "Desert Magic Latoha",
+    "category": "Intellect"
+  },
+  "1291": {
+    "name": "Orange Dragon",
+    "category": "Special"
+  },
+  "1292": {
+    "name": "Yellow Dragon",
+    "category": "Special"
+  },
+  "1299": {
+    "name": "2",
+    "category": "Special"
+  },
+  "1300": {
+    "name": "Iralcig Small Latoha",
+    "category": "Intellect"
+  },
+  "1301": {
+    "name": "Iralcig Swift Latoha",
+    "category": "Intellect"
+  },
+  "1302": {
+    "name": "Torba",
+    "category": "Other"
+  },
+  "1303": {
+    "name": "Frugon",
+    "category": "Intellect"
+  },
+  "1304": {
+    "name": "Gray Ursus",
+    "category": "Other"
+  },
+  "1305": {
+    "name": "Snowfield Lamphu",
+    "category": "Other"
+  },
+  "1306": {
+    "name": "Snowfield Kalgolem",
+    "category": "Other"
+  },
+  "1307": {
+    "name": "Lava-Maned Kailin",
+    "category": "Other"
+  },
+  "1308": {
+    "name": "Lava Starturtle",
+    "category": "Other"
+  },
+  "1309": {
+    "name": "Ice Ghula",
+    "category": "Other"
+  },
+  "1310": {
+    "name": "Iralcig Magic Latoha",
+    "category": "Intellect"
+  },
+  "1311": {
+    "name": "Kurpak Krall Scout",
+    "category": "Intellect"
+  },
+  "1312": {
+    "name": "Kurpak Krall Enforcer",
+    "category": "Intellect"
+  },
+  "1313": {
+    "name": "Snowfield Lagur",
+    "category": "Other"
+  },
+  "1314": {
+    "name": "Obsidian Driznak",
+    "category": "Other"
+  },
+  "1315": {
+    "name": "Icecap Kailin",
+    "category": "Other"
+  },
+  "1316": {
+    "name": "Ashpile Durgal",
+    "category": "Other"
+  },
+  "1317": {
+    "name": "Durgal",
+    "category": "Other"
+  },
+  "1318": {
+    "name": "Red Fur Durgal",
+    "category": "Other"
+  },
+  "1319": {
+    "name": "Icecap Durgal",
+    "category": "Other"
+  },
+  "1320": {
+    "name": "Snowfield Zaif",
+    "category": "Other"
+  },
+  "1321": {
+    "name": "Young Snowfield Zaif",
+    "category": "Other"
+  },
+  "1322": {
+    "name": "Teddy Tube",
+    "category": "Special"
+  },
+  "1323": {
+    "name": "Squishy Octopus",
+    "category": "Special"
+  },
+  "1325": {
+    "name": "Goodnight Teddy Bear",
+    "category": "Special"
+  },
+  "9000": {
+    "name": "Flostick",
+    "category": "Special"
+  },
+  "9002": {
+    "name": "Baby Flomeow",
+    "category": "Special"
+  }
+}

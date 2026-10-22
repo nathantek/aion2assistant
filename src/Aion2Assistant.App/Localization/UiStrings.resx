@@ -636,4 +636,46 @@
   <data name="EulaMissing" xml:space="preserve">
     <value>EULA not found: reinstall the application.</value>
   </data>
+  <data name="TabFamiliars" xml:space="preserve">
+    <value>Familiars</value>
+  </data>
+  <data name="TipTabFamiliars" xml:space="preserve">
+    <value>Familiars</value>
+  </data>
+  <data name="SectionFamiliars" xml:space="preserve">
+    <value>Familiars</value>
+  </data>
+  <data name="HeaderFamiliars" xml:space="preserve">
+    <value>FAMILIARS</value>
+  </data>
+  <data name="SettingsFamiliarsEnabled" xml:space="preserve">
+    <value>Show the Familiars tab (souls and tiers)</value>
+  </data>
+  <data name="SettingsFamiliarsHelp" xml:space="preserve">
+    <value>Pop-up and sound when a familiar reaches a tier or MAX level. Start the app before entering the game so the familiars' state is synced.</value>
+  </data>
+  <data name="FamiliarsTierAlert" xml:space="preserve">
+    <value>Tier reached</value>
+  </data>
+  <data name="FamiliarsMaxAlert" xml:space="preserve">
+    <value>MAX level</value>
+  </data>
+  <data name="FamiliarsBannerWaiting" xml:space="preserve">
+    <value>Waiting for you to enter the game…</value>
+  </data>
+  <data name="FamiliarsBannerStale" xml:space="preserve">
+    <value>State from {0}: start the app before the game to sync.</value>
+  </data>
+  <data name="FamiliarsBannerNeverSynced" xml:space="preserve">
+    <value>State not synced: start the app before the game.</value>
+  </data>
+  <data name="FamiliarsEmpty" xml:space="preserve">
+    <value>No souls received yet.</value>
+  </data>
+  <data name="FamiliarTierReached" xml:space="preserve">
+    <value>{0}: tier {1} reached</value>
+  </data>
+  <data name="FamiliarMaxReached" xml:space="preserve">
+    <value>{0}: MAX level!</value>
+  </data>
 </root>

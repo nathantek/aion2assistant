@@ -49,6 +49,7 @@ internal sealed class AppHost : IDisposable
     public HistoryController History { get; }
     public RecordController Records { get; }
     public FieldBossController FieldBosses { get; }
+    public FamiliarsController Familiars { get; }
     public UpdateController Updates { get; }
     private SettingsViewModel _settingsPage = null!;
     private IntPtr _foregroundBeforeCapture;
@@ -137,6 +138,12 @@ internal sealed class AppHost : IDisposable
         Window.Deactivated += (_, _) => History.View.EndTyping();
         Window.IsVisibleChanged += (_, _) => { if (!Window.IsVisible) History.View.EndTyping(); };
         Records = new RecordController(History, Notifications);
+
+        // Familiers : suivi permanent (état juste à l'activation), onglet et pop-ups selon l'option.
+        Familiars = new FamiliarsController(Capture, Settings, Meters.Data.FamiliarName, () => Topmost.ExclusiveFullscreenActive,
+            (title, message, isMax) => Notifications.Show(title, message, Resource(isMax ? "CritBrush" : "HealBrush"), ""),
+            sound => Sound.Play(sound, Settings.Volume));
+        Main.Pages[OverlayTab.Familiars] = Familiars.View;
 
         // Barre réduite : lit l'instantané du suivi (les meters ne se mettent pas à jour fenêtre réduite).
         _miniBar = new MiniBarController(Main, npcapInstalled ? () => Meters.LastSnapshot : () => null,
@@ -317,6 +324,7 @@ internal sealed class AppHost : IDisposable
         _miniBar.Dispose();
         Meters.Dispose();
         Records.Dispose();
+        Familiars.Dispose();
         History.Dispose();
         FieldBosses.Dispose();
         Capture.Dispose();

@@ -66,6 +66,10 @@
     <value>Map {0}</value>
     <comment>{0} = identifiant de carte absent de maps.json</comment>
   </data>
+  <data name="FamiliarFallback" xml:space="preserve">
+    <value>Familiar #{0}</value>
+    <comment>{0} = identifiant du familier absent de pets.json</comment>
+  </data>
   <data name="ZoneUnknown" xml:space="preserve">
     <value>Unknown zone</value>
   </data>
@@ -221,6 +225,18 @@
   </data>
   <data name="OpcodeInspect" xml:space="preserve">
     <value>Inspect</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeFamiliarState" xml:space="preserve">
+    <value>Familiars (state)</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeFamiliarSoul" xml:space="preserve">
+    <value>Familiar soul</value>
+    <comment>Nom d'opcode</comment>
+  </data>
+  <data name="OpcodeFamiliarTier" xml:space="preserve">
+    <value>Familiar tier</value>
     <comment>Nom d'opcode</comment>
   </data>
   <data name="CaptureNpcapMissing" xml:space="preserve">

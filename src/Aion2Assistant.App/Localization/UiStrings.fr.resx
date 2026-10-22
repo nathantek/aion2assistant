@@ -634,4 +634,46 @@
   <data name="EulaMissing" xml:space="preserve">
     <value>CLUF introuvable : réinstalle l'application.</value>
   </data>
+  <data name="TabFamiliars" xml:space="preserve">
+    <value>Familiers</value>
+  </data>
+  <data name="TipTabFamiliars" xml:space="preserve">
+    <value>Familiers</value>
+  </data>
+  <data name="SectionFamiliars" xml:space="preserve">
+    <value>Familiers</value>
+  </data>
+  <data name="HeaderFamiliars" xml:space="preserve">
+    <value>FAMILIERS</value>
+  </data>
+  <data name="SettingsFamiliarsEnabled" xml:space="preserve">
+    <value>Afficher l'onglet Familiers (âmes et paliers)</value>
+  </data>
+  <data name="SettingsFamiliarsHelp" xml:space="preserve">
+    <value>Pop-up et son quand un familier passe un palier ou atteint le niveau MAX. Lance l'app avant d'entrer en jeu pour que l'état des familiers soit synchronisé.</value>
+  </data>
+  <data name="FamiliarsTierAlert" xml:space="preserve">
+    <value>Palier atteint</value>
+  </data>
+  <data name="FamiliarsMaxAlert" xml:space="preserve">
+    <value>Niveau MAX</value>
+  </data>
+  <data name="FamiliarsBannerWaiting" xml:space="preserve">
+    <value>En attente de l'entrée en jeu…</value>
+  </data>
+  <data name="FamiliarsBannerStale" xml:space="preserve">
+    <value>État du {0} : lance l'app avant le jeu pour synchroniser.</value>
+  </data>
+  <data name="FamiliarsBannerNeverSynced" xml:space="preserve">
+    <value>État non synchronisé : lance l'app avant le jeu.</value>
+  </data>
+  <data name="FamiliarsEmpty" xml:space="preserve">
+    <value>Aucune âme reçue pour l'instant.</value>
+  </data>
+  <data name="FamiliarTierReached" xml:space="preserve">
+    <value>{0} : palier {1} atteint</value>
+  </data>
+  <data name="FamiliarMaxReached" xml:space="preserve">
+    <value>{0} : niveau MAX !</value>
+  </data>
 </root>

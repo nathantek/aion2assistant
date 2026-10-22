@@ -23,6 +23,11 @@ public static class Opcodes
     public const ushort FieldBossList = 0x0191;
     public const ushort CombatPowerUpdate = 0x1C56;
     public const ushort Inspect = 0x5036;
+    public const ushort FamiliarState = 0x0090;
+    public const ushort FamiliarSoul = 0x0D90;
+    public const ushort FamiliarTier = 0x1490;
+    // 0x0E90 (u8 01 | u32 id | u32 âmes consommées), reçu juste après 0x1490 : volontairement non décodé. Il
+    // redonnerait le seuil du palier franchi, alors que le menu affiche 0 âme juste après (0x1490 suffit).
 
     // Clé de ressource du nom affiché (onglet Capture), traduit à la lecture.
     private static readonly Dictionary<ushort, string> NameKeys = new()
@@ -34,7 +39,8 @@ public static class Opcodes
         [Dot] = nameof(Strings.OpcodeDot), [RemainHp] = nameof(Strings.OpcodeRemainHp), [KillCredit] = nameof(Strings.OpcodeKillCredit),
         [HpMp] = nameof(Strings.OpcodeHpMp), [PartyRoster] = nameof(Strings.OpcodePartyRoster),
         [FieldBossList] = nameof(Strings.OpcodeFieldBossList), [CombatPowerUpdate] = nameof(Strings.OpcodeCombatPower),
-        [Inspect] = nameof(Strings.OpcodeInspect),
+        [Inspect] = nameof(Strings.OpcodeInspect), [FamiliarState] = nameof(Strings.OpcodeFamiliarState),
+        [FamiliarSoul] = nameof(Strings.OpcodeFamiliarSoul), [FamiliarTier] = nameof(Strings.OpcodeFamiliarTier),
     };
 
     public static bool IsKnown(ushort opcode) => NameKeys.ContainsKey(opcode);

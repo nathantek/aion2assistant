@@ -15,6 +15,7 @@
             <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionDisplay}" Tag="{Binding ElementName=SecAffichage}" Click="OnSectionChip"/>
             <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionSound}" Tag="{Binding ElementName=SecSon}" Click="OnSectionChip"/>
             <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionTimers}" Tag="{Binding ElementName=SecTimers}" Click="OnSectionChip"/>
+            <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionFamiliars}" Tag="{Binding ElementName=SecFamiliers}" Click="OnSectionChip"/>
             <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionCombat}" Tag="{Binding ElementName=SecCombat}" Click="OnSectionChip"/>
             <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionCapture}" Tag="{Binding ElementName=SecCapture}" Click="OnSectionChip"/>
             <Button Style="{StaticResource TextButtonStyle}" Content="{loc:Tr SectionHotkeys}" Tag="{Binding ElementName=SecRaccourcis}" Click="OnSectionChip"/>
@@ -109,6 +110,44 @@
                                             Command="{Binding IncreaseThresholdCommand}" ToolTip="{loc:Tr TimerWarnEarlierTip}"/>
                                     <TextBlock Text="{loc:Tr TimerWarnBefore}" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
+                            </WrapPanel>
+                            <TextBlock Text="{Binding SoundChoice.Label}" Foreground="{DynamicResource TextMutedBrush}"
+                                       FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"
+                                       Visibility="{Binding SoundChoice.Label, Converter={StaticResource NullToCollapsed}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock x:Name="SecFamiliers" Style="{StaticResource SectionHeaderStyle}" Text="{loc:Tr HeaderFamiliars}"/>
+            <CheckBox IsChecked="{Binding FamiliarsEnabled}">
+                <TextBlock Text="{loc:Tr SettingsFamiliarsEnabled}" TextWrapping="Wrap"/>
+            </CheckBox>
+            <TextBlock Text="{loc:Tr SettingsFamiliarsHelp}" Margin="20,2,0,0"
+                       Foreground="{DynamicResource TextMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"/>
+            <ItemsControl ItemsSource="{Binding FamiliarAlerts}" Margin="0,6,0,0"
+                          Visibility="{Binding FamiliarsEnabled, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:FamiliarAlertRowViewModel}">
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                            <WrapPanel>
+                                <CheckBox Content="{loc:Tr TimerNotify}" IsChecked="{Binding Notify}" Margin="0,2,10,2"/>
+                                <CheckBox Content="{loc:Tr TimerSound}" IsChecked="{Binding Sound}" Margin="0,2,6,2"/>
+                                <ComboBox ItemsSource="{x:Static vm:SoundChoiceViewModel.Choices}"
+                                          SelectedItem="{Binding SoundChoice.SelectedChoice}" IsEnabled="{Binding Sound}"
+                                          MinWidth="110" Margin="0,2,10,2" VerticalAlignment="Center">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Label}" Foreground="{DynamicResource TextBrush}"
+                                                       FontSize="{DynamicResource FontSizeSmall}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Button Style="{StaticResource IconButtonStyle}" Content="&#xE712;"
+                                        Command="{Binding SoundChoice.ChooseFileCommand}" ToolTip="{loc:Tr TimerChooseFileTip}"
+                                        IsEnabled="{Binding Sound}"
+                                        Visibility="{Binding SoundChoice.IsCustom, Converter={StaticResource BoolToVisibility}}"/>
                             </WrapPanel>
                             <TextBlock Text="{Binding SoundChoice.Label}" Foreground="{DynamicResource TextMutedBrush}"
                                        FontSize="{DynamicResource FontSizeSmall}" TextWrapping="Wrap"

@@ -224,4 +224,20 @@ public static class UiStrings
     public static string SoundFileFilter => Get();
     /// <summary>« EULA not found: reinstall the application. » / « CLUF introuvable : réinstalle l'application. ».</summary>
     public static string EulaMissing => Get();
+    /// <summary>« Familiars » / « Familiers ».</summary>
+    public static string TabFamiliars => Get();
+    /// <summary>« Tier reached » / « Palier atteint ».</summary>
+    public static string FamiliarsTierAlert => Get();
+    /// <summary>« MAX level » / « Niveau MAX ».</summary>
+    public static string FamiliarsMaxAlert => Get();
+    /// <summary>« Waiting for you to enter the game… » / « En attente de l'entrée en jeu… ».</summary>
+    public static string FamiliarsBannerWaiting => Get();
+    /// <summary>« State from {0}: start the app before the game to sync. » / « État du {0} : lance l'app avant le jeu pour synchroniser. ».</summary>
+    public static string FamiliarsBannerStale => Get();
+    /// <summary>« State not synced: start the app before the game. » / « État non synchronisé : lance l'app avant le jeu. ».</summary>
+    public static string FamiliarsBannerNeverSynced => Get();
+    /// <summary>« {0}: tier {1} reached » / « {0} : palier {1} atteint ».</summary>
+    public static string FamiliarTierReached => Get();
+    /// <summary>« {0}: MAX level! » / « {0} : niveau MAX ! ».</summary>
+    public static string FamiliarMaxReached => Get();
 }

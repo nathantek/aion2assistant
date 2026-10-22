@@ -5,7 +5,8 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Aion2Assistant.App.ViewModels;
 
-public enum OverlayTab { Dps, Taken, Heal, History, Timers, Settings }
+/// <summary>Ordre des onglets (Suivant / Précédent). Familiars n'existe que si l'option est activée.</summary>
+public enum OverlayTab { Dps, Taken, Heal, History, Timers, Familiars, Settings }
 
 public partial class MainViewModel : ObservableObject
 {
@@ -25,6 +26,9 @@ public partial class MainViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowUpdateBanner))]
     private bool _isMinimized;
     [ObservableProperty] private string? _warningMessage;
+
+    /// <summary>Option « Familiers » : affiche l'onglet (et autorise ses pop-ups). Modifiée depuis les Réglages, sans redémarrage.</summary>
+    [ObservableProperty] private bool _familiarsEnabled;
 
     // Bandeau « Version X prête » ; null = masqué. Alimenté par UpdateController.
     [ObservableProperty]
@@ -50,6 +54,7 @@ public partial class MainViewModel : ObservableObject
         _uiScale = settings.UiScale;
         _isDocked = settings.Docked;
         _isMinimized = settings.Minimized;
+        _familiarsEnabled = settings.FamiliarsEnabled;
     }
 
     public Dictionary<OverlayTab, object> Pages { get; } = new();
@@ -62,18 +67,34 @@ public partial class MainViewModel : ObservableObject
     public static double ClampScale(double value) =>
         Math.Round(Math.Clamp(value, AppSettings.MinUiScale, AppSettings.MaxUiScale), 2);
 
+    /// <summary>Onglet présent dans la barre (Familiers seulement si l'option est activée).</summary>
+    public bool IsTabAvailable(OverlayTab tab) => tab != OverlayTab.Familiars || FamiliarsEnabled;
+
     [RelayCommand]
     private void SelectTab(OverlayTab tab)
     {
+        if (!IsTabAvailable(tab)) return;
         CurrentTab = tab;
         IsMinimized = false;
     }
 
     [RelayCommand]
-    private void NextTab() => CurrentTab = (OverlayTab)(((int)CurrentTab + 1) % TabCount);
+    private void NextTab() => CurrentTab = Step(+1);
 
     [RelayCommand]
-    private void PreviousTab() => CurrentTab = (OverlayTab)(((int)CurrentTab + TabCount - 1) % TabCount);
+    private void PreviousTab() => CurrentTab = Step(-1);
+
+    /// <summary>Onglet voisin dans le sens donné, en sautant les onglets absents.</summary>
+    private OverlayTab Step(int direction)
+    {
+        var tab = CurrentTab;
+        for (var i = 0; i < TabCount; i++)
+        {
+            tab = (OverlayTab)(((int)tab + direction + TabCount) % TabCount);
+            if (IsTabAvailable(tab)) return tab;
+        }
+        return CurrentTab;
+    }
 
     [RelayCommand]
     private void ToggleDock() => IsDocked = !IsDocked;
@@ -106,6 +127,14 @@ public partial class MainViewModel : ObservableObject
     {
         _settings.Docked = value;
         _requestSave();
+    }
+
+    partial void OnFamiliarsEnabledChanged(bool value)
+    {
+        _settings.FamiliarsEnabled = value;
+        _requestSave();
+        // Onglet retiré pendant qu'il est affiché : retour à l'onglet voisin (Timers).
+        if (!value && CurrentTab == OverlayTab.Familiars) CurrentTab = OverlayTab.Timers;
     }
 
     partial void OnIsMinimizedChanged(bool value)
