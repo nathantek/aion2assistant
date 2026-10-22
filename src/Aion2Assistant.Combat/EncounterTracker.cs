@@ -67,8 +67,14 @@ public sealed class EncounterTracker
     // Dernier combat levé (jamais un combat écarté) et sa fin : référence du filet contre le combat fantôme.
     private EncounterSnapshot? _previous;
     private long _previousEndMs;
-    // Ids réattribués depuis le gel de _frozen : un pseudo annoncé ensuite ne le concerne plus.
+    // Ids réattribués depuis le gel de _frozen (ou de _held) : un pseudo annoncé ensuite ne le concerne plus.
     private bool _frozenIdsStale;
+    // Instantané affiché au début du combat en cours : il reste affiché tant que ce combat est vide, et le redevient
+    // si ce combat se termine vide.
+    private EncounterSnapshot? _held;
+    // Dernier combat de boss levé (mode [Boss]) ; vidé seulement par Reset.
+    private EncounterSnapshot? _lastBoss;
+    private bool _lastBossIdsStale;
 
     public EncounterTracker(GameData data, CombatOptions options)
     {
@@ -88,6 +94,13 @@ public sealed class EncounterTracker
 
     /// <summary>Dernière carte annoncée par un ZoneChangedEvent (0 au départ et après StreamStarted).</summary>
     public int CurrentMapId { get; private set; }
+
+    /// <summary>
+    /// Dernier combat de boss terminé et levé (ni fantôme ni vide), pour le mode [Boss] ; voir
+    /// <see cref="EncounterDisplay.Select"/>. Survit aux changements de carte et à StreamStarted ; vidé par Reset.
+    /// </summary>
+    public EncounterSnapshot? LastBossSnapshot => _lastBoss;
+
     public event Action<EncounterSnapshot>? EncounterEnded;
 
     /// <summary>Levé quand le traitement d'un événement (ou Tick/Reset/Snapshot) a échoué ; le suivi continue.</summary>
@@ -182,6 +195,7 @@ public sealed class EncounterTracker
                 Entities.Apply(e);
                 CurrentMapId = e is ZoneChangedEvent zc ? zc.MapId : 0;
                 _frozenIdsStale = true;
+                _lastBossIdsStale = true;
                 Raise(IdsReset);
                 break;
             case ZoneChangedEvent teleport:
@@ -242,7 +256,9 @@ public sealed class EncounterTracker
         // Le combat affiché (ou la référence du filet) a pu être figé avec « #id ».
         cls = Entities.ClassOf(id);
         if (_frozen is not null && !_frozenIdsStale) _frozen = SnapshotNames.Rename(_frozen, id, name, cls);
+        if (_held is not null && !_frozenIdsStale) _held = SnapshotNames.Rename(_held, id, name, cls);
         if (_previous is not null) _previous = SnapshotNames.Rename(_previous, id, name, cls);
+        if (_lastBoss is not null && !_lastBossIdsStale) _lastBoss = SnapshotNames.Rename(_lastBoss, id, name, cls);
         try
         {
             ActorNamed?.Invoke(id, name, cls);
@@ -442,6 +458,7 @@ public sealed class EncounterTracker
     {
         if (IsActive) return;
         ClearData();
+        _held = _frozen;
         _frozen = null;
         _lastGood = null;
         _hasEncounter = true;
@@ -552,6 +569,8 @@ public sealed class EncounterTracker
             TrainingArmed = false;
             IsTraining = false;
             _frozen = null;
+            _held = null;
+            _lastBoss = null;
             _hasEncounter = false;
             _lastGood = null;
             _previous = null;
@@ -589,7 +608,10 @@ public sealed class EncounterTracker
             var duration = IsTraining
                 ? (_trainingDurationMs > 0 ? Math.Min(nowMs, _startMs + _trainingDurationMs) : nowMs) - _startMs
                 : Math.Min(nowMs, _lastActivityMs + _options.IdleTimeoutMs) - _startMs;
-            return _lastGood = Build(Math.Max(duration, _lastActivityMs - _startMs), true, null);
+            _lastGood = Build(Math.Max(duration, _lastActivityMs - _startMs), true, null);
+            // Combat en cours encore vide (ex. dégâts reçus seulement) : l'affichage précédent reste. Un essai
+            // d'entraînement s'affiche toujours (son minuteur suit l'instantané).
+            return !IsTraining && EncounterDisplay.IsEmpty(_lastGood) ? _held : _lastGood;
         }
         catch (Exception ex)
         {
@@ -611,6 +633,18 @@ public sealed class EncounterTracker
         _droppedHeals = 0;
         if (_droppedDeadHits > 0) Info($"Combat terminé : {_droppedDeadHits} coup(s) écarté(s) (acteur mort avant le combat)");
         _droppedDeadHits = 0;
+        var held = _held;
+        _held = null;
+        // Combat vide (ex. ouvert par des dégâts reçus) : l'affichage revient à l'instantané précédent, sans rien lever
+        // (ni historique ni record) ; il ne devient pas la référence du filet contre le combat fantôme. Un essai
+        // d'entraînement n'est jamais écarté.
+        if (outcome != EncounterOutcome.Training && EncounterDisplay.IsEmpty(snap))
+        {
+            _frozen = held;
+            if (held is null) _hasEncounter = false;
+            Info($"Combat vide écarté : {snap.Title}, {outcome}, {duration} ms, {snap.Taken.Total} dégâts reçus");
+            return;
+        }
         if (_previous is { } previous && IsGhost(snap, outcome, previous))
         {
             // L'affichage revient au combat précédent ; rien n'est levé (ni historique ni record).
@@ -624,6 +658,12 @@ public sealed class EncounterTracker
         // StreamStarted et un changement de carte hors téléport l'effacent aussi.
         _frozen = snap;
         _frozenIdsStale = false;
+        // Un essai d'entraînement (mannequin à PV de boss) n'est pas un combat de boss.
+        if (!snap.IsTraining && EncounterDisplay.IsBossEncounter(snap))
+        {
+            _lastBoss = snap;
+            _lastBossIdsStale = false;
+        }
         if (outcome is EncounterOutcome.Training or EncounterOutcome.Manual)
             _previous = null;
         else

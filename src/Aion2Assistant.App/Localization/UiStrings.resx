@@ -149,6 +149,9 @@
   <data name="RecordNewMessage" xml:space="preserve">
     <value>{0}: {1}/s (previous {2}/s, +{3}%)</value>
   </data>
+  <data name="MiniLastBossDps" xml:space="preserve">
+    <value>Your DPS on the last boss (current fight is not a boss)</value>
+  </data>
   <data name="MiniSelfDps" xml:space="preserve">
     <value>Your DPS (fight in progress)</value>
   </data>
@@ -205,6 +208,12 @@
   </data>
   <data name="MeterNamesMissing" xml:space="preserve">
     <value>Names unknown: change zone to load them.</value>
+  </data>
+  <data name="MeterLastBossAgo" xml:space="preserve">
+    <value>Last boss · {0} min ago</value>
+  </data>
+  <data name="MeterLastBossJustNow" xml:space="preserve">
+    <value>Last boss · &lt; 1 min ago</value>
   </data>
   <data name="MeterNoBossSuffix" xml:space="preserve">
     <value> · no boss, everything counts</value>

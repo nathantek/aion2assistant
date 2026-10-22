@@ -80,6 +80,8 @@ public static class UiStrings
     public static string RecordNewMessage => Get();
     /// <summary>« Your DPS (fight in progress) » / « Ton DPS (combat en cours) ».</summary>
     public static string MiniSelfDps => Get();
+    /// <summary>« Your DPS on the last boss (fight in progress) » / « Ton DPS sur le dernier boss (combat en cours) ».</summary>
+    public static string MiniLastBossDps => Get();
     /// <summary>« Next timer » / « Prochain timer ».</summary>
     public static string MiniNextTimer => Get();
     /// <summary>« Show / hide » / « Afficher / masquer ».</summary>
@@ -96,6 +98,10 @@ public static class UiStrings
     public static string MeterGroupTotal => Get();
     /// <summary>«  · no boss, everything counts » / «  · aucun boss, tout est compté ».</summary>
     public static string MeterNoBossSuffix => Get();
+    /// <summary>« Last boss · {0} min ago » / « Dernier boss · il y a {0} min ».</summary>
+    public static string MeterLastBossAgo => Get();
+    /// <summary>« Last boss · &lt; 1 min ago » / « Dernier boss · il y a &lt; 1 min ».</summary>
+    public static string MeterLastBossJustNow => Get();
     /// <summary>« Training: {0} left » / « Entraînement : {0} restantes ».</summary>
     public static string TrainingRemaining => Get();
     /// <summary>« Free training: {0} » / « Entraînement libre : {0} ».</summary>

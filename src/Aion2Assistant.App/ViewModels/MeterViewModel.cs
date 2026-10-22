@@ -41,6 +41,8 @@ public partial class MeterViewModel : ObservableObject
 
     [ObservableProperty] private bool _hasSnapshot;
     [ObservableProperty] private string _headerText = "";
+    // Mode [Boss] : « Dernier boss · il y a 2 min » quand le meter live garde un boss passé ; null = masqué.
+    [ObservableProperty] private string? _pastBossText;
     // Badge d'issue à droite du titre (historique seulement) ; null = état en texte dans le titre.
     [ObservableProperty] private OutcomeBadge? _badge;
     [ObservableProperty] private double? _targetHpPct;

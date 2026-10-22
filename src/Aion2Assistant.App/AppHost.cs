@@ -139,7 +139,8 @@ internal sealed class AppHost : IDisposable
         Records = new RecordController(History, Notifications);
 
         // Barre réduite : lit l'instantané du suivi (les meters ne se mettent pas à jour fenêtre réduite).
-        _miniBar = new MiniBarController(Main, npcapInstalled ? () => Meters.LastSnapshot : () => null, timersPage, BossFilter);
+        _miniBar = new MiniBarController(Main, npcapInstalled ? () => Meters.LastSnapshot : () => null,
+            npcapInstalled ? () => Meters.LastBossSnapshot : () => null, timersPage, BossFilter);
 
         // État vide des meters live : résumé du dernier combat + lien vers l'historique.
         if (npcapInstalled)

@@ -18,6 +18,8 @@ internal sealed class MetersController : IDisposable
     private readonly MainViewModel _main;
     private readonly Window _window;
     private EncounterSnapshot? _lastSnapshot;
+    private DisplayedEncounter _displayed;
+    private readonly BossFilter _bossFilter;
     private readonly AppSettings _settings;
     private readonly CombatOptions _options = new();
     private readonly EncounterTracker _tracker;
@@ -30,6 +32,7 @@ internal sealed class MetersController : IDisposable
         _main = main;
         _window = window;
         _settings = settings;
+        _bossFilter = bossFilter;
         Dps = new MeterViewModel(MeterKind.Dps, UiStrings.TabDps, dps, bossFilter, display) { Training = new TrainingControls(StartTraining, StopTraining) };
         Heal = new MeterViewModel(MeterKind.Heal, UiStrings.TabHeal, heal, display: display);
         Taken = new MeterViewModel(MeterKind.Taken, UiStrings.TabTaken, taken, display: display);
@@ -46,6 +49,8 @@ internal sealed class MetersController : IDisposable
         _tracker.ActorNamed += (id, name, cls) => ActorNamed?.Invoke(id, name, cls);
         _tracker.IdsReset += () => IdsReset?.Invoke();
         _timer.Tick += (_, _) => Tick();
+        // Bascule [Boss | Tout] : le combat affiché change aussitôt (retour au dernier boss en mode [Boss]).
+        bossFilter.PropertyChanged += OnBossFilterChanged;
     }
 
     /// <summary>Noms de jeu chargés (aussi utilisés pour ré-résoudre les noms de l'historique).</summary>
@@ -74,6 +79,9 @@ internal sealed class MetersController : IDisposable
 
     /// <summary>Dernier instantané calculé (rafraîchi toutes les 250 ms, même fenêtre réduite).</summary>
     public EncounterSnapshot? LastSnapshot => _lastSnapshot;
+
+    /// <summary>Dernier combat de boss du suivi (mode [Boss] des meters et de la barre réduite).</summary>
+    public EncounterSnapshot? LastBossSnapshot => _tracker.LastBossSnapshot;
 
     public MeterViewModel Dps { get; }
     public MeterViewModel Heal { get; }
@@ -139,8 +147,23 @@ internal sealed class MetersController : IDisposable
     private void OnMainPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(MainViewModel.CurrentTab)) return;
-        var vm = VisibleMeter();
-        if (vm is not null && _window.IsVisible && !_main.IsMinimized) vm.Update(_lastSnapshot);
+        if (_window.IsVisible && !_main.IsMinimized) UpdateVisible(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+    }
+
+    /// <summary>Met à jour le meter visible avec le combat choisi (dernier boss en mode [Boss], voir EncounterDisplay).</summary>
+    private void UpdateVisible(long nowMs)
+    {
+        if (VisibleMeter() is not { } vm) return;
+        vm.PastBossText = PastBossText(_displayed, nowMs);
+        vm.Update(_displayed.Snapshot);
+    }
+
+    /// <summary>« Dernier boss · il y a 2 min » quand on garde un boss passé ; null sinon. Minutes entières : le texte change chaque minute.</summary>
+    private static string? PastBossText(DisplayedEncounter shown, long nowMs)
+    {
+        if (!shown.IsPastBoss || shown.Snapshot is not { } s) return null;
+        var minutes = EncounterDisplay.MinutesSinceEnd(s, nowMs);
+        return minutes < 1 ? UiStrings.MeterLastBossJustNow : UiStrings.Format(nameof(UiStrings.MeterLastBossAgo), minutes);
     }
 
     private MeterViewModel? VisibleMeter() => _main.CurrentTab switch
@@ -165,6 +188,8 @@ internal sealed class MetersController : IDisposable
         if (sw.ElapsedMilliseconds > 100) Log.Warning("Lent : {Where} {Ms} ms ({Count} éléments)", "Meters.OnEvents", sw.ElapsedMilliseconds, batch.Count);
     }
 
+    private void OnBossFilterChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) => Tick();
+
     private void Tick()
     {
         try
@@ -186,10 +211,11 @@ internal sealed class MetersController : IDisposable
         _tracker.Tick(now);
         var snapshot = _tracker.Snapshot(now);
         _lastSnapshot = snapshot;
+        _displayed = EncounterDisplay.Select(snapshot, _tracker.LastBossSnapshot, _bossFilter.BossOnly);
         // L'état de l'essai est relu à chaque rafraîchissement ; la durée d'un instantané actif suit l'horloge.
         Dps.ApplyTraining(new TrainingState(_tracker.TrainingArmed, _tracker.IsTraining,
             snapshot?.TrainingDurationMs ?? 0, snapshot?.DurationMs ?? 0));
-        if (_window.IsVisible && !_main.IsMinimized) VisibleMeter()?.Update(snapshot);
+        if (_window.IsVisible && !_main.IsMinimized) UpdateVisible(now);
         if (sw.ElapsedMilliseconds > 100)
             Log.Warning("Lent : {Where} {Ms} ms ({Count} éléments)", "Meters.Refresh", sw.ElapsedMilliseconds, snapshot?.Dps.Actors.Count ?? 0);
     }
@@ -206,6 +232,7 @@ internal sealed class MetersController : IDisposable
         }
         _capture.EventsReceived -= OnEvents;
         _main.PropertyChanged -= OnMainPropertyChanged;
+        _bossFilter.PropertyChanged -= OnBossFilterChanged;
         _timer.Stop();
     }
 }

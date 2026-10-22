@@ -82,6 +82,10 @@
                     <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                VerticalAlignment="Center"/>
                 </DockPanel>
+                <!-- Mode [Boss] : combat de boss passé gardé à l'écran (vue live seulement) -->
+                <TextBlock Text="{Binding PastBossText}" Style="{StaticResource SmallMutedStyle}" TextTrimming="CharacterEllipsis"
+                           Margin="0,1,0,0"
+                           Visibility="{Binding PastBossText, Converter={StaticResource NullToCollapsed}}"/>
                 <!-- PV de la cible, alignés à droite juste au-dessus de la barre -->
                 <TextBlock Text="{Binding TargetHpText}" Style="{StaticResource SmallValueStyle}" HorizontalAlignment="Right"
                            Margin="0,2,0,0"
