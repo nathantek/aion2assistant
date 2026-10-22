@@ -72,4 +72,14 @@ public static class FamiliarAlerts
         return new FamiliarAlertDecision(alert.Notify && !exclusiveFullscreen,
             alert.Sound ? new SoundRef(alert.SoundId, alert.CustomSoundPath) : null);
     }
+
+    /// <summary>
+    /// Pop-up compacte d'âme reçue (sans son) : seulement option activée, overlay réduit à la barre et hors plein écran
+    /// exclusif. Pas de pop-up d'âme si une pop-up de palier est affichée pour le même lot (pas d'empilement bruyant).
+    /// </summary>
+    public static bool ShowSoulPopup(bool enabled, bool minimized, bool exclusiveFullscreen, bool milestonePopupShown) =>
+        enabled && minimized && !exclusiveFullscreen && !milestonePopupShown;
+
+    /// <summary>Texte de la pop-up d'âme : « nom progression », par ex. « Kalgolem 12/25 » ou « Kalgolem MAX ».</summary>
+    public static string SoulPopupText(string name, FamiliarStatus status) => $"{name} {status.Text}";
 }

@@ -15,17 +15,23 @@ public static class FamiliarParsers
     private const uint MaxSouls = 999;
     private const uint MaxSoulGain = 99;
 
+    /// <summary>Borne de chaque liste de 0x0090 (identifiants 1000..9999 ; 199 paliers observés au plus).</summary>
+    private const uint MaxListCount = 2000;
+    private const int TierEntrySize = 12, SoulEntrySize = 8;
+
     /// <summary>
-    /// 0x0090 : u32 en-tête (inconnu) | u8 N1 | N1 × (u32 id, u32 id répété, u32 palier) | u8 N2 | N2 × (u32 id, u32 âmes),
-    /// puis environ 1 500 octets non décodés (ignorés). Les deux listes sont fusionnées : palier 0 et âmes 0 par défaut.
+    /// 0x0090 : u32 en-tête (inconnu, variable : 1184, 1104 ; non vérifié) | varint N1 | N1 × (u32 id, u32 id répété, u32 palier)
+    /// | varint N2 | N2 × (u32 id, u32 âmes), puis des octets non décodés (ignorés). N1 et N2 sont des varints LEB128 : un seul
+    /// octet sous 128, deux au-delà (199 paliers = c7 01). Chaque compteur est borné à 2000 et doit tenir dans les octets
+    /// restants avant toute allocation. Les deux listes sont fusionnées : palier 0 et âmes 0 par défaut.
     /// </summary>
     public static bool State(ReadOnlySpan<byte> body, long timeMs, Action<GameEvent> emit)
     {
         var r = new SpanReader(body);
         if (!r.TryU32(out _)) return false;
 
-        // N ≤ 255 garanti par le u8 ; ordre de première apparition conservé.
-        if (!r.TryU8(out var tierCount)) return false;
+        // Ordre de première apparition conservé.
+        if (!TryCount(ref r, TierEntrySize, out var tierCount)) return false;
         var tiers = new Dictionary<int, int>(tierCount);
         var order = new List<int>(tierCount);
         for (var i = 0; i < tierCount; i++)
@@ -36,7 +42,7 @@ public static class FamiliarParsers
             order.Add((int)id);
         }
 
-        if (!r.TryU8(out var soulCount)) return false;
+        if (!TryCount(ref r, SoulEntrySize, out var soulCount)) return false;
         var souls = new Dictionary<int, int>(soulCount);
         for (var i = 0; i < soulCount; i++)
         {
@@ -75,6 +81,16 @@ public static class FamiliarParsers
         if (!r.TryU32(out var id) || !IsValidId(id)) return false;
         if (!r.TryU32(out var tier) || tier == 0) return false;
         emit(new FamiliarTierEvent(timeMs, (int)id, ClampTier(tier)));
+        return true;
+    }
+
+    /// <summary>Compteur varint d'une liste : au plus <see cref="MaxListCount"/>, et ses entrées doivent tenir dans le reste.</summary>
+    private static bool TryCount(ref SpanReader r, int entrySize, out int count)
+    {
+        count = 0;
+        if (!r.TryVarint(out var value) || value > MaxListCount) return false;
+        if ((long)value * entrySize > r.Remaining) return false;
+        count = (int)value;
         return true;
     }
 

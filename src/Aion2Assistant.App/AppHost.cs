@@ -141,7 +141,9 @@ internal sealed class AppHost : IDisposable
 
         // Familiers : suivi permanent (état juste à l'activation), onglet et pop-ups selon l'option.
         Familiars = new FamiliarsController(Capture, Settings, Meters.Data.FamiliarName, () => Topmost.ExclusiveFullscreenActive,
+            () => Window.IsVisible && Main.IsMinimized,
             (title, message, isMax) => Notifications.Show(title, message, Resource(isMax ? "CritBrush" : "HealBrush"), ""),
+            text => Notifications.ShowCompact(text, Resource("HealBrush"), ""),
             sound => Sound.Play(sound, Settings.Volume));
         Main.Pages[OverlayTab.Familiars] = Familiars.View;
 

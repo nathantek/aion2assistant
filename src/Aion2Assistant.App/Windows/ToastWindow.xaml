@@ -4,7 +4,7 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ShowInTaskbar="False" ShowActivated="False" Topmost="True" ResizeMode="NoResize"
         SizeToContent="WidthAndHeight" FontFamily="{DynamicResource UiFont}" Opacity="0" Cursor="Hand">
-    <Border CornerRadius="8" Background="{DynamicResource OverlayBackgroundBrush}"
+    <Border x:Name="RootBorder" CornerRadius="8" Background="{DynamicResource OverlayBackgroundBrush}"
             BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" Width="260">
         <Border.LayoutTransform>
             <ScaleTransform x:Name="RootScale"/>
@@ -18,7 +18,7 @@
             <Border x:Name="AccentBar" CornerRadius="8,0,0,8"/>
             <TextBlock x:Name="GlyphText" Grid.Column="1" FontFamily="{DynamicResource IconFont}"
                        FontSize="{DynamicResource FontSizeLarge}" Margin="10,0" VerticalAlignment="Center"/>
-            <StackPanel Grid.Column="2" Margin="0,8,10,8">
+            <StackPanel x:Name="TextPanel" Grid.Column="2" Margin="0,8,10,8">
                 <TextBlock x:Name="TitleText" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                 <TextBlock x:Name="MessageText" Foreground="{DynamicResource TextMutedBrush}"
                            FontSize="{DynamicResource FontSizeSmall}"/>

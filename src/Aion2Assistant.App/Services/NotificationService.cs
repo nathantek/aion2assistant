@@ -5,18 +5,43 @@ using Aion2Assistant.App.Windows;
 
 namespace Aion2Assistant.App.Services;
 
-/// <summary>Pop-ups discrètes empilées sous l'overlay, 3 au maximum (la plus ancienne part en premier).</summary>
+/// <summary>Pop-ups discrètes empilées sous l'overlay, 3 au maximum (la plus ancienne part en premier), dont au plus une compacte.</summary>
 internal sealed class NotificationService(Window owner, MainViewModel main)
 {
     private const int MaxToasts = 3;
     private const double Gap = 6;
     private readonly List<ToastWindow> _open = new();
 
-    public void Show(string title, string message, Brush accent, string glyph)
+    private static readonly TimeSpan CompactLifetime = TimeSpan.FromSeconds(3);
+    private ToastWindow? _compact;
+
+    public void Show(string title, string message, Brush accent, string glyph) =>
+        Add(new ToastWindow(title, message, accent, glyph, main.UiScale));
+
+    /// <summary>
+    /// Pop-up compacte d'une ligne (3 s, sans son). Une seule à la fois : si elle est encore visible, son texte est
+    /// remplacé et sa durée relancée au lieu d'empiler.
+    /// </summary>
+    public void ShowCompact(string text, Brush accent, string glyph)
+    {
+        if (_compact is { } current && current.TryUpdate(text))
+        {
+            Relayout();
+            return;
+        }
+        var toast = ToastWindow.Compact(text, accent, glyph, main.UiScale, CompactLifetime);
+        toast.Closed += (_, _) =>
+        {
+            if (_compact == toast) _compact = null;
+        };
+        _compact = toast;
+        Add(toast);
+    }
+
+    private void Add(ToastWindow toast)
     {
         if (_open.Count >= MaxToasts) _open[0].Close();
 
-        var toast = new ToastWindow(title, message, accent, glyph, main.UiScale);
         toast.Closed += (_, _) =>
         {
             _open.Remove(toast);

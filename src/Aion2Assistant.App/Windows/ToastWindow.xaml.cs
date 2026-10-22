@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -12,6 +13,29 @@ public partial class ToastWindow : Window
     private readonly DispatcherTimer _life = new() { Interval = Lifetime };
     private bool _closing;
     private bool _closed;
+
+    /// <summary>
+    /// Variante compacte : une seule ligne, plus petite, durée de vie courte. Réutilisable tant qu'elle est visible
+    /// (<see cref="TryUpdate"/>) pour remplacer le texte au lieu d'empiler.
+    /// </summary>
+    public static ToastWindow Compact(string text, Brush accent, string glyph, double scale, TimeSpan lifetime)
+    {
+        var toast = new ToastWindow(text, "", accent, glyph, scale);
+        toast._life.Interval = lifetime;
+        toast.MessageText.Visibility = Visibility.Collapsed;
+        toast.TitleText.SetResourceReference(TextBlock.FontSizeProperty, "FontSizeSmall");
+        toast.TextPanel.Margin = new Thickness(0, 4, 10, 4);
+        toast.GlyphText.SetResourceReference(TextBlock.FontSizeProperty, "FontSizeSmall");
+        toast.GlyphText.Margin = new Thickness(8, 0, 6, 0);
+        if (string.IsNullOrEmpty(glyph))
+        {
+            toast.GlyphText.Visibility = Visibility.Collapsed;
+            toast.TextPanel.Margin = new Thickness(8, 4, 10, 4);
+        }
+        toast.RootBorder.Width = double.NaN;
+        toast.RootBorder.MaxWidth = 260;
+        return toast;
+    }
 
     public ToastWindow(string title, string message, Brush accent, string glyph, double scale)
     {
@@ -38,6 +62,19 @@ public partial class ToastWindow : Window
         };
         _life.Tick += (_, _) => FadeOutAndClose();
         MouseLeftButtonUp += (_, _) => FadeOutAndClose();
+    }
+
+    /// <summary>Remplace le texte et relance la durée de vie ; faux si la pop-up est déjà en train de disparaître.</summary>
+    public bool TryUpdate(string title)
+    {
+        if (_closed || _closing) return false;
+        TitleText.Text = title;
+        if (IsLoaded)
+        {
+            _life.Stop();
+            _life.Start();
+        }
+        return true;
     }
 
     private void FadeOutAndClose()
