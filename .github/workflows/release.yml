@@ -36,6 +36,9 @@ jobs:
           $version = ($csproj.Project.PropertyGroup.InformationalVersion | Where-Object { $_ } | Select-Object -First 1)
           if (-not $version) { throw 'InformationalVersion introuvable dans Aion2Assistant.App.csproj' }
           if ("v$version" -ne $env:TAG) { throw "Le tag $env:TAG ne correspond pas a la version de l'app (v$version)" }
+          # Résumé des nouveautés obligatoire, vérifié avant tout envoi : release-notes/<tag>.md.
+          $notesFile = "release-notes/$env:TAG.md"
+          if (-not (Test-Path $notesFile) -or -not (Get-Content $notesFile -Raw).Trim()) { throw "Résumé des nouveautés manquant ou vide : $notesFile" }
           "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Publish
@@ -352,7 +355,9 @@ jobs:
             '',
             'Vérification : `Get-FileHash .\<fichier>` doit afficher la même valeur.'
           )
-          $notes = $install -join "`n"
+          # Résumé des nouveautés (release-notes/<tag>.md, vérifié au début du job) en tête, puis l'installation.
+          $summary = (Get-Content "release-notes/$env:TAG.md" -Raw -Encoding utf8).Trim()
+          $notes = $summary + "`n`n" + ($install -join "`n")
           # Notes générées par GitHub (changements depuis la release précédente), facultatives.
           $generated = gh api "repos/$repo/releases/generate-notes" -f "tag_name=$env:TAG" --jq '.body'
           if ($LASTEXITCODE -eq 0 -and $generated) {
