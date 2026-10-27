@@ -60,7 +60,8 @@ public static class TimersConfigLoader
                     BuildRule(timer),
                     timer.OpenFor is null ? null : ParseDuration(timer.OpenFor, "openFor"),
                     timer.Verified,
-                    (english ? NonBlank(timer.ShortNameEn) : null) ?? NonBlank(timer.ShortName)));
+                    (english ? NonBlank(timer.ShortNameEn) : null) ?? NonBlank(timer.ShortName),
+                    TimerZone(timer, errors)));
             }
             catch (Exception ex) when (ex is FormatException or ArgumentException)
             {
@@ -73,6 +74,21 @@ public static class TimersConfigLoader
     }
 
     private static string? NonBlank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    /// <summary>Fuseau propre au timer ; null (fuseau global) s'il est absent ou inconnu, avec une erreur dans ce cas.</summary>
+    private static ServerTime? TimerZone(TimerDto timer, List<string> errors)
+    {
+        if (NonBlank(timer.TimeZone) is not { } id) return null;
+        try
+        {
+            return new ServerTime(ServerTime.ResolveZone(id));
+        }
+        catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException or ArgumentException)
+        {
+            errors.Add($"Timer « {timer.Id} » : fuseau « {id} » inconnu, fuseau global utilisé.");
+            return null;
+        }
+    }
 
     private static IScheduleRule BuildRule(TimerDto timer) => timer.Kind switch
     {

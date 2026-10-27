@@ -23,4 +23,6 @@ public sealed class TimerDto
     public DayOfWeek? Day { get; set; }
     public string? Time { get; set; }
     public bool Verified { get; set; }
+    /// <summary>Fuseau propre au timer (facultatif) ; absent = serverTimeZone. Ex. failles à l'heure de Paris, resets en UTC.</summary>
+    public string? TimeZone { get; set; }
 }

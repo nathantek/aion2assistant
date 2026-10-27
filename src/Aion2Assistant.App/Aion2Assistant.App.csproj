@@ -12,8 +12,8 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <!-- Le DPI (PerMonitorV2) est déclaré dans le manifeste pour WPF ; WinForms n'héberge que le NotifyIcon. -->
     <NoWarn>$(NoWarn);WFAC010</NoWarn>
-    <Version>0.4.4</Version>
-    <InformationalVersion>0.4.4</InformationalVersion>
+    <Version>0.4.5</Version>
+    <InformationalVersion>0.4.5</InformationalVersion>
     <!-- Point d'entrée explicite (Program.Main dans App.xaml.cs) : Velopack doit s'exécuter avant tout. -->
     <StartupObject>Aion2Assistant.App.App</StartupObject>
     <!-- Ressources neutres en anglais (Localization/UiStrings.resx) ; le français va dans l'assembly satellite fr\. -->

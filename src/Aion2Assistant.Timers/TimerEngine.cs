@@ -22,7 +22,8 @@ public sealed class TimerEngine(
 
     private TimerState ComputeOne(TimerDefinition definition, DateTimeOffset now)
     {
-        var today = serverTime.ServerDate(now);
+        var zone = definition.Zone ?? serverTime;
+        var today = zone.ServerDate(now);
         var span = definition.Rule.LookaroundDays;
         DateTimeOffset? previous = null;
         DateTimeOffset? next = null;
@@ -32,7 +33,7 @@ public sealed class TimerEngine(
             var day = today.AddDays(offset);
             foreach (var time in definition.Rule.TimesOn(day))
             {
-                var at = serverTime.ToUtc(day, time);
+                var at = zone.ToUtc(day, time);
                 if (at <= now)
                 {
                     if (previous is null || at > previous) previous = at;

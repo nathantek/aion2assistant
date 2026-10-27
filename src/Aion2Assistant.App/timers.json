@@ -2,7 +2,8 @@
   "serverTimeZone": "UTC",
   "timers": [
     { "id": "rift", "name": "Faille spatio-temporelle", "shortName": "Faille", "nameEn": "Rift", "shortNameEn": "Rift",
-      "kind": "Recurring", "anchor": "18:00", "interval": "03:00", "openFor": "00:10", "category": "rift", "verified": true },
+      "kind": "Recurring", "anchor": "20:00", "interval": "03:00", "openFor": "00:10", "category": "rift", "verified": true,
+      "timeZone": "Europe/Paris" },
     { "id": "shugo-festival", "name": "Festival Shugo", "shortName": "Shugo", "nameEn": "Shugo Festival", "shortNameEn": "Shugo",
       "kind": "Recurring", "anchor": "00:00", "interval": "01:00", "category": "event", "verified": true },
     { "id": "daily-reset", "name": "Reset quotidien", "shortName": "Reset jour", "nameEn": "Daily reset", "shortNameEn": "Daily",
